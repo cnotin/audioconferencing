@@ -1,4 +1,4 @@
-package se.ltu.M7017E.lab2;
+package se.ltu.M7017E.lab2.client;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
