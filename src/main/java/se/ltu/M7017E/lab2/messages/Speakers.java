@@ -7,13 +7,13 @@ import java.util.Map;
 import lombok.Data;
 
 @Data
-public class ThereAre {
+public class Speakers {
 	private int room;
 	// key=port, value=name
 	private Map<Integer, String> people = new HashMap<Integer, String>();
 
 	public String toString() {
-		StringBuilder sb = new StringBuilder("THERE_ARE,");
+		StringBuilder sb = new StringBuilder("SPEAKERS,");
 		sb.append(room);
 		sb.append(',');
 
@@ -32,8 +32,8 @@ public class ThereAre {
 		return sb.toString();
 	}
 
-	public static ThereAre fromString(String str) {
-		ThereAre ret = new ThereAre();
+	public static Speakers fromString(String str) {
+		Speakers ret = new Speakers();
 
 		String[] tokens = str.split(",");
 

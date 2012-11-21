@@ -15,7 +15,6 @@ public class App {
 	public App() {
 		control = new ControlChannel(this);
 		new Thread(control).start();
-		control.whosThere();
 
 		try {
 			Thread.sleep(1000);
@@ -23,8 +22,6 @@ public class App {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("End of timeout");
-		control.iAm(me);
 	}
 
 	public Friend findFriendByName(String name) {

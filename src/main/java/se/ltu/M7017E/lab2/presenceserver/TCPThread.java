@@ -1,32 +1,38 @@
-package se.ltu.M7017E.lab2.client;
+package se.ltu.M7017E.lab2.presenceserver;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.net.InetAddress;
 import java.net.Socket;
 
-/**
- * Manage the control channel
- */
-public class ControlChannel implements Runnable {
+import se.ltu.M7017E.lab2.messages.Join;
+import se.ltu.M7017E.lab2.messages.Leave;
+import se.ltu.M7017E.lab2.messages.Voice;
+
+public class TCPThread implements Runnable {
 	private App app;
 	private BufferedReader in;
 	private PrintStream out;
-	private boolean quit = false; // set to true to exit thread
+	private Friend me;
+	/**
+	 * Set to true to exit thread
+	 */
+	private boolean quit = false;
 
-	public ControlChannel(App app) {
-		System.out.println("Creating control channel");
+	public TCPThread(App app, Socket socket) {
+		System.out.println("New client " + socket.getInetAddress());
 		this.app = app;
 
+		this.me = new Friend();
+		this.me.setName("clem");
+		this.me.setTcpThread(this);
+
 		try {
-			Socket socket = new Socket(InetAddress.getByName("localhost"), 5000);
 			in = new BufferedReader(new InputStreamReader(
 					socket.getInputStream()));
 			out = new PrintStream(socket.getOutputStream());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -53,24 +59,14 @@ public class ControlChannel implements Runnable {
 	}
 
 	public void caseMessage(String message) {
-		if (message.startsWith("THERE_ARE")) {
-
-		} else if (message.startsWith("JOINED")) {
-
-		} else if (message.startsWith("LEFT")) {
-
-		} else if (message.startsWith("ROOMS_START")) {
-
-		} else if (message.startsWith("ROOM")) {
-
-		} else if (message.startsWith("ROOMS_STOP")) {
-
-		} else if (message.startsWith("VOICE_OK")) {
-
-		} else if (message.startsWith("VOICE_NOK")) {
-
-		} else if (message.startsWith("SPEAKER")) {
-
+		if (message.startsWith("JOIN")) {
+			app.joinMsg(me, Join.fromString(message));
+		} else if (message.startsWith("LEAVE")) {
+			app.leaveMsg(me, Leave.fromString(message));
+		} else if (message.startsWith("LIST")) {
+			app.listMsg(me);
+		} else if (message.startsWith("VOICE")) {
+			app.voiceMsg(me, Voice.fromString(message));
 		}
 	}
 

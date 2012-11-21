@@ -7,12 +7,12 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-public class Room {
+public class Audience {
 	private int room;
 	private List<String> names = new LinkedList<String>();
 
 	public String toString() {
-		StringBuilder sb = new StringBuilder("ROOM,");
+		StringBuilder sb = new StringBuilder("AUDIENCE,");
 		sb.append(room);
 		sb.append(',');
 
@@ -27,8 +27,8 @@ public class Room {
 		return sb.toString();
 	}
 
-	public static Room fromString(String str) {
-		Room ret = new Room();
+	public static Audience fromString(String str) {
+		Audience ret = new Audience();
 
 		String[] tokens = str.split(",");
 
