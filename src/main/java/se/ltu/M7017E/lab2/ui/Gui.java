@@ -2,10 +2,16 @@ package se.ltu.M7017E.lab2.ui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -15,6 +21,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -118,8 +125,8 @@ public class Gui extends JFrame {
 
 	private JPanel createButtonPanel() {
 		JPanel panel = new JPanel();
-		callBtn = new JButton("Call contact",callIcon);
-		hangUpBtn = new JButton("Hang up",hangIcon);
+		callBtn = new JButton("Call contact", callIcon);
+		hangUpBtn = new JButton("Hang up", hangIcon);
 
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
 		panel.add(callBtn);
@@ -131,14 +138,82 @@ public class Gui extends JFrame {
 		this.menu = new JMenuBar();
 
 		JMenu edit = new JMenu("Edit");
-		JMenuItem preferences = new JMenuItem("Preferences");
-		preferences.addActionListener(new ActionListener() {
+		JMenuItem addContact = new JMenuItem("Add a contact");
+		addContact.addActionListener(new ActionListener() {
+
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 
+				JDialog jdialog = new JDialog();
+				JPanel mainPanel = new JPanel();
+				JPanel namePanel = new JPanel();
+				JPanel ipPanel = new JPanel();
+				JPanel buttonPanel = new JPanel();
+				JLabel contactNameLabel = new JLabel("Contact name");
+				JLabel contactIPLabel = new JLabel("Contact IP");
+				final JTextField nameField = new JTextField(20);
+				final JTextField ipField = new JTextField(15);
+				JButton saveButton = new JButton("Save");
+				JButton cancelButton = new JButton("Cancel");
+				jdialog.setSize(400, 200);
+				jdialog.setTitle("Add a contact");
+				jdialog.setVisible(true);
+
+				mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+				namePanel.setLayout(new BoxLayout(namePanel, BoxLayout.X_AXIS));
+				ipPanel.setLayout(new BoxLayout(ipPanel, BoxLayout.X_AXIS));
+				buttonPanel.setLayout(new BoxLayout(buttonPanel,
+						BoxLayout.X_AXIS));
+
+				namePanel.add(contactNameLabel);
+				namePanel.add(nameField);
+				ipPanel.add(contactIPLabel);
+				ipPanel.add(ipField);
+				buttonPanel.add(saveButton);
+				buttonPanel.add(cancelButton);
+				mainPanel.add(namePanel);
+				mainPanel.add(ipPanel);
+				mainPanel.add(buttonPanel);
+
+				jdialog.add(mainPanel);
+				saveButton.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						System.out.println("plouf");
+						try {
+
+							String contact = nameField.getText() + "\n"
+									+ ipField.getText() + "\n";
+							FileWriter MyFile = new FileWriter("contacts.txt",
+									true);
+							MyFile.write(contact);
+
+							MyFile.close();
+
+							FileReader fr = new FileReader("contacts.txt");
+							BufferedReader br = new BufferedReader(fr);
+							String s;
+							int i = 0;
+							while ((s = br.readLine()) != null) {
+								i++;
+								System.out.println(s);
+							}
+							System.out.println(i);
+						} catch (FileNotFoundException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						;
+					}
+
+				});
+
 			}
 		});
-		edit.add(preferences);
+		edit.add(addContact);
 		menu.add(edit);
 
 		JMenu help = new JMenu("?");
