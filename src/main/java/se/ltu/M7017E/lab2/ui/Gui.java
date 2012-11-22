@@ -1,9 +1,11 @@
 package se.ltu.M7017E.lab2.ui;
 
+import java.awt.PopupMenu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
@@ -32,6 +34,11 @@ public class Gui extends JFrame {
 	private JButton rmvBtn;
 	private JList contactsList;
 	private JList contactsToCallList;
+	
+	private ImageIcon addIcon = new ImageIcon(getClass().getResource(
+			"/icons/add_button.png"));
+	private ImageIcon rmvIcon = new ImageIcon(getClass().getResource(
+			"/icons/rmv_button.png"));
 
 	public Gui(final App app) {
 		this.setJMenuBar(createMenu());
@@ -41,6 +48,9 @@ public class Gui extends JFrame {
 		this.setResizable(true);
 		this.setLocationRelativeTo(null);// center window on screen
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		
+		
+
 
 		// use OS' native look'n'feel
 		try {
@@ -68,8 +78,8 @@ public class Gui extends JFrame {
 
 		JPanel panel = new JPanel();
 		JPanel buttons = new JPanel();
-		addBtn = new JButton("Add");
-		rmvBtn = new JButton("Remove");
+		addBtn = new JButton(addIcon);
+		rmvBtn = new JButton(rmvIcon);
 
 
 		this.contactsList = new JList();
@@ -79,6 +89,8 @@ public class Gui extends JFrame {
 		JScrollPane contactToCallScrollPane = new JScrollPane(
 				this.contactsToCallList);
 
+
+		addBtn.add(new PopupMenu("Add contact to call list"));	
 		buttons.setLayout(new BoxLayout(buttons, BoxLayout.Y_AXIS));
 		buttons.setAlignmentX(CENTER_ALIGNMENT);
 		buttons.add(addBtn);
