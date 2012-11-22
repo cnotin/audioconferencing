@@ -55,7 +55,6 @@ public class Gui extends JFrame {
 			"/icons/hang_button.png"));
 
 	public Gui(final App app) {
-		this.setJMenuBar(createMenu());
 		this.app = app;
 		this.setTitle("Audio conferencing tool");
 		this.setSize(600, 500);
@@ -66,7 +65,6 @@ public class Gui extends JFrame {
 		// use OS' native look'n'feel
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-			UIManager.put("Slider.paintValue", false);
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (InstantiationException e) {
@@ -76,6 +74,8 @@ public class Gui extends JFrame {
 		} catch (UnsupportedLookAndFeelException e) {
 			e.printStackTrace();
 		}
+
+		this.setJMenuBar(createMenu());
 
 		this.getContentPane().setLayout(
 				new BoxLayout(this.getContentPane(), BoxLayout.Y_AXIS));
