@@ -1,6 +1,5 @@
 package se.ltu.M7017E.lab2.ui;
 
-import java.awt.PopupMenu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
@@ -25,8 +24,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.JTree;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 import se.ltu.M7017E.lab2.App;
 import se.ltu.M7017E.lab2.Contact;
@@ -45,15 +46,20 @@ public class Gui extends JFrame {
 	private JList contactsList;
 	private JList contactsToCallList;
 	private ArrayList<Contact> contacts;
+	private JTree roomList = new JTree();
 	private ImageIcon addIcon = new ImageIcon(getClass().getResource(
 			"/icons/add_button.png"));
 	private ImageIcon rmvIcon = new ImageIcon(getClass().getResource(
 			"/icons/rmv_button.png"));
+
 	private Gui me = this;
 	private DefaultListModel model;
+	private ImageIcon callIcon = new ImageIcon(getClass().getResource(
+			"/icons/call_button.png"));
+	private ImageIcon hangIcon = new ImageIcon(getClass().getResource(
+			"/icons/hang_button.png"));
 
 	public Gui(final App app) {
-		this.setJMenuBar(createMenu());
 		this.setTitle("Audio conferencing tool");
 		this.setSize(600, 500);
 		this.setResizable(true);
@@ -63,7 +69,6 @@ public class Gui extends JFrame {
 		// use OS' native look'n'feel
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-			UIManager.put("Slider.paintValue", false);
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (InstantiationException e) {
@@ -74,9 +79,9 @@ public class Gui extends JFrame {
 			e.printStackTrace();
 		}
 		this.setContactsList();
+		this.setJMenuBar(createMenu());
 		this.getContentPane().setLayout(
 				new BoxLayout(this.getContentPane(), BoxLayout.Y_AXIS));
-
 		this.add(createButtonPanel());
 		this.add(createContactsPanel());
 
@@ -133,41 +138,51 @@ public class Gui extends JFrame {
 	private JPanel createContactsPanel() {
 
 		JPanel panel = new JPanel();
+
+		JPanel roomPanel = new JPanel();
+		JPanel contactPanel = new JPanel();
 		JPanel buttons = new JPanel();
+
 		addBtn = new JButton(addIcon);
 		rmvBtn = new JButton(rmvIcon);
 
-		this.contactsList = new JList();
-		JScrollPane contactScrollPane = new JScrollPane(this.contactsList);
-
+		/* Room Panel */
+		roomList = buildTree();
+		roomPanel.setLayout(new BoxLayout(roomPanel, BoxLayout.Y_AXIS));
+		JScrollPane roomListPane = new JScrollPane(roomList);
+		roomPanel.add(new JLabel("Room list"));
+		roomPanel.add(roomListPane);
 		model = new DefaultListModel();
 		for (int i = 0; i < this.contacts.size(); i++) {
 			Contact contact = (Contact) this.contacts.get(i);
 			model.addElement(contact.getName());
 		}
 		this.contactsToCallList = new JList(model);
+		contactPanel.setLayout(new BoxLayout(contactPanel, BoxLayout.Y_AXIS));
+		contactsList = new JList();
 		JScrollPane contactToCallScrollPane = new JScrollPane(
 				this.contactsToCallList);
+		contactPanel.add(new JLabel("Contact list"));
+		contactPanel.add(contactToCallScrollPane);
 
-		addBtn.add(new PopupMenu("Add contact to call list"));
 		buttons.setLayout(new BoxLayout(buttons, BoxLayout.Y_AXIS));
 		buttons.setAlignmentX(CENTER_ALIGNMENT);
 		buttons.add(addBtn);
 		buttons.add(rmvBtn);
 
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
-		panel.add(contactScrollPane);
+		panel.add(roomPanel);
 		panel.add(buttons);
-		panel.add(contactToCallScrollPane);
+		panel.add(contactPanel);
 
 		return panel;
-
 	}
 
 	private JPanel createButtonPanel() {
 		JPanel panel = new JPanel();
-		callBtn = new JButton("Call");
-		hangUpBtn = new JButton("Hang up");
+		callBtn = new JButton("Call contact", callIcon);
+		hangUpBtn = new JButton("Hang up", hangIcon);
+
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
 		panel.add(callBtn);
 		panel.add(hangUpBtn);
@@ -279,4 +294,25 @@ public class Gui extends JFrame {
 		return menu;
 	}
 
+	private JTree buildTree() {
+		// Root creation
+		DefaultMutableTreeNode racine = new DefaultMutableTreeNode("All rooms");
+
+		// Add leaves and way from the root
+		for (int i = 1; i < 6; i++) {
+			DefaultMutableTreeNode rep = new DefaultMutableTreeNode("Room" + i);
+
+			// Add 4 ways
+			if (i < 4) {
+				DefaultMutableTreeNode rep2 = new DefaultMutableTreeNode(
+						"Contact" + i);
+				rep.add(rep2);
+			}
+			// Add leaves to the root
+			racine.add(rep);
+		}
+		// create tree
+		JTree arbre = new JTree(racine);
+		return arbre;
+	}
 }
