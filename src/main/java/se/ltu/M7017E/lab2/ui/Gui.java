@@ -8,8 +8,10 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.swing.BoxLayout;
+import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -27,6 +29,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import se.ltu.M7017E.lab2.App;
+import se.ltu.M7017E.lab2.Contact;
 
 public class Gui extends JFrame {
 
@@ -42,7 +45,7 @@ public class Gui extends JFrame {
 	private JButton rmvBtn;
 	private JList contactsList;
 	private JList contactsToCallList;
-
+	private ArrayList contacts;
 	private ImageIcon addIcon = new ImageIcon(getClass().getResource(
 			"/icons/add_button.png"));
 	private ImageIcon rmvIcon = new ImageIcon(getClass().getResource(
@@ -70,12 +73,50 @@ public class Gui extends JFrame {
 		} catch (UnsupportedLookAndFeelException e) {
 			e.printStackTrace();
 		}
-
+		this.setContactsList();
 		this.getContentPane().setLayout(
 				new BoxLayout(this.getContentPane(), BoxLayout.Y_AXIS));
 
 		this.add(createButtonPanel());
 		this.add(createContactsPanel());
+
+	}
+
+	private void setContactsList() {
+
+		String s;
+		try {
+			FileReader fr = new FileReader("contacts.txt");
+			BufferedReader br = new BufferedReader(fr);
+			int i = 0;
+			int j = 0;
+			contacts = new ArrayList<Contact>();
+			while ((s = br.readLine()) != null) {
+
+				if ((i % 2) == 0) { // even
+
+					contacts.add(new Contact());
+					Contact contact = (Contact) contacts.get(j);
+					contact.setName(s);
+				} else { // odd
+					Contact contact = (Contact) contacts.get(j);
+					contact.setIp(s);
+					j++;
+				}
+				System.out.println(s);
+				i++;
+			}
+			fr.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		for (int k = 0; k < contacts.size(); k++) {
+			Contact contact = (Contact) contacts.get(k);
+			System.out.println("Name : " + contact.getName() + "\tIP : "
+					+ contact.getIp());
+		}
 
 	}
 
@@ -89,7 +130,12 @@ public class Gui extends JFrame {
 		this.contactsList = new JList();
 		JScrollPane contactScrollPane = new JScrollPane(this.contactsList);
 
-		this.contactsToCallList = new JList();
+		DefaultListModel model = new DefaultListModel();
+		for (int i = 0; i < this.contacts.size(); i++) {
+			Contact contact = (Contact) this.contacts.get(i);
+			model.addElement(contact.getName());
+		}
+		this.contactsToCallList = new JList(model);
 		JScrollPane contactToCallScrollPane = new JScrollPane(
 				this.contactsToCallList);
 
@@ -174,15 +220,6 @@ public class Gui extends JFrame {
 
 							MyFile.close();
 
-							FileReader fr = new FileReader("contacts.txt");
-							BufferedReader br = new BufferedReader(fr);
-							String s;
-							int i = 0;
-							while ((s = br.readLine()) != null) {
-								i++;
-								System.out.println(s);
-							}
-							System.out.println(i);
 						} catch (FileNotFoundException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
