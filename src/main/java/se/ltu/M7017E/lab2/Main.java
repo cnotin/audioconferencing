@@ -3,6 +3,10 @@ package se.ltu.M7017E.lab2;
 import java.io.IOException;
 import java.net.MulticastSocket;
 
+import javax.swing.SwingUtilities;
+
+import se.ltu.M7017E.lab2.ui.Gui;
+
 public class Main {
 	public static void main(String[] args) {
 		System.out.println("Welcome");
@@ -20,5 +24,14 @@ public class Main {
 		new Thread(new UDPServer(socket)).start();
 		UDPClient client = new UDPClient(socket);
 		client.whosthere();
+	
+		final App app = new App();
+	
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				Gui gui = new Gui(app);
+				gui.setVisible(true);
+			}
+		});
 	}
 }
