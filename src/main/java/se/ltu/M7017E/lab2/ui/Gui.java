@@ -1,6 +1,5 @@
 package se.ltu.M7017E.lab2.ui;
 
-import java.awt.PopupMenu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -8,6 +7,7 @@ import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -15,8 +15,10 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTree;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 import se.ltu.M7017E.lab2.App;
 
@@ -34,7 +36,8 @@ public class Gui extends JFrame {
 	private JButton rmvBtn;
 	private JList contactsList;
 	private JList contactsToCallList;
-	
+	private JTree roomList = new JTree();
+
 	private ImageIcon addIcon = new ImageIcon(getClass().getResource(
 			"/icons/add_button.png"));
 	private ImageIcon rmvIcon = new ImageIcon(getClass().getResource(
@@ -48,9 +51,6 @@ public class Gui extends JFrame {
 		this.setResizable(true);
 		this.setLocationRelativeTo(null);// center window on screen
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		
-		
-
 
 		// use OS' native look'n'feel
 		try {
@@ -77,32 +77,39 @@ public class Gui extends JFrame {
 	private JPanel createContactsPanel() {
 
 		JPanel panel = new JPanel();
+
+		JPanel roomPanel = new JPanel();
+		JPanel contactPanel = new JPanel();
 		JPanel buttons = new JPanel();
+
 		addBtn = new JButton(addIcon);
 		rmvBtn = new JButton(rmvIcon);
 
+		/* Room Panel */
+		roomList = buildTree();
+		roomPanel.setLayout(new BoxLayout(roomPanel, BoxLayout.Y_AXIS));
+		JScrollPane roomListPane = new JScrollPane(roomList);
+		roomPanel.add(new JLabel("Room list"));
+		roomPanel.add(roomListPane);
 
-		this.contactsList = new JList();
-		JScrollPane contactScrollPane = new JScrollPane(this.contactsList);
-
-		this.contactsToCallList = new JList();
+		contactPanel.setLayout(new BoxLayout(contactPanel, BoxLayout.Y_AXIS));
+		contactsList = new JList();
 		JScrollPane contactToCallScrollPane = new JScrollPane(
 				this.contactsToCallList);
+		contactPanel.add(new JLabel("Contact list"));
+		contactPanel.add(contactToCallScrollPane);
 
-
-		addBtn.add(new PopupMenu("Add contact to call list"));	
 		buttons.setLayout(new BoxLayout(buttons, BoxLayout.Y_AXIS));
 		buttons.setAlignmentX(CENTER_ALIGNMENT);
 		buttons.add(addBtn);
 		buttons.add(rmvBtn);
 
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
-		panel.add(contactScrollPane);
+		panel.add(roomPanel);
 		panel.add(buttons);
-		panel.add(contactToCallScrollPane);
+		panel.add(contactPanel);
 
 		return panel;
-
 	}
 
 	private JPanel createButtonPanel() {
@@ -151,4 +158,25 @@ public class Gui extends JFrame {
 		return menu;
 	}
 
+	private JTree buildTree() {
+		// Root creation
+		DefaultMutableTreeNode racine = new DefaultMutableTreeNode("All rooms");
+
+		// Add leaves and way from the root
+		for (int i = 1; i < 6; i++) {
+			DefaultMutableTreeNode rep = new DefaultMutableTreeNode("Room" + i);
+
+			// Add 4 ways
+			if (i < 4) {
+				DefaultMutableTreeNode rep2 = new DefaultMutableTreeNode(
+						"Contact" + i);
+				rep.add(rep2);
+			}
+			// Add leaves to the root
+			racine.add(rep);
+		}
+		// create tree
+		JTree arbre = new JTree(racine);
+		return arbre;
+	}
 }
