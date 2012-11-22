@@ -37,7 +37,6 @@ public class Gui extends JFrame {
 	 * 
 	 */
 	private static final long serialVersionUID = -9219551892569083659L;
-	private App app;
 	private JMenuBar menu;
 	private JButton callBtn;
 	private JButton hangUpBtn;
@@ -45,15 +44,16 @@ public class Gui extends JFrame {
 	private JButton rmvBtn;
 	private JList contactsList;
 	private JList contactsToCallList;
-	private ArrayList contacts;
+	private ArrayList<Contact> contacts;
 	private ImageIcon addIcon = new ImageIcon(getClass().getResource(
 			"/icons/add_button.png"));
 	private ImageIcon rmvIcon = new ImageIcon(getClass().getResource(
 			"/icons/rmv_button.png"));
+	private Gui me = this;
+	private DefaultListModel model;
 
 	public Gui(final App app) {
 		this.setJMenuBar(createMenu());
-		this.app = app;
 		this.setTitle("Audio conferencing tool");
 		this.setSize(600, 500);
 		this.setResizable(true);
@@ -90,7 +90,7 @@ public class Gui extends JFrame {
 			BufferedReader br = new BufferedReader(fr);
 			int i = 0;
 			int j = 0;
-			contacts = new ArrayList<Contact>();
+			this.contacts = new ArrayList<Contact>();
 			while ((s = br.readLine()) != null) {
 
 				if ((i % 2) == 0) { // even
@@ -120,6 +120,16 @@ public class Gui extends JFrame {
 
 	}
 
+	private void refreshJList() {
+		model = new DefaultListModel();
+		for (int i = 0; i < this.contacts.size(); i++) {
+			Contact contact = (Contact) this.contacts.get(i);
+			model.addElement(contact.getName());
+		}
+		this.contactsToCallList.setModel(this.model);
+
+	}
+
 	private JPanel createContactsPanel() {
 
 		JPanel panel = new JPanel();
@@ -130,7 +140,7 @@ public class Gui extends JFrame {
 		this.contactsList = new JList();
 		JScrollPane contactScrollPane = new JScrollPane(this.contactsList);
 
-		DefaultListModel model = new DefaultListModel();
+		model = new DefaultListModel();
 		for (int i = 0; i < this.contacts.size(); i++) {
 			Contact contact = (Contact) this.contacts.get(i);
 			model.addElement(contact.getName());
@@ -174,7 +184,7 @@ public class Gui extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 
-				JDialog jdialog = new JDialog();
+				final JDialog jdialog = new JDialog();
 				JPanel mainPanel = new JPanel();
 				JPanel namePanel = new JPanel();
 				JPanel ipPanel = new JPanel();
@@ -209,7 +219,6 @@ public class Gui extends JFrame {
 				saveButton.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						System.out.println("plouf");
 						try {
 
 							String contact = nameField.getText() + "\n"
@@ -219,6 +228,9 @@ public class Gui extends JFrame {
 							MyFile.write(contact);
 
 							MyFile.close();
+							setContactsList();
+							refreshJList();
+							jdialog.dispose();
 
 						} catch (FileNotFoundException e1) {
 							// TODO Auto-generated catch block
@@ -227,6 +239,14 @@ public class Gui extends JFrame {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}
+						;
+					}
+
+				});
+				cancelButton.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						jdialog.dispose();
 						;
 					}
 
