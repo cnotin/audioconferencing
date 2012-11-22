@@ -42,6 +42,10 @@ public class Gui extends JFrame {
 			"/icons/add_button.png"));
 	private ImageIcon rmvIcon = new ImageIcon(getClass().getResource(
 			"/icons/rmv_button.png"));
+	private ImageIcon callIcon = new ImageIcon(getClass().getResource(
+			"/icons/call_button.png"));
+	private ImageIcon hangIcon = new ImageIcon(getClass().getResource(
+			"/icons/hang_button.png"));
 
 	public Gui(final App app) {
 		this.setJMenuBar(createMenu());
@@ -114,8 +118,9 @@ public class Gui extends JFrame {
 
 	private JPanel createButtonPanel() {
 		JPanel panel = new JPanel();
-		callBtn = new JButton("Call");
-		hangUpBtn = new JButton("Hang up");
+		callBtn = new JButton("Call contact",callIcon);
+		hangUpBtn = new JButton("Hang up",hangIcon);
+
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
 		panel.add(callBtn);
 		panel.add(hangUpBtn);
