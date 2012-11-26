@@ -86,7 +86,6 @@ public class AddContactDialog extends JDialog {
 	/**
 	 * Save the new contact in the "contact.txt" file
 	 */
-
 	private void addcontact(Gui gui) {
 		try {
 

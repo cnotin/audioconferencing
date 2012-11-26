@@ -1,5 +1,6 @@
 package se.ltu.M7017E.lab2.ui;
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
@@ -31,24 +32,15 @@ import se.ltu.M7017E.lab2.Contact;
 
 public class Gui extends JFrame {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -9219551892569083659L;
 	private JMenuBar menu;
 	private JButton callBtn;
 	private JButton hangUpBtn;
-	private JButton addBtn;
-	private JButton rmvBtn;
 	private JButton newBtn;
 	private JButton dltBtn;
 	private JList contactsList;
 	private ArrayList<Contact> contacts;
-	private JTree roomList = new JTree();
-	private ImageIcon addIcon = new ImageIcon(getClass().getResource(
-			"/icons/add_button.png"));
-	private ImageIcon rmvIcon = new ImageIcon(getClass().getResource(
-			"/icons/rmv_button.png"));
+	public JTree roomList = new JTree();
 	private ImageIcon callIcon = new ImageIcon(getClass().getResource(
 			"/icons/call_button.png"));
 	private ImageIcon hangIcon = new ImageIcon(getClass().getResource(
@@ -61,6 +53,9 @@ public class Gui extends JFrame {
 	// private Gui me = this;
 	private DefaultListModel model;
 
+	/**
+	 * Interface of the application. Display the main window
+	 */
 	public Gui(final App app) {
 		this.setTitle("Audio conferencing tool");
 		this.setSize(600, 500);
@@ -90,7 +85,7 @@ public class Gui extends JFrame {
 	}
 
 	/**
-	 * Read the 2contact.txt" file to display all the saved contacts in the list
+	 * Read the "contact.txt" file to display all the saved contacts in the list
 	 */
 	public void setContactsList() {
 
@@ -143,17 +138,19 @@ public class Gui extends JFrame {
 
 	}
 
+	/**
+	 * Create the part of the main window with all the contact informations
+	 * 
+	 * @return the contact panel in the main window
+	 */
 	private JPanel createContactsPanel() {
 
 		JPanel panel = new JPanel();
 
 		JPanel roomPanel = new JPanel();
 		JPanel contactPanel = new JPanel();
-		JPanel buttons = new JPanel();
 		JPanel subContactPanel = new JPanel();
 
-		addBtn = new JButton(addIcon);
-		rmvBtn = new JButton(rmvIcon);
 		newBtn = new JButton(newIcon);
 		dltBtn = new JButton(dltIcon);
 
@@ -186,23 +183,22 @@ public class Gui extends JFrame {
 		subContactPanel.add(dltBtn);
 
 		contactPanel.add(subContactPanel);
-		// contactsList = new JList();
 		JScrollPane contactToCallScrollPane = new JScrollPane(this.contactsList);
 		contactPanel.add(contactToCallScrollPane);
 
-		buttons.setLayout(new BoxLayout(buttons, BoxLayout.Y_AXIS));
-		buttons.setAlignmentX(CENTER_ALIGNMENT);
-		buttons.add(addBtn);
-		buttons.add(rmvBtn);
-
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
 		panel.add(roomPanel);
-		panel.add(buttons);
+		panel.add(Box.createRigidArea(new Dimension(15, 0)));
 		panel.add(contactPanel);
 
 		return panel;
 	}
 
+	/**
+	 * Create the part of the main window with the buttons
+	 * 
+	 * @return the panel with the buttons
+	 */
 	private JPanel createButtonPanel() {
 		JPanel panel = new JPanel();
 		callBtn = new JButton("Call contact", callIcon);
@@ -214,6 +210,11 @@ public class Gui extends JFrame {
 		return panel;
 	}
 
+	/**
+	 * Create the menu bar in the main window
+	 * 
+	 * @return the menu bar
+	 */
 	private JMenuBar createMenu() {
 		this.menu = new JMenuBar();
 
@@ -226,6 +227,7 @@ public class Gui extends JFrame {
 			}
 		});
 		edit.add(addContact);
+
 		menu.add(edit);
 
 		JMenu help = new JMenu("?");
@@ -250,6 +252,11 @@ public class Gui extends JFrame {
 		return menu;
 	}
 
+	/**
+	 * Dummy, create a tree, only for the test
+	 * 
+	 * @return a tree
+	 */
 	private JTree buildTree() {
 		// Root creation
 		DefaultMutableTreeNode racine = new DefaultMutableTreeNode("All rooms");
