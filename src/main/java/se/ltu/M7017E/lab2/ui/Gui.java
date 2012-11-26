@@ -3,17 +3,15 @@ package se.ltu.M7017E.lab2.ui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -23,7 +21,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -43,21 +40,26 @@ public class Gui extends JFrame {
 	private JButton hangUpBtn;
 	private JButton addBtn;
 	private JButton rmvBtn;
+	private JButton newBtn;
+	private JButton dltBtn;
 	private JList contactsList;
-	private JList contactsToCallList;
 	private ArrayList<Contact> contacts;
 	private JTree roomList = new JTree();
 	private ImageIcon addIcon = new ImageIcon(getClass().getResource(
 			"/icons/add_button.png"));
 	private ImageIcon rmvIcon = new ImageIcon(getClass().getResource(
 			"/icons/rmv_button.png"));
-
-	private Gui me = this;
-	private DefaultListModel model;
 	private ImageIcon callIcon = new ImageIcon(getClass().getResource(
 			"/icons/call_button.png"));
 	private ImageIcon hangIcon = new ImageIcon(getClass().getResource(
 			"/icons/hang_button.png"));
+	private ImageIcon newIcon = new ImageIcon(getClass().getResource(
+			"/icons/new_button.png"));
+	private ImageIcon dltIcon = new ImageIcon(getClass().getResource(
+			"/icons/dlt_button.png"));
+
+	// private Gui me = this;
+	private DefaultListModel model;
 
 	public Gui(final App app) {
 		this.setTitle("Audio conferencing tool");
@@ -87,7 +89,10 @@ public class Gui extends JFrame {
 
 	}
 
-	private void setContactsList() {
+	/**
+	 * Read the 2contact.txt" file to display all the saved contacts in the list
+	 */
+	public void setContactsList() {
 
 		String s;
 		try {
@@ -125,13 +130,16 @@ public class Gui extends JFrame {
 
 	}
 
-	private void refreshJList() {
+	/**
+	 * Refresh the JList with the saved contact list
+	 */
+	public void refreshJList() {
 		model = new DefaultListModel();
 		for (int i = 0; i < this.contacts.size(); i++) {
 			Contact contact = (Contact) this.contacts.get(i);
 			model.addElement(contact.getName());
 		}
-		this.contactsToCallList.setModel(this.model);
+		this.contactsList.setModel(this.model);
 
 	}
 
@@ -142,9 +150,12 @@ public class Gui extends JFrame {
 		JPanel roomPanel = new JPanel();
 		JPanel contactPanel = new JPanel();
 		JPanel buttons = new JPanel();
+		JPanel subContactPanel = new JPanel();
 
 		addBtn = new JButton(addIcon);
 		rmvBtn = new JButton(rmvIcon);
+		newBtn = new JButton(newIcon);
+		dltBtn = new JButton(dltIcon);
 
 		/* Room Panel */
 		roomList = buildTree();
@@ -157,12 +168,26 @@ public class Gui extends JFrame {
 			Contact contact = (Contact) this.contacts.get(i);
 			model.addElement(contact.getName());
 		}
-		this.contactsToCallList = new JList(model);
+		this.contactsList = new JList(model);
 		contactPanel.setLayout(new BoxLayout(contactPanel, BoxLayout.Y_AXIS));
-		contactsList = new JList();
-		JScrollPane contactToCallScrollPane = new JScrollPane(
-				this.contactsToCallList);
-		contactPanel.add(new JLabel("Contact list"));
+
+		subContactPanel.setLayout(new BoxLayout(subContactPanel,
+				BoxLayout.X_AXIS));
+		subContactPanel.add(new JLabel("Contact list"));
+		subContactPanel.add(Box.createHorizontalGlue());
+		newBtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new AddContactDialog(Gui.this);
+			}
+		});
+
+		subContactPanel.add(newBtn);
+		subContactPanel.add(dltBtn);
+
+		contactPanel.add(subContactPanel);
+		// contactsList = new JList();
+		JScrollPane contactToCallScrollPane = new JScrollPane(this.contactsList);
 		contactPanel.add(contactToCallScrollPane);
 
 		buttons.setLayout(new BoxLayout(buttons, BoxLayout.Y_AXIS));
@@ -195,78 +220,9 @@ public class Gui extends JFrame {
 		JMenu edit = new JMenu("Edit");
 		JMenuItem addContact = new JMenuItem("Add a contact");
 		addContact.addActionListener(new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-
-				final JDialog jdialog = new JDialog();
-				JPanel mainPanel = new JPanel();
-				JPanel namePanel = new JPanel();
-				JPanel ipPanel = new JPanel();
-				JPanel buttonPanel = new JPanel();
-				JLabel contactNameLabel = new JLabel("Contact name");
-				JLabel contactIPLabel = new JLabel("Contact IP");
-				final JTextField nameField = new JTextField(20);
-				final JTextField ipField = new JTextField(15);
-				JButton saveButton = new JButton("Save");
-				JButton cancelButton = new JButton("Cancel");
-				jdialog.setSize(400, 200);
-				jdialog.setTitle("Add a contact");
-				jdialog.setVisible(true);
-
-				mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-				namePanel.setLayout(new BoxLayout(namePanel, BoxLayout.X_AXIS));
-				ipPanel.setLayout(new BoxLayout(ipPanel, BoxLayout.X_AXIS));
-				buttonPanel.setLayout(new BoxLayout(buttonPanel,
-						BoxLayout.X_AXIS));
-
-				namePanel.add(contactNameLabel);
-				namePanel.add(nameField);
-				ipPanel.add(contactIPLabel);
-				ipPanel.add(ipField);
-				buttonPanel.add(saveButton);
-				buttonPanel.add(cancelButton);
-				mainPanel.add(namePanel);
-				mainPanel.add(ipPanel);
-				mainPanel.add(buttonPanel);
-
-				jdialog.add(mainPanel);
-				saveButton.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						try {
-
-							String contact = nameField.getText() + "\n"
-									+ ipField.getText() + "\n";
-							FileWriter MyFile = new FileWriter("contacts.txt",
-									true);
-							MyFile.write(contact);
-
-							MyFile.close();
-							setContactsList();
-							refreshJList();
-							jdialog.dispose();
-
-						} catch (FileNotFoundException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						} catch (IOException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
-						;
-					}
-
-				});
-				cancelButton.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						jdialog.dispose();
-						;
-					}
-
-				});
-
+				new AddContactDialog(Gui.this);
 			}
 		});
 		edit.add(addContact);
