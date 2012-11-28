@@ -1,6 +1,7 @@
 package se.ltu.M7017E.lab2.ui;
 
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
@@ -21,8 +22,8 @@ public class AddContactDialog extends JDialog {
 	 * 
 	 */
 	private static final long serialVersionUID = -7019751683904933564L;
-	private JLabel nameLabel = new JLabel("Contact name");
-	private JLabel IPLabel = new JLabel("Contact IP");
+	private JLabel nameLabel = new JLabel("Contact name :");
+	private JLabel IPLabel = new JLabel("Contact IP :        ");
 	private JButton saveButton = new JButton("Save");
 	private JButton cancelButton = new JButton("Cancel");
 
@@ -33,7 +34,7 @@ public class AddContactDialog extends JDialog {
 	 * Window to add a contact thanks to his name and the IP address
 	 */
 	public AddContactDialog(final Gui gui) {
-		this.setSize(400, 200);
+		this.setSize(400, 130);
 		this.setTitle("Add a contact");
 		this.setModal(true);
 
@@ -42,13 +43,12 @@ public class AddContactDialog extends JDialog {
 		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
 		JPanel namePanel = new JPanel();
-		namePanel.setLayout(new BoxLayout(namePanel, BoxLayout.X_AXIS));
+		namePanel.setLayout(new FlowLayout());
 		namePanel.add(nameLabel);
 		namePanel.add(nameField);
 		namePanel.setVisible(true);
-
 		JPanel ipPanel = new JPanel();
-		ipPanel.setLayout(new BoxLayout(ipPanel, BoxLayout.X_AXIS));
+		ipPanel.setLayout(new FlowLayout());
 		ipPanel.add(IPLabel);
 		ipPanel.add(ipField);
 

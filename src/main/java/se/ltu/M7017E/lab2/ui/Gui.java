@@ -4,9 +4,14 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Vector;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -88,6 +93,15 @@ public class Gui extends JFrame {
 	 * Read the "contact.txt" file to display all the saved contacts in the list
 	 */
 	public void setContactsList() {
+		File file = new File("contacts.txt");
+		if (file.exists() == false) // check if the file already exist, else the
+									// file is created
+			try {
+				file.createNewFile();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 
 		String s;
 		try {
@@ -113,6 +127,7 @@ public class Gui extends JFrame {
 			}
 			fr.close();
 		} catch (IOException e) {
+
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -176,6 +191,53 @@ public class Gui extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				new AddContactDialog(Gui.this);
+			}
+		});
+
+		dltBtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("delete " + contactsList.getSelectedIndex());
+				Vector monVector = new Vector();
+				File f = new File("contacts.txt");
+				BufferedReader B = null;
+				try {
+					B = new BufferedReader(new FileReader(f));
+				} catch (FileNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				String ligne = "";
+				try {
+					ligne = B.readLine();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				while (ligne != null) {
+					monVector.addElement(ligne);
+					try {
+						ligne = B.readLine();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+				monVector.removeElementAt(contactsList.getSelectedIndex() * 2);
+				monVector.removeElementAt(contactsList.getSelectedIndex() * 2);
+				PrintWriter P = null;
+				try {
+					P = new PrintWriter(new FileWriter(f));
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				for (int i = 0; i < monVector.size(); i++) {
+					P.println(monVector.get(i));
+				}
+				P.close();
+				setContactsList();
+				refreshJList();
 			}
 		});
 
