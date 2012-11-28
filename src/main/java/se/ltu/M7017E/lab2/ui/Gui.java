@@ -57,17 +57,12 @@ public class Gui extends JFrame {
 
 	// private Gui me = this;
 	private DefaultListModel model;
+	private String userName;
 
 	/**
 	 * Interface of the application. Display the main window
 	 */
 	public Gui(final App app) {
-		this.setTitle("Audio conferencing tool");
-		this.setSize(600, 500);
-		this.setResizable(true);
-		this.setLocationRelativeTo(null);// center window on screen
-		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-
 		// use OS' native look'n'feel
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -80,12 +75,44 @@ public class Gui extends JFrame {
 		} catch (UnsupportedLookAndFeelException e) {
 			e.printStackTrace();
 		}
+		this.setGuiTitleWithName();
+		this.setSize(600, 500);
+		this.setResizable(true);
+		this.setLocationRelativeTo(null);// center window on screen
+		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.setContactsList();
 		this.setJMenuBar(createMenu());
 		this.getContentPane().setLayout(
 				new BoxLayout(this.getContentPane(), BoxLayout.Y_AXIS));
 		this.add(createButtonPanel());
 		this.add(createContactsPanel());
+
+	}
+
+	/**
+	 * Set the title of the gui
+	 */
+	public void setGuiTitleWithName() {
+		File file = new File("name.txt");
+		if (file.exists() == false) // check if the file already exist, else the
+			new ChangeNameDialog(this);
+		else
+			try {
+				FileReader fr = new FileReader("name.txt");
+				BufferedReader br = new BufferedReader(fr);
+				if (br.readLine() == null)
+					new ChangeNameDialog(this);
+				else {
+					setUserName(br.readLine());
+					this.setTitle("Audio conferencing tool"
+							+ "                 Hello " + userName);
+				}
+				fr.close();
+			} catch (IOException e) {
+
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
 	}
 
@@ -281,6 +308,13 @@ public class Gui extends JFrame {
 		this.menu = new JMenuBar();
 
 		JMenu edit = new JMenu("Edit");
+		JMenuItem setName = new JMenuItem("Change your name");
+		setName.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				new ChangeNameDialog(Gui.this);
+			}
+		});
 		JMenuItem addContact = new JMenuItem("Add a contact");
 		addContact.addActionListener(new ActionListener() {
 			@Override
@@ -289,6 +323,7 @@ public class Gui extends JFrame {
 			}
 		});
 		edit.add(addContact);
+		edit.add(setName);
 
 		menu.add(edit);
 
@@ -339,5 +374,13 @@ public class Gui extends JFrame {
 		// create tree
 		JTree arbre = new JTree(racine);
 		return arbre;
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
 	}
 }

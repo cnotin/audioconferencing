@@ -22,8 +22,8 @@ public class AddContactDialog extends JDialog {
 	 * 
 	 */
 	private static final long serialVersionUID = -7019751683904933564L;
-	private JLabel nameLabel = new JLabel("Contact name :");
-	private JLabel IPLabel = new JLabel("Contact IP :        ");
+	private JLabel nameLabel = new JLabel("Contact name : ");
+	private JLabel IPLabel = new JLabel("Contact IP :         ");
 	private JButton saveButton = new JButton("Save");
 	private JButton cancelButton = new JButton("Cancel");
 
@@ -47,6 +47,7 @@ public class AddContactDialog extends JDialog {
 		namePanel.add(nameLabel);
 		namePanel.add(nameField);
 		namePanel.setVisible(true);
+
 		JPanel ipPanel = new JPanel();
 		ipPanel.setLayout(new FlowLayout());
 		ipPanel.add(IPLabel);
