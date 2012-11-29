@@ -4,14 +4,19 @@ import java.util.LinkedList;
 import java.util.List;
 
 import lombok.Getter;
+import lombok.Setter;
+import se.ltu.M7017E.lab2.client.ui.Gui;
 import se.ltu.M7017E.lab2.common.Contact;
 
 public class App {
+	@Getter
 	private ControlChannel control;
 	@Getter
 	private List<Contact> contacts = new LinkedList<Contact>();
 	@Getter
 	private Contact me = new Contact("lab2 client", "lab2.client.lan");
+	@Setter
+	private Gui gui;
 
 	public App() {
 		control = new ControlChannel(this);

@@ -55,6 +55,7 @@ public class ChangeNameDialog extends JDialog {
 				// save the contact
 				if (!nameField.getText().equals(""))
 					changeName(gui);
+
 			}
 		});
 

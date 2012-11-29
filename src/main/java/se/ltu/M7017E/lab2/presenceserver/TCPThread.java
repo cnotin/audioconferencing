@@ -6,7 +6,9 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
 
+import se.ltu.M7017E.lab2.common.messages.AnswerCall;
 import se.ltu.M7017E.lab2.common.messages.Bye;
+import se.ltu.M7017E.lab2.common.messages.Call;
 import se.ltu.M7017E.lab2.common.messages.Hello;
 import se.ltu.M7017E.lab2.common.messages.Join;
 import se.ltu.M7017E.lab2.common.messages.Leave;
@@ -65,7 +67,20 @@ public class TCPThread implements Runnable {
 					app.msg(me, new ListMsg());
 				} else if (message.startsWith("BYE")) {
 					quit = true; // the msg will be sent after quitting the loop
+				} else if (message.startsWith("CALL")) {
+					app.msg(Call.fromString(message));
+
+				} else if (message.startsWith("ANSWERCALL")) {
+					AnswerCall answer = AnswerCall.fromString(message);
+					if (answer.getAnswer().equals("yes"))
+						System.out.println("discussion between "
+								+ answer.getSender() + " and "
+								+ answer.getReceiver() + " on ports "
+								+ answer.getPortSender() + " and "
+								+ answer.getPortReceiver());
+					app.msg(answer);
 				}
+
 			}
 		}
 

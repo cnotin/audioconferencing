@@ -13,6 +13,7 @@ public class Main {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				Gui gui = new Gui(app);
+				app.setGui(gui);
 				gui.setVisible(true);
 			}
 		});

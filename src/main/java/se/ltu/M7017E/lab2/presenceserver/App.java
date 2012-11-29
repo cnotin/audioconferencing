@@ -8,8 +8,10 @@ import java.util.Map;
 import java.util.Set;
 
 import lombok.Getter;
+import se.ltu.M7017E.lab2.common.messages.AnswerCall;
 import se.ltu.M7017E.lab2.common.messages.Audience;
 import se.ltu.M7017E.lab2.common.messages.Bye;
+import se.ltu.M7017E.lab2.common.messages.Call;
 import se.ltu.M7017E.lab2.common.messages.Hello;
 import se.ltu.M7017E.lab2.common.messages.Join;
 import se.ltu.M7017E.lab2.common.messages.Leave;
@@ -78,6 +80,18 @@ public class App {
 		client.send(audience);
 	}
 
+	public void msg(Call call) {
+		Client client = findClientsByName(call.getReceiver());
+		System.out.println("sending message to" + client.getName());
+		client.send(call.toString());
+	}
+
+	public void msg(AnswerCall answer) {
+		Client client = findClientsByName(answer.getSender());
+		System.out.println("sending message to" + client.getName());
+		client.send(answer.toString());
+	}
+
 	public void msg(Client client, Leave leave) {
 		int roomId = leave.getRoom();
 		Room room = this.rooms.get(roomId);
@@ -108,4 +122,16 @@ public class App {
 		}
 	}
 
+	public Client findClientsByName(String name) {
+		System.out.println("name to search " + name + "<");
+		Client clientToReturn = null;
+		System.out.println("number of clients" + clients.size());
+		for (Client client : clients) {
+			System.out.println("client name : " + client.getName());
+			if (client.getName().equals(name)) {
+				clientToReturn = client;
+			}
+		}
+		return clientToReturn;
+	}
 }

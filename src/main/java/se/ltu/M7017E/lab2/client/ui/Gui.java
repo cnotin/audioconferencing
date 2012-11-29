@@ -3,6 +3,8 @@ package se.ltu.M7017E.lab2.client.ui;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -58,6 +60,7 @@ public class Gui extends JFrame {
 
 	private DefaultListModel model;
 	private String userName;
+	private App app;
 
 	/**
 	 * Interface of the application. Display the main window
@@ -75,7 +78,9 @@ public class Gui extends JFrame {
 		} catch (UnsupportedLookAndFeelException e) {
 			e.printStackTrace();
 		}
+		this.app = app;
 		this.setGuiTitleWithName();
+		app.getControl().send("HELLO," + userName);
 		this.setSize(600, 500);
 		this.setResizable(true);
 		this.setLocationRelativeTo(null);// center window on screen
@@ -86,6 +91,19 @@ public class Gui extends JFrame {
 				new BoxLayout(this.getContentPane(), BoxLayout.Y_AXIS));
 		this.add(createButtonPanel());
 		this.add(createContactsPanel());
+
+		// listener for playing a doubleclicked file in the JList
+		this.contactsList.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent evt) {
+				if (evt.getClickCount() == 2) {
+					System.out.println(contactsList.getSelectedValue());
+					// CALL, port, sender, receiver
+					app.getControl().send(
+							"CALL," + 5010 + "," + userName + ","
+									+ contactsList.getSelectedValue());
+				}
+			}
+		});
 	}
 
 	/**
