@@ -31,6 +31,7 @@ import javax.swing.JTree;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 
 import se.ltu.M7017E.lab2.client.App;
 import se.ltu.M7017E.lab2.common.Contact;
@@ -45,7 +46,7 @@ public class Gui extends JFrame {
 	private JButton dltBtn;
 	private JList contactsList;
 	private ArrayList<Contact> contacts;
-	public JTree roomList = new JTree();
+	public JTree roomList;
 	private ImageIcon callIcon = new ImageIcon(getClass().getResource(
 			"/icons/call_button.png"));
 	private ImageIcon hangIcon = new ImageIcon(getClass().getResource(
@@ -86,7 +87,6 @@ public class Gui extends JFrame {
 				new BoxLayout(this.getContentPane(), BoxLayout.Y_AXIS));
 		this.add(createButtonPanel());
 		this.add(createContactsPanel());
-
 	}
 
 	/**
@@ -113,8 +113,6 @@ public class Gui extends JFrame {
 
 				fr.close();
 			} catch (IOException e) {
-
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -130,7 +128,6 @@ public class Gui extends JFrame {
 			try {
 				file.createNewFile();
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 
@@ -158,9 +155,7 @@ public class Gui extends JFrame {
 
 		for (int k = 0; k < contacts.size(); k++) {
 			Contact contact = (Contact) contacts.get(k);
-
 		}
-
 	}
 
 	/**
@@ -174,6 +169,27 @@ public class Gui extends JFrame {
 		}
 		this.contactsList.setModel(this.model);
 
+	}
+
+	/**
+	 * Create the room panel in the main window, and initiate the JTree
+	 * 
+	 * @return the Roompanel, part of the contact panel in the main window
+	 */
+	private JPanel createRoomPanel() {
+
+		JPanel panel = new JPanel();
+
+		DefaultMutableTreeNode racine = new DefaultMutableTreeNode("All rooms");
+		DefaultTreeModel treemodel = new DefaultTreeModel(racine);
+		roomList = new JTree(treemodel);
+
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+		JScrollPane roomListPane = new JScrollPane(roomList);
+		panel.add(new JLabel("Room list"));
+		panel.add(roomListPane);
+
+		return panel;
 	}
 
 	/**
@@ -192,12 +208,8 @@ public class Gui extends JFrame {
 		newBtn = new JButton(newIcon);
 		dltBtn = new JButton(dltIcon);
 
-		/* Room Panel */
-		roomList = buildTree();
-		roomPanel.setLayout(new BoxLayout(roomPanel, BoxLayout.Y_AXIS));
-		JScrollPane roomListPane = new JScrollPane(roomList);
-		roomPanel.add(new JLabel("Room list"));
-		roomPanel.add(roomListPane);
+		roomPanel = createRoomPanel();
+
 		model = new DefaultListModel();
 		for (int i = 0; i < this.contacts.size(); i++) {
 			Contact contact = (Contact) this.contacts.get(i);
@@ -227,14 +239,12 @@ public class Gui extends JFrame {
 				try {
 					B = new BufferedReader(new FileReader(f));
 				} catch (FileNotFoundException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 				String ligne = "";
 				try {
 					ligne = B.readLine();
 				} catch (IOException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 				while (ligne != null) {
@@ -242,12 +252,10 @@ public class Gui extends JFrame {
 					try {
 						ligne = B.readLine();
 					} catch (IOException e1) {
-						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
 				}
-				monVector.removeElementAt(contactsList.getSelectedIndex() * 2);
-				monVector.removeElementAt(contactsList.getSelectedIndex() * 2);
+				monVector.removeElementAt(contactsList.getSelectedIndex());
 				PrintWriter P = null;
 				try {
 					P = new PrintWriter(new FileWriter(f));
@@ -350,27 +358,27 @@ public class Gui extends JFrame {
 	 * 
 	 * @return a tree
 	 */
-	private JTree buildTree() {
-		// Root creation
-		DefaultMutableTreeNode racine = new DefaultMutableTreeNode("All rooms");
-
-		// Add leaves and way from the root
-		for (int i = 1; i < 6; i++) {
-			DefaultMutableTreeNode rep = new DefaultMutableTreeNode("Room" + i);
-
-			// Add 4 ways
-			if (i < 4) {
-				DefaultMutableTreeNode rep2 = new DefaultMutableTreeNode(
-						"Contact" + i);
-				rep.add(rep2);
-			}
-			// Add leaves to the root
-			racine.add(rep);
-		}
-		// create tree
-		JTree arbre = new JTree(racine);
-		return arbre;
-	}
+	// private JTree buildTree() {
+	// // Root creation
+	// DefaultMutableTreeNode racine = new DefaultMutableTreeNode("All rooms");
+	//
+	// // Add leaves and way from the root
+	// for (int i = 1; i < 6; i++) {
+	// DefaultMutableTreeNode rep = new DefaultMutableTreeNode("Room" + i);
+	//
+	// // Add 4 ways
+	// if (i < 4) {
+	// DefaultMutableTreeNode rep2 = new DefaultMutableTreeNode(
+	// "Contact" + i);
+	// rep.add(rep2);
+	// }
+	// // Add leaves to the root
+	// racine.add(rep);
+	// }
+	// // create tree
+	// JTree arbre = new JTree(racine);
+	// return arbre;
+	// }
 
 	public String getUserName() {
 		return userName;
