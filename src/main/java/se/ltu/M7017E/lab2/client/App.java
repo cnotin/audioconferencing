@@ -4,6 +4,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 import lombok.Getter;
+
+import org.gstreamer.Gst;
+
+import se.ltu.M7017E.lab2.client.audio.ReceiverPipeline;
 import se.ltu.M7017E.lab2.common.Contact;
 
 public class App {
@@ -13,16 +17,26 @@ public class App {
 	@Getter
 	private Contact me = new Contact("lab2 client", "lab2.client.lan");
 
+	private ReceiverPipeline receiver;
+
 	public App() {
 		control = new ControlChannel(this);
 		new Thread(control).start();
 
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		Gst.init("Audioconferencing", new String[] { "--gst-debug-level=3",
+				"--gst-debug-no-color" });
+		receiver = new ReceiverPipeline();
+		receiver.play();
+	}
+
+	public void joinRoom(int roomId) {
+		receiver.joinRoom(roomId);
+		// TODO: connect sender too
+	}
+
+	public void leaveRoom(int roomId) {
+		receiver.leaveRoom(roomId);
+		// TODO: disconnect sender too
 	}
 
 	public Contact findcontactsByName(String name) {

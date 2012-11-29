@@ -10,11 +10,22 @@ public class Main {
 
 		final App app = new App();
 
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				Gui gui = new Gui(app);
-				gui.setVisible(true);
-			}
-		});
+		if (args.length > 0 && args[0].equals("NO_UI")) {
+			System.out.println("Don't display UI. Press enter to quit");
+
+			app.joinRoom(1);
+			app.joinRoom(2);
+
+			new java.util.Scanner(System.in).nextLine();
+			System.out.println("Bye");
+			System.exit(0);
+		} else {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					Gui gui = new Gui(app);
+					gui.setVisible(true);
+				}
+			});
+		}
 	}
 }
