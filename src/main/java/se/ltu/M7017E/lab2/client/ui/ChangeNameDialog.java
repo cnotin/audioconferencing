@@ -1,4 +1,4 @@
-package se.ltu.M7017E.lab2.ui;
+package se.ltu.M7017E.lab2.client.ui;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
