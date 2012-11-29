@@ -4,13 +4,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 import lombok.Getter;
+import se.ltu.M7017E.lab2.common.Contact;
 
 public class App {
 	private ControlChannel control;
 	@Getter
-	private List<Friend> friends = new LinkedList<Friend>();
+	private List<Contact> contacts = new LinkedList<Contact>();
 	@Getter
-	private Friend me = new Friend("lab2 client", "lab2.client.lan", 1200);
+	private Contact me = new Contact("lab2 client", "lab2.client.lan");
 
 	public App() {
 		control = new ControlChannel(this);
@@ -24,10 +25,10 @@ public class App {
 		}
 	}
 
-	public Friend findFriendByName(String name) {
-		for (Friend friend : friends) {
-			if (friend.getName().equals(name)) {
-				return friend;
+	public Contact findcontactsByName(String name) {
+		for (Contact contact : contacts) {
+			if (contact.getName().equals(name)) {
+				return contact;
 			}
 		}
 

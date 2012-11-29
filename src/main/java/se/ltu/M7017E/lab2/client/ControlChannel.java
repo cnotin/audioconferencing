@@ -53,9 +53,7 @@ public class ControlChannel implements Runnable {
 	}
 
 	public void caseMessage(String message) {
-		if (message.startsWith("THERE_ARE")) {
-
-		} else if (message.startsWith("JOINED")) {
+		if (message.startsWith("JOINED")) {
 
 		} else if (message.startsWith("LEFT")) {
 
@@ -64,12 +62,6 @@ public class ControlChannel implements Runnable {
 		} else if (message.startsWith("ROOM")) {
 
 		} else if (message.startsWith("ROOMS_STOP")) {
-
-		} else if (message.startsWith("VOICE_OK")) {
-
-		} else if (message.startsWith("VOICE_NOK")) {
-
-		} else if (message.startsWith("SPEAKER")) {
 
 		}
 	}

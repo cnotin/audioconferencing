@@ -9,17 +9,13 @@ import java.util.List;
 import java.util.Map;
 
 import lombok.Getter;
-import se.ltu.M7017E.lab2.messages.Audience;
-import se.ltu.M7017E.lab2.messages.Join;
-import se.ltu.M7017E.lab2.messages.Joined;
-import se.ltu.M7017E.lab2.messages.Leave;
-import se.ltu.M7017E.lab2.messages.Left;
-import se.ltu.M7017E.lab2.messages.RoomsStart;
-import se.ltu.M7017E.lab2.messages.RoomsStop;
-import se.ltu.M7017E.lab2.messages.Speakers;
-import se.ltu.M7017E.lab2.messages.Voice;
-import se.ltu.M7017E.lab2.messages.VoiceNOk;
-import se.ltu.M7017E.lab2.messages.VoiceOk;
+import se.ltu.M7017E.lab2.common.messages.Audience;
+import se.ltu.M7017E.lab2.common.messages.Join;
+import se.ltu.M7017E.lab2.common.messages.Joined;
+import se.ltu.M7017E.lab2.common.messages.Leave;
+import se.ltu.M7017E.lab2.common.messages.Left;
+import se.ltu.M7017E.lab2.common.messages.RoomsStart;
+import se.ltu.M7017E.lab2.common.messages.RoomsStop;
 
 public class App {
 	@Getter
@@ -70,16 +66,6 @@ public class App {
 		audience.setNames(room.getAudienceAsStrings());
 		friend.getTcpThread().send(audience.toString());
 
-		// tell to the newcomer who are the speakers
-		Speakers speakers = new Speakers();
-		Map<Integer, String> speakersMap = new HashMap<Integer, String>();
-		for (int i = 0; i < room.getSpeakers().length; i++) {
-			if (room.getSpeakers()[i] != null) {
-				speakersMap.put(i, room.getSpeakers()[i].getName());
-			}
-		}
-		speakers.setPeople(speakersMap);
-		friend.getTcpThread().send(speakers.toString());
 	}
 
 	public void leaveMsg(Friend friend, Leave leave) {
@@ -110,25 +96,6 @@ public class App {
 		}
 
 		friend.send(new RoomsStop());
-	}
-
-	public void voiceMsg(Friend friend, Voice voice) {
-		int roomId = voice.getRoom();
-		Room room = this.rooms.get(roomId);
-
-		int port = room.getFreeSpeakerSlot(friend);
-		if (port == -1) {
-			// room full => refuses
-			VoiceNOk voiceNOk = new VoiceNOk();
-			voiceNOk.setRoom(roomId);
-			friend.send(voiceNOk);
-		} else {
-			// accept the client
-			VoiceOk voiceOk = new VoiceOk();
-			voiceOk.setRoom(roomId);
-			voiceOk.setPort(port);
-			friend.send(voiceOk);
-		}
 	}
 
 	public void broadcast(String message) {

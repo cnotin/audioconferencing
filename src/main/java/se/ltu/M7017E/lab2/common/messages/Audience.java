@@ -1,4 +1,4 @@
-package se.ltu.M7017E.lab2.messages;
+package se.ltu.M7017E.lab2.common.messages;
 
 import java.util.Iterator;
 import java.util.LinkedList;

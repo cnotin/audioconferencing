@@ -1,17 +1,17 @@
-package se.ltu.M7017E.lab2.messages;
+package se.ltu.M7017E.lab2.common.messages;
 
 import lombok.Data;
 
 @Data
-public class Leave {
+public class Join {
 	private int room;
 
 	public String toString() {
-		return "LEAVE," + room;
+		return "JOIN," + room;
 	}
 
-	public static Leave fromString(String str) {
-		Leave ret = new Leave();
+	public static Join fromString(String str) {
+		Join ret = new Join();
 
 		String[] tokens = str.split(",");
 		ret.room = new Integer(tokens[1]);

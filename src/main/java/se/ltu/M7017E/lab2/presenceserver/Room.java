@@ -10,34 +10,9 @@ public class Room {
 	private int id;
 
 	private List<Friend> audience = new LinkedList<Friend>();
-	private Friend[] speakers = new Friend[254];
 
 	public Room(int id) {
 		this.id = id;
-	}
-
-	/**
-	 * TODO
-	 * 
-	 * @param friend
-	 *            TODO
-	 * @return (-1) if no free slot anymore (room is full)
-	 */
-	public int getFreeSpeakerSlot(Friend friend) {
-		int free = -1;
-
-		for (int i = 0; i < speakers.length && free == -1; i++) {
-			if (speakers[i] == null) {
-				free = i;
-			}
-		}
-
-		if (free != -1) {
-			// found one => book it
-			speakers[free] = friend;
-		}
-
-		return free;
 	}
 
 	public List<String> getAudienceAsStrings() {

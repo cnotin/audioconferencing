@@ -6,15 +6,15 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
 
-import se.ltu.M7017E.lab2.messages.Join;
-import se.ltu.M7017E.lab2.messages.Leave;
-import se.ltu.M7017E.lab2.messages.Voice;
+import se.ltu.M7017E.lab2.common.messages.Join;
+import se.ltu.M7017E.lab2.common.messages.Leave;
 
 public class TCPThread implements Runnable {
 	private App app;
 	private BufferedReader in;
 	private PrintStream out;
 	private Friend me;
+
 	/**
 	 * Set to true to exit thread
 	 */
@@ -65,8 +65,6 @@ public class TCPThread implements Runnable {
 			app.leaveMsg(me, Leave.fromString(message));
 		} else if (message.startsWith("LIST")) {
 			app.listMsg(me);
-		} else if (message.startsWith("VOICE")) {
-			app.voiceMsg(me, Voice.fromString(message));
 		}
 	}
 

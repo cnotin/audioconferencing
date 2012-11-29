@@ -1,4 +1,4 @@
-package se.ltu.M7017E.lab2.ui;
+package se.ltu.M7017E.lab2.client.ui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,8 +29,8 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import se.ltu.M7017E.lab2.App;
-import se.ltu.M7017E.lab2.Contact;
+import se.ltu.M7017E.lab2.client.App;
+import se.ltu.M7017E.lab2.common.Contact;
 
 public class Gui extends JFrame {
 
