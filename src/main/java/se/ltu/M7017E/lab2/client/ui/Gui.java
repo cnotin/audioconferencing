@@ -55,7 +55,6 @@ public class Gui extends JFrame {
 	private ImageIcon dltIcon = new ImageIcon(getClass().getResource(
 			"/icons/dlt_button.png"));
 
-	// private Gui me = this;
 	private DefaultListModel model;
 	private String userName;
 

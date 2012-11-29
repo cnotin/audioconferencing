@@ -21,7 +21,7 @@ public class ControlChannel implements Runnable {
 		this.app = app;
 
 		try {
-			Socket socket = new Socket(InetAddress.getByName("localhost"), 5000);
+			Socket socket = new Socket(InetAddress.getByName("localhost"), 4000);
 			in = new BufferedReader(new InputStreamReader(
 					socket.getInputStream()));
 			out = new PrintStream(socket.getOutputStream());
