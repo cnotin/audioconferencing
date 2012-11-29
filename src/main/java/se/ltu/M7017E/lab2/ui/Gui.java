@@ -94,19 +94,23 @@ public class Gui extends JFrame {
 	 */
 	public void setGuiTitleWithName() {
 		File file = new File("name.txt");
-		if (file.exists() == false) // check if the file already exist, else the
+		if (!file.exists()) // check if the file already exist, else the
 			new ChangeNameDialog(this);
 		else
 			try {
 				FileReader fr = new FileReader("name.txt");
 				BufferedReader br = new BufferedReader(fr);
-				if (br.readLine() == null)
+				br = new BufferedReader(fr);
+				String s = br.readLine();
+				System.out.println("hello" + s);
+				if (s == null)
 					new ChangeNameDialog(this);
-				else {
-					setUserName(br.readLine());
-					this.setTitle("Audio conferencing tool"
-							+ "                 Hello " + userName);
-				}
+				else
+					this.setUserName(s);
+
+				this.setTitle("Audio conferencing tool"
+						+ "                 Hello " + userName);
+
 				fr.close();
 			} catch (IOException e) {
 
@@ -121,8 +125,8 @@ public class Gui extends JFrame {
 	 */
 	public void setContactsList() {
 		File file = new File("contacts.txt");
-		if (file.exists() == false) // check if the file already exist, else the
-									// file is created
+		if (!file.exists()) // check if the file already exist, else the
+							// file is created
 			try {
 				file.createNewFile();
 			} catch (IOException e1) {
@@ -139,16 +143,9 @@ public class Gui extends JFrame {
 			this.contacts = new ArrayList<Contact>();
 			while ((s = br.readLine()) != null) {
 
-				if ((i % 2) == 0) { // even
-
-					contacts.add(new Contact());
-					Contact contact = (Contact) contacts.get(j);
-					contact.setName(s);
-				} else { // odd
-					Contact contact = (Contact) contacts.get(j);
-					contact.setIp(s);
-					j++;
-				}
+				Contact contact = new Contact();
+				contact.setName(s);
+				contacts.add(contact);
 				System.out.println(s);
 				i++;
 			}
@@ -161,8 +158,7 @@ public class Gui extends JFrame {
 
 		for (int k = 0; k < contacts.size(); k++) {
 			Contact contact = (Contact) contacts.get(k);
-			System.out.println("Name : " + contact.getName() + "\tIP : "
-					+ contact.getIp());
+
 		}
 
 	}

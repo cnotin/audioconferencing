@@ -23,18 +23,16 @@ public class AddContactDialog extends JDialog {
 	 */
 	private static final long serialVersionUID = -7019751683904933564L;
 	private JLabel nameLabel = new JLabel("Contact name : ");
-	private JLabel IPLabel = new JLabel("Contact IP :         ");
 	private JButton saveButton = new JButton("Save");
 	private JButton cancelButton = new JButton("Cancel");
 
 	private final JTextField nameField = new JTextField(15);
-	private final JTextField ipField = new JTextField(15);
 
 	/**
-	 * Window to add a contact thanks to his name and the IP address
+	 * Window to add a contact thanks to his name
 	 */
 	public AddContactDialog(final Gui gui) {
-		this.setSize(400, 130);
+		this.setSize(400, 80);
 		this.setTitle("Add a contact");
 		this.setModal(true);
 
@@ -47,12 +45,6 @@ public class AddContactDialog extends JDialog {
 		namePanel.add(nameLabel);
 		namePanel.add(nameField);
 		namePanel.setVisible(true);
-
-		JPanel ipPanel = new JPanel();
-		ipPanel.setLayout(new FlowLayout());
-		ipPanel.add(IPLabel);
-		ipPanel.add(ipField);
-
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 		buttonPanel.add(saveButton);
@@ -76,7 +68,6 @@ public class AddContactDialog extends JDialog {
 		JPanel mainPanel = new JPanel();
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 		mainPanel.add(namePanel);
-		mainPanel.add(ipPanel);
 		mainPanel.add(Box.createRigidArea(new Dimension(0, 5)));
 		mainPanel.add(buttonPanel);
 
@@ -90,8 +81,7 @@ public class AddContactDialog extends JDialog {
 	private void addcontact(Gui gui) {
 		try {
 
-			String contact = nameField.getText() + "\n" + ipField.getText()
-					+ "\n";
+			String contact = nameField.getText() + "\n";
 			FileWriter MyFile = new FileWriter("contacts.txt", true);
 			MyFile.write(contact);
 
