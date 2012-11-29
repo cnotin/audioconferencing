@@ -6,14 +6,17 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
 
+import se.ltu.M7017E.lab2.common.messages.Bye;
+import se.ltu.M7017E.lab2.common.messages.Hello;
 import se.ltu.M7017E.lab2.common.messages.Join;
 import se.ltu.M7017E.lab2.common.messages.Leave;
+import se.ltu.M7017E.lab2.common.messages.ListMsg;
 
 public class TCPThread implements Runnable {
 	private App app;
 	private BufferedReader in;
 	private PrintStream out;
-	private Friend me;
+	private Client me;
 
 	/**
 	 * Set to true to exit thread
@@ -24,9 +27,7 @@ public class TCPThread implements Runnable {
 		System.out.println("New client " + socket.getInetAddress());
 		this.app = app;
 
-		this.me = new Friend();
-		this.me.setName("clem");
-		this.me.setTcpThread(this);
+		this.me = new Client(socket.getInetAddress().getHostAddress(), this);
 
 		try {
 			in = new BufferedReader(new InputStreamReader(
@@ -53,19 +54,24 @@ public class TCPThread implements Runnable {
 			} else {
 				// do something with the message
 				System.out.println("Got raw msg: " + message);
-				caseMessage(message);
+
+				if (message.startsWith("HELLO")) {
+					app.msg(me, Hello.fromString(message));
+				} else if (message.startsWith("JOIN")) {
+					app.msg(me, Join.fromString(message));
+				} else if (message.startsWith("LEAVE")) {
+					app.msg(me, Leave.fromString(message));
+				} else if (message.startsWith("LIST")) {
+					app.msg(me, new ListMsg());
+				} else if (message.startsWith("BYE")) {
+					quit = true; // the msg will be sent after quitting the loop
+				}
 			}
 		}
-	}
 
-	public void caseMessage(String message) {
-		if (message.startsWith("JOIN")) {
-			app.joinMsg(me, Join.fromString(message));
-		} else if (message.startsWith("LEAVE")) {
-			app.leaveMsg(me, Leave.fromString(message));
-		} else if (message.startsWith("LIST")) {
-			app.listMsg(me);
-		}
+		// client quits
+		app.msg(me, new Bye());
+
 	}
 
 	/**

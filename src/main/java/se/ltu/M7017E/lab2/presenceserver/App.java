@@ -2,32 +2,30 @@ package se.ltu.M7017E.lab2.presenceserver;
 
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import lombok.Getter;
 import se.ltu.M7017E.lab2.common.messages.Audience;
+import se.ltu.M7017E.lab2.common.messages.Bye;
+import se.ltu.M7017E.lab2.common.messages.Hello;
 import se.ltu.M7017E.lab2.common.messages.Join;
-import se.ltu.M7017E.lab2.common.messages.Joined;
 import se.ltu.M7017E.lab2.common.messages.Leave;
-import se.ltu.M7017E.lab2.common.messages.Left;
+import se.ltu.M7017E.lab2.common.messages.ListMsg;
 import se.ltu.M7017E.lab2.common.messages.RoomsStart;
 import se.ltu.M7017E.lab2.common.messages.RoomsStop;
 
 public class App {
 	@Getter
-	private List<Friend> friends = Collections
-			.synchronizedList(new LinkedList<Friend>());
-	private Map<Integer, Room> rooms = Collections
-			.synchronizedMap(new HashMap<Integer, Room>());
+	private Set<Client> clients = new HashSet<Client>();
+	private Map<Integer, Room> rooms = new HashMap<Integer, Room>();
 
 	public App() {
 		ServerSocket serverSocket = null;
 		try {
-			serverSocket = new ServerSocket(5000);
+			serverSocket = new ServerSocket(4000);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -43,7 +41,25 @@ public class App {
 		}
 	}
 
-	public void joinMsg(Friend friend, Join join) {
+	public void msg(Client client, Hello hello) {
+		client.setName(hello.getName());
+		clients.add(client);
+	}
+
+	public void msg(Client client, Bye bye) {
+		// someone leaves, maybe he forgot to leave properly each room => do it
+		for (Map.Entry<Integer, Room> iter : rooms.entrySet()) {
+			Room room = iter.getValue();
+			if (room.isWithin(client)) {
+				room.left(client);
+			}
+		}
+
+		// removes him from the known clients in the server
+		clients.remove(client);
+	}
+
+	public void msg(Client client, Join join) {
 		int roomId = join.getRoom();
 
 		Room room = rooms.get(roomId);
@@ -52,39 +68,27 @@ public class App {
 			room = new Room(roomId);
 			this.rooms.put(roomId, room);
 		}
-		room.getAudience().add(friend);
 
-		// announce the newcomer to people in the room
-		Joined joined = new Joined();
-		joined.setName(friend.getName());
-		joined.setRoom(roomId);
-		room.broadcast(joined);
+		room.join(client);
 
 		// tell to the newcomer who's there
 		Audience audience = new Audience();
 		audience.setRoom(roomId);
 		audience.setNames(room.getAudienceAsStrings());
-		friend.getTcpThread().send(audience.toString());
-
+		client.send(audience);
 	}
 
-	public void leaveMsg(Friend friend, Leave leave) {
+	public void msg(Client client, Leave leave) {
 		int roomId = leave.getRoom();
 		Room room = this.rooms.get(roomId);
 
 		// TODO Stop player
-		// TODO recycle the port if he was a speaker
-		// TODO really remove from the room
 
-		// tell to everyone that he's gone
-		Left left = new Left();
-		left.setName(friend.getName());
-		left.setRoom(roomId);
-		room.broadcast(left);
+		room.left(client);
 	}
 
-	public void listMsg(Friend friend) {
-		friend.send(new RoomsStart());
+	public void msg(Client client, ListMsg list) {
+		client.send(new RoomsStart());
 
 		// for each room (key = id, value = room)
 		for (Map.Entry<Integer, Room> entry : rooms.entrySet()) {
@@ -92,15 +96,15 @@ public class App {
 			audience.setRoom(entry.getKey());
 			audience.setNames(entry.getValue().getAudienceAsStrings());
 
-			friend.send(audience);
+			client.send(audience);
 		}
 
-		friend.send(new RoomsStop());
+		client.send(new RoomsStop());
 	}
 
 	public void broadcast(String message) {
-		for (Friend friend : friends) {
-			friend.send(message);
+		for (Client client : clients) {
+			client.send(message);
 		}
 	}
 

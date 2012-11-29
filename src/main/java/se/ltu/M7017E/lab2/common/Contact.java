@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Contact {
-	private String name;
-	private String ip;
+	protected String name;
+	protected String ip;
 }
