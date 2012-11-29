@@ -16,8 +16,8 @@ public class RoomReceiver extends Bin {
 	private final Element adder;
 	private final Pad src;
 
-	public RoomReceiver(String ip, int port) {
-		super();
+	public RoomReceiver(String name, String ip, int port) {
+		super(name);
 
 		udpSource = ElementFactory.make("udpsrc", null);
 		udpSource.set("multicast-group", ip);
@@ -81,5 +81,7 @@ public class RoomReceiver extends Bin {
 		Pad pad = rtpBin.getRequestPad("recv_rtp_sink_0");
 		Tool.successOrDie("udpSource-rtpbin", udpSource.getStaticPad("src")
 				.link(pad).equals(PadLinkReturn.OK));
+
+		pause();
 	}
 }
