@@ -7,12 +7,14 @@ import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.Socket;
 
+import lombok.Getter;
 import se.ltu.M7017E.lab2.common.messages.AnswerCall;
 
 /**
  * Manage the control channel
  */
 public class ControlChannel implements Runnable {
+	@Getter
 	private App app;
 	private BufferedReader in;
 	private PrintStream out;

@@ -39,8 +39,8 @@ public class AcceptACallDialog extends JDialog {
 			public void actionPerformed(ActionEvent e) {
 				// save the contact
 				System.out.println("yes");
-
-				control.send("ANSWERCALL" + "," + call.getPort() + "," + 5012
+				int port = control.getApp().selectAPort();
+				control.send("ANSWERCALL" + "," + call.getPort() + "," + port
 						+ "," + call.getSender() + "," + call.getReceiver()
 						+ ",yes");
 				me.dispose();

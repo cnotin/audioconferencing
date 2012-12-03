@@ -101,11 +101,7 @@ public class Gui extends JFrame {
 		this.contactsList.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent evt) {
 				if (evt.getClickCount() == 2) {
-					System.out.println(contactsList.getSelectedValue());
-					// CALL, port, sender, receiver
-					app.getControl().send(
-							"CALL," + 5010 + "," + userName + ","
-									+ contactsList.getSelectedValue());
+					callContact();
 				}
 			}
 		});
@@ -321,15 +317,7 @@ public class Gui extends JFrame {
 		callBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println(contactsList.getSelectedValue());
-				// CALL, port, sender, receiver
-				if (contactsList.getSelectedValue() != null)
-					app.getControl().send(
-							"CALL," + 5010 + "," + userName + ","
-									+ contactsList.getSelectedValue());
-				else
-					showMessage("Please select a person to call!");
-
+				callContact();
 			}
 		});
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
@@ -337,6 +325,18 @@ public class Gui extends JFrame {
 		panel.add(callBtn);
 		panel.add(hangUpBtn);
 		return panel;
+	}
+
+	private void callContact() {
+
+		System.out.println(contactsList.getSelectedValue());
+
+		if (contactsList.getSelectedValue() != null)
+			app.getControl().send(
+					"CALL," + app.selectAPort() + "," + userName + ","
+							+ contactsList.getSelectedValue());
+		else
+			showMessage("Please select a person to call!");
 	}
 
 	/**
