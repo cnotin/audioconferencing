@@ -155,10 +155,8 @@ public class Gui extends JFrame {
 			FileReader fr = new FileReader("contacts.txt");
 			BufferedReader br = new BufferedReader(fr);
 			int i = 0;
-			int j = 0;
 			this.contacts = new ArrayList<Contact>();
 			while ((s = br.readLine()) != null) {
-
 				Contact contact = new Contact();
 				contact.setName(s);
 				contacts.add(contact);

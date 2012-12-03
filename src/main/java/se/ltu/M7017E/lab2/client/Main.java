@@ -9,14 +9,6 @@ public class Main {
 		System.out.println("Welcome");
 
 		final App app = new App();
-
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				Gui gui = new Gui(app);
-				app.setGui(gui);
-				gui.setVisible(true);
-			}
-		});
 		if (args.length > 0 && args[0].equals("NO_UI")) {
 			System.out.println("Don't display UI. Press enter to quit");
 
@@ -30,6 +22,7 @@ public class Main {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
 					Gui gui = new Gui(app);
+					app.setGui(gui);
 					gui.setVisible(true);
 				}
 			});
