@@ -36,7 +36,9 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
 import se.ltu.M7017E.lab2.client.App;
+import se.ltu.M7017E.lab2.client.ControlChannel;
 import se.ltu.M7017E.lab2.common.Contact;
+import se.ltu.M7017E.lab2.common.messages.Call;
 
 public class Gui extends JFrame {
 
@@ -243,6 +245,7 @@ public class Gui extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				new AddContactDialog(Gui.this);
+
 			}
 		});
 
@@ -313,7 +316,16 @@ public class Gui extends JFrame {
 		JPanel panel = new JPanel();
 		callBtn = new JButton("Call contact", callIcon);
 		hangUpBtn = new JButton("Hang up", hangIcon);
-
+		callBtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.out.println(contactsList.getSelectedValue());
+				// CALL, port, sender, receiver
+				app.getControl().send(
+						"CALL," + 5010 + "," + userName + ","
+								+ contactsList.getSelectedValue());
+			}
+		});
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
 		panel.add(callBtn);
 		panel.add(hangUpBtn);
@@ -368,6 +380,18 @@ public class Gui extends JFrame {
 		menu.add(help);
 
 		return menu;
+	}
+
+	public void acceptACall(String message, ControlChannel control) {
+
+		Call call = Call.fromString(message);
+		new AcceptACallDialog(control, call);
+	}
+
+	public void showMessage(String message) {
+
+		JOptionPane.showMessageDialog(app.getGui(), message, null,
+				JOptionPane.INFORMATION_MESSAGE);
 	}
 
 	/**

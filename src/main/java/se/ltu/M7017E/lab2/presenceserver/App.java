@@ -82,8 +82,13 @@ public class App {
 
 	public void msg(Call call) {
 		Client client = findClientsByName(call.getReceiver());
-		System.out.println("sending message to" + client.getName());
-		client.send(call.toString());
+		if (client != null) {
+			System.out.println("sending message to" + client.getName());
+			client.send(call.toString());
+		} else {
+			client = findClientsByName(call.getSender());
+			client.send("ERROR," + call.getReceiver() + " is not connected :(");
+		}
 	}
 
 	public void msg(AnswerCall answer) {

@@ -7,9 +7,7 @@ import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.Socket;
 
-import se.ltu.M7017E.lab2.client.ui.AcceptACallDialog;
 import se.ltu.M7017E.lab2.common.messages.AnswerCall;
-import se.ltu.M7017E.lab2.common.messages.Call;
 
 /**
  * Manage the control channel
@@ -68,15 +66,25 @@ public class ControlChannel implements Runnable {
 		} else if (message.startsWith("ROOMS_STOP")) {
 
 		} else if (message.startsWith("CALL")) {
-			Call call = Call.fromString(message);
-			new AcceptACallDialog(this, call);
+			System.out.println("allo");
+			app.getGui().acceptACall(message, this);
+
 		} else if (message.startsWith("ANSWERCALL")) {
 			AnswerCall answer = AnswerCall.fromString(message);
-			if (answer.getAnswer().equals("yes"))
-				System.out.println(answer.getReceiver() + " accepted the call");
-			if (answer.getAnswer().equals("no"))
-				System.out.println(answer.getReceiver() + " declined the call");
+			if (answer.getAnswer().equals("yes")) {
+				app.getGui().showMessage(
+						answer.getReceiver() + " accepted the call");
+
+			}
+			if (answer.getAnswer().equals("no")) {
+				app.getGui().showMessage(
+						answer.getReceiver() + " declined the call");
+			}
+
+		} else if (message.startsWith("ERROR")) {
+			app.getGui().showMessage(message.substring(6, message.length()));
 		}
+		;
 	}
 
 	/**

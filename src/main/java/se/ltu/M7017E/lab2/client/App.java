@@ -19,7 +19,9 @@ public class App {
 	private List<Contact> contacts = new LinkedList<Contact>();
 	@Getter
 	private Contact me = new Contact("lab2 client", "lab2.client.lan");
+
 	@Setter
+	@Getter
 	private Gui gui;
 
 	private ReceiverPipeline receiver;
