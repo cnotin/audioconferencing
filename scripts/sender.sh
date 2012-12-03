@@ -17,7 +17,7 @@ fi;
 
 
 
-gst-launch -v --gst-debug=2 gstrtpbin name=rtpbin \
-    audiotestsrc freq=$FREQ ! audioconvert ! \
-    mulawenc ! rtppcmupay ! rtpbin.send_rtp_sink_0 \
+gst-launch -v --gst-debug=3 gstrtpbin name=rtpbin \
+    alsasrc ! tee name=t \
+    t. ! audioconvert ! mulawenc ! rtppcmupay ! rtpbin.send_rtp_sink_0 \
           rtpbin.send_rtp_src_0 ! udpsink host=224.1.42.$ROOM port=5000

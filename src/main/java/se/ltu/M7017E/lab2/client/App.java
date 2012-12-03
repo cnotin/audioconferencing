@@ -11,15 +11,15 @@ import lombok.Setter;
 import org.gstreamer.Gst;
 
 import se.ltu.M7017E.lab2.client.audio.ReceiverPipeline;
+import se.ltu.M7017E.lab2.client.audio.SenderPipeline;
 import se.ltu.M7017E.lab2.client.ui.Gui;
 import se.ltu.M7017E.lab2.common.Contact;
 
+@Getter
 public class App {
 	@Getter
 	private ControlChannel control;
-	@Getter
 	private List<Contact> contacts = new LinkedList<Contact>();
-	@Getter
 	private Contact me = new Contact("lab2 client", "lab2.client.lan");
 
 	@Setter
@@ -27,6 +27,7 @@ public class App {
 	private Gui gui;
 
 	private ReceiverPipeline receiver;
+	private SenderPipeline sender;
 
 	public App() {
 		control = new ControlChannel(this);
@@ -36,16 +37,18 @@ public class App {
 				"--gst-debug-no-color" });
 		receiver = new ReceiverPipeline();
 		receiver.play();
+
+		sender = new SenderPipeline();
 	}
 
 	public void joinRoom(int roomId) {
 		receiver.joinRoom(roomId);
-		// TODO: connect sender too
+		sender.joinRoom(roomId);
 	}
 
 	public void leaveRoom(int roomId) {
 		receiver.leaveRoom(roomId);
-		// TODO: disconnect sender too
+		sender.leaveRoom(roomId);
 	}
 
 	public Contact findcontactsByName(String name) {

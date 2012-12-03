@@ -2,6 +2,8 @@ package se.ltu.M7017E.lab2.client;
 
 import javax.swing.SwingUtilities;
 
+import org.gstreamer.Bin;
+
 import se.ltu.M7017E.lab2.client.ui.Gui;
 
 public class Main {
@@ -10,13 +12,18 @@ public class Main {
 
 		final App app = new App();
 		if (args.length > 0 && args[0].equals("NO_UI")) {
-			System.out.println("Don't display UI. Press enter to quit");
+			System.out.println("DEBUG: Don't display UI.");
 
-			app.joinRoom(1);
-			app.joinRoom(2);
+			app.joinRoom(10);
+			app.joinRoom(11);
 
+			System.out.println("See the dot?");
 			new java.util.Scanner(System.in).nextLine();
-			System.out.println("Bye");
+			app.getSender().debugToDotFile(Bin.DEBUG_GRAPH_SHOW_ALL, "sender");
+
+			System.out.println("Bye ?");
+			new java.util.Scanner(System.in).nextLine();
+			System.out.println("See you");
 			System.exit(0);
 		} else {
 			SwingUtilities.invokeLater(new Runnable() {
