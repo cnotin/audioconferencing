@@ -27,7 +27,16 @@ public class SenderPipeline extends Pipeline {
 		Tool.successOrDie("src-tee", linkMany(src, tee));
 	}
 
-	public void joinRoom(int roomId) {
+	/**
+	 * Join a room thus adding all necessary stuff to this pipeline. At the end
+	 * the streaming of the sound to it will be automatically started.
+	 * 
+	 * @param roomId
+	 *            id of the room to join
+	 * @return the RTP SSRC of this sender, or (-1) if the room was already
+	 *         joined
+	 */
+	public long joinRoom(int roomId) {
 		// don't join if already joined
 		if (!rooms.containsKey(roomId)) {
 			if (isPlaying()) {
@@ -46,7 +55,10 @@ public class SenderPipeline extends Pipeline {
 					.link(room.getStaticPad("sink")).equals(PadLinkReturn.OK));
 
 			play();
+
+			return room.getSSRC();
 		}
+		return -1;
 	}
 
 	public void leaveRoom(int roomId) {

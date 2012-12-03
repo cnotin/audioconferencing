@@ -1,7 +1,5 @@
 package se.ltu.M7017E.lab2.client.audio;
 
-import lombok.Getter;
-
 import org.gstreamer.Bin;
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
@@ -9,7 +7,6 @@ import org.gstreamer.GhostPad;
 import org.gstreamer.Pad;
 
 public class RtpMulawEncodeBin extends Bin {
-	@Getter
 	private Element convert;
 	private Element encoder;
 	private Element rtpPay;

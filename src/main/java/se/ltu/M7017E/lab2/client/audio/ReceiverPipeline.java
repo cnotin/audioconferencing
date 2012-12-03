@@ -21,12 +21,13 @@ public class ReceiverPipeline extends Pipeline {
 		linkMany(adder, sink);
 	}
 
-	public void joinRoom(int roomId) {
+	public void joinRoom(int roomId, long ssrcToIgnore) {
 		// don't join if already joined
 		if (!rooms.containsKey(roomId)) {
 			// create the receiver bin
 			RoomReceiver room = new RoomReceiver("room" + roomId,
-					Config.BASE_IP + roomId, Config.RTP_MULTICAST_PORT);
+					Config.BASE_IP + roomId, Config.RTP_MULTICAST_PORT,
+					ssrcToIgnore);
 			rooms.put(roomId, room);
 			// add it to this
 			add(room);

@@ -7,6 +7,7 @@ import org.gstreamer.ElementFactory;
 import org.gstreamer.GhostPad;
 import org.gstreamer.Pad;
 import org.gstreamer.PadLinkReturn;
+import org.gstreamer.elements.FakeSink;
 
 import se.ltu.M7017E.lab2.client.Tool;
 
@@ -16,7 +17,8 @@ public class RoomReceiver extends Bin {
 	private final Element adder;
 	private final Pad src;
 
-	public RoomReceiver(String name, String ip, int port) {
+	public RoomReceiver(String name, String ip, int port,
+			final long ssrcToIgnore) {
 		super(name);
 
 		udpSource = ElementFactory.make("udpsrc", null);
@@ -38,33 +40,42 @@ public class RoomReceiver extends Bin {
 			@Override
 			public void padAdded(Element element, Pad pad) {
 				if (pad.getName().startsWith("recv_rtp_src")) {
-					/*
-					 * TODO : if SSRC=myself.ssrc then connect to fakesink to
-					 * prevent echo of my own voice
-					 */
-
 					System.out.println("Got new sound input pad: " + pad);
 
-					// create elements
-					RtpMulawDecodeBin decoder = new RtpMulawDecodeBin();
+					/*
+					 * if the SSRC if this incoming new participant is mine,
+					 * then connect to fakesink to prevent echo of my own voice
+					 */
+					if (pad.getName().contains(String.valueOf(ssrcToIgnore))) {
+						Element fakesink = new FakeSink((String) null);
+						RoomReceiver.this.add(fakesink);
+						fakesink.syncStateWithParent();
 
-					// add them
-					RoomReceiver.this.add(decoder);
+						Tool.successOrDie(
+								"bin-fakesink",
+								pad.link(fakesink.getStaticPad("sink")).equals(
+										PadLinkReturn.OK));
+					} else {
+						// create elements
+						RtpMulawDecodeBin decoder = new RtpMulawDecodeBin();
 
-					// sync them
-					decoder.syncStateWithParent();
+						// add them
+						RoomReceiver.this.add(decoder);
 
-					// link them
-					Tool.successOrDie(
-							"bin-decoder",
-							pad.link(decoder.getStaticPad("sink")).equals(
-									PadLinkReturn.OK));
+						// sync them
+						decoder.syncStateWithParent();
 
-					Pad adderPad = adder.getRequestPad("sink%d");
-					Tool.successOrDie(
-							"decoder-adder",
-							decoder.getStaticPad("src").link(adderPad)
-									.equals(PadLinkReturn.OK));
+						// link them
+						Tool.successOrDie(
+								"bin-decoder",
+								pad.link(decoder.getStaticPad("sink")).equals(
+										PadLinkReturn.OK));
+
+						Pad adderPad = adder.getRequestPad("sink%d");
+						Tool.successOrDie("decoder-adder",
+								decoder.getStaticPad("src").link(adderPad)
+										.equals(PadLinkReturn.OK));
+					}
 				}
 			}
 		});

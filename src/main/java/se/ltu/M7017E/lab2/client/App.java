@@ -33,7 +33,7 @@ public class App {
 		control = new ControlChannel(this);
 		new Thread(control).start();
 
-		Gst.init("Audioconferencing", new String[] { "--gst-debug-level=2",
+		Gst.init("Audioconferencing", new String[] { "--gst-debug-level=3",
 				"--gst-debug-no-color" });
 		receiver = new ReceiverPipeline();
 		receiver.play();
@@ -42,13 +42,13 @@ public class App {
 	}
 
 	public void joinRoom(int roomId) {
-		receiver.joinRoom(roomId);
-		sender.joinRoom(roomId);
+		long mySSRC = sender.joinRoom(roomId);
+		receiver.joinRoom(roomId, mySSRC);
 	}
 
 	public void leaveRoom(int roomId) {
-		receiver.leaveRoom(roomId);
 		sender.leaveRoom(roomId);
+		receiver.leaveRoom(roomId);
 	}
 
 	public Contact findcontactsByName(String name) {
