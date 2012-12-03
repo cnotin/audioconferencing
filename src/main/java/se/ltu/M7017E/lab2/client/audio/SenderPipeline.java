@@ -52,7 +52,7 @@ public class SenderPipeline extends Pipeline {
 	public void leaveRoom(int roomId) {
 		// can't leave if not joined
 		if (rooms.containsKey(roomId)) {
-
+			// TODO
 		}
 	}
 }
