@@ -46,6 +46,7 @@ public class Gui extends JFrame {
 	private JMenuBar menu;
 	private JButton callBtn;
 	private JButton hangUpBtn;
+	private JButton joinBtn;
 	private JButton newBtn;
 	private JButton dltBtn;
 	private JList contactsList;
@@ -59,6 +60,8 @@ public class Gui extends JFrame {
 			"/icons/new_button.png"));
 	private ImageIcon dltIcon = new ImageIcon(getClass().getResource(
 			"/icons/dlt_button.png"));
+	private ImageIcon joinIcon = new ImageIcon(getClass().getResource(
+			"/icons/door_button.png"));
 
 	private DefaultListModel model;
 	private String userName;
@@ -312,6 +315,7 @@ public class Gui extends JFrame {
 	 */
 	private JPanel createButtonPanel() {
 		JPanel panel = new JPanel();
+		joinBtn = new JButton("Join room", joinIcon);
 		callBtn = new JButton("Call contact", callIcon);
 		hangUpBtn = new JButton("Hang up", hangIcon);
 		callBtn.addActionListener(new ActionListener() {
@@ -319,12 +323,17 @@ public class Gui extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				System.out.println(contactsList.getSelectedValue());
 				// CALL, port, sender, receiver
-				app.getControl().send(
-						"CALL," + 5010 + "," + userName + ","
-								+ contactsList.getSelectedValue());
+				if (contactsList.getSelectedValue() != null)
+					app.getControl().send(
+							"CALL," + 5010 + "," + userName + ","
+									+ contactsList.getSelectedValue());
+				else
+					showMessage("Please select a person to call!");
+
 			}
 		});
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+		panel.add(joinBtn);
 		panel.add(callBtn);
 		panel.add(hangUpBtn);
 		return panel;
