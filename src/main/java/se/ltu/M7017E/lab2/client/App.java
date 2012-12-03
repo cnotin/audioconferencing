@@ -33,7 +33,7 @@ public class App {
 		control = new ControlChannel(this);
 		new Thread(control).start();
 
-		Gst.init("Audioconferencing", new String[] { "--gst-debug-level=3",
+		Gst.init("Audioconferencing", new String[] { "--gst-debug-level=2",
 				"--gst-debug-no-color" });
 		receiver = new ReceiverPipeline();
 		receiver.play();

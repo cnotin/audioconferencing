@@ -37,14 +37,13 @@ public class RoomReceiver extends Bin {
 		rtpBin.connect(new Element.PAD_ADDED() {
 			@Override
 			public void padAdded(Element element, Pad pad) {
-				System.out.println("Pad added: " + pad);
 				if (pad.getName().startsWith("recv_rtp_src")) {
 					/*
 					 * TODO : if SSRC=myself.ssrc then connect to fakesink to
 					 * prevent echo of my own voice
 					 */
 
-					System.out.println("\nGot new sound input pad: " + pad);
+					System.out.println("Got new sound input pad: " + pad);
 
 					// create elements
 					RtpMulawDecodeBin decoder = new RtpMulawDecodeBin();
