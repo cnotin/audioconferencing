@@ -16,7 +16,8 @@ public class Main {
 
 			// TODO, remove. This is an example. It shouldn't be done this way
 			// at all.
-			app.getSender().streamTo("192.168.1.6", 5010);
+			int port = app.getReceiver().receiveFromUnicast();
+			app.getSender().streamTo("127.0.0.01", port);
 
 			System.out.println("See the dot?");
 			new java.util.Scanner(System.in).nextLine();
