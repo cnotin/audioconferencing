@@ -68,6 +68,7 @@ public class ControlChannel implements Runnable {
 		} else if (message.startsWith("ROOMS_STOP")) {
 
 		} else if (message.startsWith("CALL")) {
+
 			System.out.println("allo");
 			app.getGui().acceptACall(message, this);
 
@@ -76,6 +77,7 @@ public class ControlChannel implements Runnable {
 			if (answer.getAnswer().equals("yes")) {
 				app.getGui().showMessage(
 						answer.getReceiver() + " accepted the call");
+				app.call("test", Integer.parseInt(answer.getPortReceiver()));
 
 			}
 			if (answer.getAnswer().equals("no")) {

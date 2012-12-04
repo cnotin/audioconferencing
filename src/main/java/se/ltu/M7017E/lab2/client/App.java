@@ -99,4 +99,9 @@ public class App {
 
 		return false;
 	}
+
+	public void call(String ip, int port) {
+		getSender().streamTo("130.240.53.166", port);
+	}
+
 }
