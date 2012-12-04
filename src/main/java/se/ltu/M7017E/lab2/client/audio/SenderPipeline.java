@@ -28,15 +28,16 @@ public class SenderPipeline extends Pipeline {
 	}
 
 	/**
-	 * Join a room thus adding all necessary stuff to this pipeline. At the end
-	 * the streaming of the sound to it will be automatically started.
+	 * Start streaming to a room (multicast) thus adding all necessary stuff to
+	 * this pipeline. At the end the streaming of the sound to it will be
+	 * automatically started.
 	 * 
 	 * @param roomId
 	 *            id of the room to join
 	 * @return the RTP SSRC of this sender, or (-1) if the room was already
 	 *         joined
 	 */
-	public long joinRoom(int roomId) {
+	public long streamTo(int roomId) {
 		// don't join if already joined
 		if (!rooms.containsKey(roomId)) {
 			if (isPlaying()) {
@@ -61,10 +62,43 @@ public class SenderPipeline extends Pipeline {
 		return -1;
 	}
 
-	public void leaveRoom(int roomId) {
+	public void stopStreamingTo(int roomId) {
 		// can't leave if not joined
 		if (rooms.containsKey(roomId)) {
 			// TODO
 		}
+	}
+
+	/**
+	 * Stream to one contact (unicast) thus adding all necessary stuff to this
+	 * pipeline. At the end the streaming of the sound to him will be
+	 * automatically started.
+	 * 
+	 * @param ip
+	 *            IP adress of the person to join
+	 * @param port
+	 *            the port on which he listens
+	 */
+	public void streamTo(String ip, int port) {
+		if (isPlaying()) {
+			pause();
+		}
+
+		// create the sender bin
+		SenderBin friend = new SenderBin("unicast_" + ip + "_" + port, ip,
+				port, false);
+		// add it to this
+		add(friend);
+
+		// connect its input to the tee
+		Tool.successOrDie("tee-unicastSender",
+				tee.getRequestPad("src%d").link(friend.getStaticPad("sink"))
+						.equals(PadLinkReturn.OK));
+
+		play();
+	}
+
+	public void stopStreamingTo(String ip, int port) {
+		// TODO
 	}
 }

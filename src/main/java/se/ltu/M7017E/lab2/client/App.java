@@ -42,13 +42,13 @@ public class App {
 	}
 
 	public void joinRoom(int roomId) {
-		long mySSRC = sender.joinRoom(roomId);
-		receiver.joinRoom(roomId, mySSRC);
+		long mySSRC = sender.streamTo(roomId);
+		receiver.receiveFromRoom(roomId, mySSRC);
 	}
 
 	public void leaveRoom(int roomId) {
-		sender.leaveRoom(roomId);
-		receiver.leaveRoom(roomId);
+		sender.stopStreamingTo(roomId);
+		receiver.stopRoomReceiving(roomId);
 	}
 
 	public Contact findcontactsByName(String name) {

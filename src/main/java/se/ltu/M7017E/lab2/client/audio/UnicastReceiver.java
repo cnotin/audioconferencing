@@ -1,33 +1,96 @@
 package se.ltu.M7017E.lab2.client.audio;
 
+import lombok.Getter;
+
 import org.gstreamer.Bin;
 import org.gstreamer.Caps;
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
+import org.gstreamer.GhostPad;
+import org.gstreamer.Pad;
+import org.gstreamer.PadLinkReturn;
 
 import se.ltu.M7017E.lab2.client.Tool;
 
 public class UnicastReceiver extends Bin {
-
 	private final Element udpSource;
 	private final Element rtpBin;
+	private Pad src;
+	@Getter
+	private int port = 0;
 
-	public UnicastReceiver(String ip, int port) {
+	/**
+	 * TODO
+	 * 
+	 * @param connectSrcTo
+	 *            As soon as our friend will have called us on this local
+	 *            unicast port, we will connect the src of this bin to this
+	 *            Element
+	 */
+	public UnicastReceiver(final Element connectSrcTo) {
+		super();
+
 		udpSource = ElementFactory.make("udpsrc", null);
-		udpSource.set("port", port);
-		udpSource.set("uri", "udp://" + ip);
-		udpSource.set("auto-multicast", false);
+		udpSource.set("port", 0);
 		Tool.successOrDie("caps",
 				udpSource.getStaticPad("src").setCaps(
 						Caps.fromString("application/x-rtp, media=audio, "
 								+ "clock-rate=8000, channel=1, payload=0, "
 								+ "encoding-name=PCMU")));
+
 		rtpBin = ElementFactory.make("gstrtpbin", null);
 
-		RtpMulawDecodeBin decoder = new RtpMulawDecodeBin();
-		Element sink = ElementFactory.make("autoaudiosink", null);
-		addMany(udpSource, rtpBin, decoder, sink);
-		linkMany(udpSource, rtpBin, decoder, sink);
+		// ####################### CONNECT EVENTS ######################"
+		rtpBin.connect(new Element.PAD_ADDED() {
+			@Override
+			public void padAdded(Element element, Pad pad) {
+				if (pad.getName().startsWith("recv_rtp_src")) {
+					System.out.println("Got new sound input pad: " + pad);
+					// create elements
+					RtpMulawDecodeBin decoder = new RtpMulawDecodeBin();
 
+					// add them
+					UnicastReceiver.this.add(decoder);
+
+					// sync them
+					decoder.syncStateWithParent();
+
+					// link them
+					Tool.successOrDie(
+							"bin-decoder",
+							pad.link(decoder.getStaticPad("sink")).equals(
+									PadLinkReturn.OK));
+
+					/*
+					 * now that we have what we should connect to it, add the
+					 * ghost pad
+					 */
+					src = new GhostPad("src", decoder.getStaticPad("src"));
+					src.setActive(true);
+					addPad(src);
+
+					/*
+					 * connect this UnicastReceiver to the Element we've been
+					 * asked to do
+					 */
+					Tool.successOrDie("unicastreceiver-connectsrcto", Element
+							.linkMany(UnicastReceiver.this, connectSrcTo));
+				}
+			}
+		});
+
+		// ############## ADD THEM TO PIPELINE ####################
+		addMany(udpSource, rtpBin);
+
+		// ###################### LINK THEM ##########################
+		Pad pad = rtpBin.getRequestPad("recv_rtp_sink_0");
+		Tool.successOrDie("udpSource-rtpbin", udpSource.getStaticPad("src")
+				.link(pad).equals(PadLinkReturn.OK));
+
+		port = (Integer) udpSource.get("port");
+		System.out.println("Got assigned port: " + port);
+		setName("unicast_" + port);
+
+		pause();
 	}
 }

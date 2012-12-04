@@ -1,5 +1,8 @@
 package se.ltu.M7017E.lab2.client.audio;
 
+import org.gstreamer.Bin;
+import org.gstreamer.Element;
+import org.gstreamer.ElementFactory;
 import org.gstreamer.Gst;
 import org.gstreamer.Pipeline;
 
@@ -10,10 +13,16 @@ public class TestClassReceiver {
 		Gst.init("Audioconferencing", new String[] { "--gst-debug-level=3",
 				"--gst-debug-no-color" });
 		Pipeline pipeline = new Pipeline();
-		pipeline.add(new UnicastReceiver("224.1.42.1", 5000));
-		System.out.println("blblbl");
-		pipeline.play();
+		pipeline.pause();
 
+		Element sink = ElementFactory.make("autoaudiosink", null);
+		Element receiver = new UnicastReceiver(sink);
+
+		pipeline.addMany(receiver, sink);
+		Bin.linkMany(receiver, sink);
+
+		pipeline.play();
+		Gst.main();
 	}
 
 }

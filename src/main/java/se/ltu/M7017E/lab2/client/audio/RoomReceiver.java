@@ -11,21 +11,19 @@ import org.gstreamer.elements.FakeSink;
 
 import se.ltu.M7017E.lab2.client.Tool;
 
-public class ReceiverBin extends Bin {
+public class RoomReceiver extends Bin {
 	private final Element udpSource;
 	private final Element rtpBin;
 	private final Element adder;
 	private final Pad src;
 
-	public ReceiverBin(String name, String ip, int port, boolean multicast,
+	public RoomReceiver(String name, String ip, int port,
 			final long ssrcToIgnore) {
 		super(name);
 
 		udpSource = ElementFactory.make("udpsrc", null);
-		if (multicast) {
-			udpSource.set("multicast-group", ip);
-			udpSource.set("auto-multicast", true);
-		}
+		udpSource.set("multicast-group", ip);
+		udpSource.set("auto-multicast", true);
 		udpSource.set("port", port);
 
 		Tool.successOrDie("caps",
@@ -50,7 +48,7 @@ public class ReceiverBin extends Bin {
 					 */
 					if (pad.getName().contains(String.valueOf(ssrcToIgnore))) {
 						Element fakesink = new FakeSink((String) null);
-						ReceiverBin.this.add(fakesink);
+						RoomReceiver.this.add(fakesink);
 						fakesink.syncStateWithParent();
 
 						Tool.successOrDie(
@@ -62,7 +60,7 @@ public class ReceiverBin extends Bin {
 						RtpMulawDecodeBin decoder = new RtpMulawDecodeBin();
 
 						// add them
-						ReceiverBin.this.add(decoder);
+						RoomReceiver.this.add(decoder);
 
 						// sync them
 						decoder.syncStateWithParent();

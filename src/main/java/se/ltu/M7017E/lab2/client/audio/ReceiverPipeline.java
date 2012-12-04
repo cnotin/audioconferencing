@@ -10,7 +10,7 @@ import org.gstreamer.Pipeline;
 import se.ltu.M7017E.lab2.client.Config;
 
 public class ReceiverPipeline extends Pipeline {
-	private Map<Integer, ReceiverBin> rooms = new HashMap<Integer, ReceiverBin>();
+	private Map<Integer, RoomReceiver> rooms = new HashMap<Integer, RoomReceiver>();
 	private final Element adder = ElementFactory.make("liveadder", null);
 	private final Element sink = ElementFactory.make("autoaudiosink", null);
 
@@ -21,12 +21,13 @@ public class ReceiverPipeline extends Pipeline {
 		linkMany(adder, sink);
 	}
 
-	public void joinRoom(int roomId, long ssrcToIgnore) {
+	public void receiveFromRoom(int roomId, long ssrcToIgnore) {
 		// don't join if already joined
 		if (!rooms.containsKey(roomId)) {
 			// create the receiver bin
-			ReceiverBin room = new ReceiverBin("room" + roomId, Config.BASE_IP
-					+ roomId, Config.RTP_MULTICAST_PORT, true, ssrcToIgnore);
+			RoomReceiver room = new RoomReceiver("room" + roomId,
+					Config.BASE_IP + roomId, Config.RTP_MULTICAST_PORT,
+					ssrcToIgnore);
 			rooms.put(roomId, room);
 			// add it to this
 			add(room);
@@ -37,10 +38,27 @@ public class ReceiverPipeline extends Pipeline {
 		}
 	}
 
-	public void leaveRoom(int roomId) {
+	public void stopRoomReceiving(int roomId) {
 		// can't leave if not joined
 		if (rooms.containsKey(roomId)) {
 			// TODO
 		}
+	}
+
+	public long receiveFromUnicast() {
+		// create the receiver bin
+		UnicastReceiver friend = new UnicastReceiver(adder);
+		// add it to this
+		add(friend);
+		friend.syncStateWithParent();
+
+		// connect its output to the adder
+		friend.link(adder);
+
+		return friend.getPort();
+	}
+
+	public void stopUnicastReceiving(int port) {
+		// TODO
 	}
 }
