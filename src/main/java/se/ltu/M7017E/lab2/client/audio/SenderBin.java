@@ -12,14 +12,14 @@ import org.gstreamer.elements.good.RTPBin;
 
 import se.ltu.M7017E.lab2.client.Tool;
 
-public class RoomSender extends Bin {
+public class SenderBin extends Bin {
 	private final Pad sink;
 	@Getter
 	private final RtpMulawEncodeBin encoder;
 	private final Element udpSink;
 	private final RTPBin rtpBin;
 
-	public RoomSender(String name, String ip, int port) {
+	public SenderBin(String name, String ip, int port, boolean multicast) {
 		super(name);
 
 		encoder = new RtpMulawEncodeBin();
@@ -30,7 +30,9 @@ public class RoomSender extends Bin {
 		udpSink = ElementFactory.make("udpsink", null);
 		udpSink.set("host", ip);
 		udpSink.set("port", port);
-		udpSink.set("auto-multicast", true);
+		if (multicast) {
+			udpSink.set("auto-multicast", true);
+		}
 		udpSink.set("async", false);
 
 		// ############## ADD THEM TO PIPELINE ####################

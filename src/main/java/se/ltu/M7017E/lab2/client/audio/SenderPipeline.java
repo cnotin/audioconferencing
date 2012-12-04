@@ -13,7 +13,7 @@ import se.ltu.M7017E.lab2.client.Config;
 import se.ltu.M7017E.lab2.client.Tool;
 
 public class SenderPipeline extends Pipeline {
-	private Map<Integer, RoomSender> rooms = new HashMap<Integer, RoomSender>();
+	private Map<Integer, SenderBin> rooms = new HashMap<Integer, SenderBin>();
 	private final BaseSrc src = (BaseSrc) ElementFactory.make("alsasrc", null);
 	private final Element tee = ElementFactory.make("tee", null);
 
@@ -44,8 +44,8 @@ public class SenderPipeline extends Pipeline {
 			}
 
 			// create the sender bin
-			RoomSender room = new RoomSender("room" + roomId, Config.BASE_IP
-					+ roomId, Config.RTP_MULTICAST_PORT);
+			SenderBin room = new SenderBin("room" + roomId, Config.BASE_IP
+					+ roomId, Config.RTP_MULTICAST_PORT, true);
 			rooms.put(roomId, room);
 			// add it to this
 			add(room);

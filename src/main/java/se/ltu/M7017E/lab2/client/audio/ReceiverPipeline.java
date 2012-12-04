@@ -10,7 +10,7 @@ import org.gstreamer.Pipeline;
 import se.ltu.M7017E.lab2.client.Config;
 
 public class ReceiverPipeline extends Pipeline {
-	private Map<Integer, RoomReceiver> rooms = new HashMap<Integer, RoomReceiver>();
+	private Map<Integer, ReceiverBin> rooms = new HashMap<Integer, ReceiverBin>();
 	private final Element adder = ElementFactory.make("liveadder", null);
 	private final Element sink = ElementFactory.make("autoaudiosink", null);
 
@@ -25,9 +25,8 @@ public class ReceiverPipeline extends Pipeline {
 		// don't join if already joined
 		if (!rooms.containsKey(roomId)) {
 			// create the receiver bin
-			RoomReceiver room = new RoomReceiver("room" + roomId,
-					Config.BASE_IP + roomId, Config.RTP_MULTICAST_PORT,
-					ssrcToIgnore);
+			ReceiverBin room = new ReceiverBin("room" + roomId, Config.BASE_IP
+					+ roomId, Config.RTP_MULTICAST_PORT, true, ssrcToIgnore);
 			rooms.put(roomId, room);
 			// add it to this
 			add(room);
