@@ -87,10 +87,10 @@ public class UnicastReceiver extends Bin {
 		Tool.successOrDie("udpSource-rtpbin", udpSource.getStaticPad("src")
 				.link(pad).equals(PadLinkReturn.OK));
 
+		pause();
+
 		port = (Integer) udpSource.get("port");
 		System.out.println("Got assigned port: " + port);
 		setName("unicast_" + port);
-
-		pause();
 	}
 }
