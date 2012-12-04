@@ -3,9 +3,12 @@ package se.ltu.M7017E.lab2.client.audio;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.gstreamer.Bin;
+import org.gstreamer.Closure;
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
 import org.gstreamer.Gst;
+import org.gstreamer.Pad;
 import org.gstreamer.PadLinkReturn;
 import org.gstreamer.Pipeline;
 import org.gstreamer.elements.BaseSrc;
@@ -85,16 +88,61 @@ public class SenderPipeline extends Pipeline {
 			pause();
 		}
 
-		// create the sender bin
-		SenderBin friend = new SenderBin("unicast_" + ip + "_" + port, ip,
-				port, false);
-		// add it to this
-		add(friend);
+		/*
+		 * // create the sender bin SenderBin friend = new SenderBin("unicast_"
+		 * + ip + "_" + port, ip, port, false); // add it to this add(friend);
+		 * 
+		 * // connect its input to the tee
+		 * Tool.successOrDie("tee-unicastSender",
+		 * tee.getRequestPad("src%d").link(friend.getStaticPad("sink"))
+		 * .equals(PadLinkReturn.OK));
+		 */
 		Element convert = ElementFactory.make("audioconvert", "convert");
 		Element rtpPayload = ElementFactory.make("rtppcmupay", "rtpPayload");
 		Element encoder = ElementFactory.make("mulawenc", "mulawenc");
+		Bin rtpBin = (Bin) ElementFactory.make("gstrtpbin", "rtpbin");
+		rtpBin.connect(new Element.PAD_ADDED() {
+			@Override
+			public void padAdded(Element element, Pad pad) {
+				System.out.println("Pad added: " + pad);
+			}
+		});
+		rtpBin.getRequestPad("send_rtp_sink_0");
+		rtpBin.connect("on-ssrc-validated", new Closure() {
+			@SuppressWarnings("unused")
+			public void invoke() {
+				System.out.println("lol");
+			}
+		});
+		System.out.println("Caps (check out SSRC) "
+				+ rtpBin.getElementByName("rtpsession0").getSinkPads().get(0)
+						.getCaps());
+
+		Element rtpsink = ElementFactory.make("udpsink", "rtpsink");
+		rtpsink.set("port", 5000);
+		rtpsink.set("host", "130.240.53.166");
+		rtpsink.set("auto-multicast", false);
+		Element rtcpsink = ElementFactory.make("udpsink", "rtcpsink");
+		rtcpsink.set("port", 5001);
+
+		addMany(src, convert, rtpPayload, encoder, rtpBin, rtpsink, rtcpsink);
+		System.out.println("link "
+				+ Element.linkMany(src, convert, encoder, rtpPayload));
+
+		System.out.println(Element.linkPads(rtpPayload, null, rtpBin,
+				"send_rtp_sink_0"));
+		System.out.println(Element.linkPads(rtpBin, "send_rtp_src_0", rtpsink,
+				"sink"));
+
+		System.out.println(Element.linkPads(rtpBin, "send_rtcp_src_0",
+				rtcpsink, null));
+
 		play();
+
+		System.out.println(rtpBin.getSrcPads().get(1).getCaps());
+
 		Gst.main();
+
 	}
 
 	public void stopStreamingTo(String ip, int port) {
