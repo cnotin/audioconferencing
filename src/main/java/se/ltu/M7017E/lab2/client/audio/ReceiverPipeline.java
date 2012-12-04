@@ -45,7 +45,7 @@ public class ReceiverPipeline extends Pipeline {
 		}
 	}
 
-	public long receiveFromUnicast() {
+	public int receiveFromUnicast() {
 		// create the receiver bin
 		UnicastReceiver friend = new UnicastReceiver(adder);
 		// add it to this
