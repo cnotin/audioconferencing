@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
-import org.gstreamer.Gst;
 import org.gstreamer.PadLinkReturn;
 import org.gstreamer.Pipeline;
 import org.gstreamer.elements.BaseSrc;
@@ -24,6 +23,8 @@ public class SenderPipeline extends Pipeline {
 		// live source => drop stream when in paused state
 		src.setLive(true);
 
+		addMany(src, tee);
+		Tool.successOrDie("src-tee", linkMany(src, tee));
 	}
 
 	/**
@@ -37,8 +38,6 @@ public class SenderPipeline extends Pipeline {
 	 *         joined
 	 */
 	public long streamTo(int roomId) {
-		addMany(src, tee);
-		Tool.successOrDie("src-tee", linkMany(src, tee));
 		// don't join if already joined
 		if (!rooms.containsKey(roomId)) {
 			if (isPlaying()) {
@@ -90,11 +89,13 @@ public class SenderPipeline extends Pipeline {
 				port, false);
 		// add it to this
 		add(friend);
-		Element convert = ElementFactory.make("audioconvert", "convert");
-		Element rtpPayload = ElementFactory.make("rtppcmupay", "rtpPayload");
-		Element encoder = ElementFactory.make("mulawenc", "mulawenc");
+
+		// connect its input to the tee
+		Tool.successOrDie("tee-unicastSender",
+				tee.getRequestPad("src%d").link(friend.getStaticPad("sink"))
+						.equals(PadLinkReturn.OK));
+
 		play();
-		Gst.main();
 	}
 
 	public void stopStreamingTo(String ip, int port) {

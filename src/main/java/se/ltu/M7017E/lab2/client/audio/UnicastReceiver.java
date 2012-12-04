@@ -31,7 +31,7 @@ public class UnicastReceiver extends Bin {
 		super();
 
 		udpSource = ElementFactory.make("udpsrc", null);
-		udpSource.set("port", 5000);
+		udpSource.set("port", 0);
 		Tool.successOrDie("caps",
 				udpSource.getStaticPad("src").setCaps(
 						Caps.fromString("application/x-rtp, media=audio, "

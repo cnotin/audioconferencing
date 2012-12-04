@@ -28,14 +28,11 @@ public class SenderBin extends Bin {
 		Pad rtpSink0 = rtpBin.getRequestPad("send_rtp_sink_0");
 
 		udpSink = ElementFactory.make("udpsink", null);
-
-		udpSink.set("port", 5000);
 		udpSink.set("host", ip);
+		udpSink.set("port", port);
 		if (multicast) {
 			udpSink.set("auto-multicast", true);
-		} else
-			udpSink.set("auto-multicast", false);
-
+		}
 		udpSink.set("async", false);
 
 		// ############## ADD THEM TO PIPELINE ####################
