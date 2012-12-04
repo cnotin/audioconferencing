@@ -14,8 +14,9 @@ public class Main {
 		if (args.length > 0 && args[0].equals("NO_UI")) {
 			System.out.println("DEBUG: Don't display UI.");
 
-			app.joinRoom(10);
-			app.joinRoom(11);
+			// TODO, remove. This is an example. It shouldn't be done this way
+			// at all.
+			app.getSender().streamTo("192.168.1.6", 5010);
 
 			System.out.println("See the dot?");
 			new java.util.Scanner(System.in).nextLine();
