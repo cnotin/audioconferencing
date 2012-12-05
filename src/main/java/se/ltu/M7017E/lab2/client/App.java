@@ -1,9 +1,14 @@
 package se.ltu.M7017E.lab2.client;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.net.DatagramSocket;
 import java.util.LinkedList;
 import java.util.List;
+
+import javax.swing.JOptionPane;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -14,25 +19,32 @@ import se.ltu.M7017E.lab2.client.audio.ReceiverPipeline;
 import se.ltu.M7017E.lab2.client.audio.SenderPipeline;
 import se.ltu.M7017E.lab2.client.ui.Gui;
 import se.ltu.M7017E.lab2.common.Contact;
+import se.ltu.M7017E.lab2.common.messages.Hello;
 
 @Getter
 public class App {
-	@Getter
 	private ControlChannel control;
 	private List<Contact> contacts = new LinkedList<Contact>();
-	private Contact me = new Contact("lab2 client", "lab2.client.lan");
+	private String username;
 
 	@Setter
-	@Getter
 	private Gui gui;
 
 	private ReceiverPipeline receiver;
 	private SenderPipeline sender;
 
 	public App() {
+		// ######### BUSINESS LOGIC ############
+		fetchUsername();
+
+		// ######### COMMUNICATION WITH SERVER ###########
 		control = new ControlChannel(this);
 		new Thread(control).start();
 
+		// say hello :)
+		control.send(new Hello(this.username).toString());
+
+		// ############ GSTREAMER STUFF ###############
 		Gst.init("Audioconferencing", new String[] { "--gst-debug-level=3",
 				"--gst-debug-no-color" });
 		receiver = new ReceiverPipeline();
@@ -61,43 +73,48 @@ public class App {
 		return null;
 	}
 
-	/**
-	 * 
-	 * return an available port
-	 */
-	public int selectAPort() {
-		int port = 5000;
-		while (portIsAvailable(port) == false) {
-			System.out.println("port=" + port);
-			port++;
-		}
-
-		System.out.println("PORT SELECTED : " + port);
-		return port;
-	}
-
-	// source :
-	// http://stackoverflow.com/questions/434718/sockets-discover-port-availability-using-java
-	/**
-	 * 
-	 * check if the port is available
-	 */
-	public static boolean portIsAvailable(int port) {
-
-		DatagramSocket ds = null;
-		try {
-
-			ds = new DatagramSocket(port);
-			ds.setReuseAddress(true);
-			return true;
-		} catch (IOException e) {
-		} finally {
-			if (ds != null) {
-				ds.close();
+	public void fetchUsername() {
+		/*
+		 * algo: check if file exists, then check if there is a name inside. If
+		 * any of these two tests fail: ask for a name
+		 */
+		File file = new File("name.txt");
+		if (file.exists()) {
+			try {
+				FileReader fr = new FileReader(file);
+				BufferedReader br = new BufferedReader(fr);
+				br = new BufferedReader(fr);
+				String s = br.readLine();
+				System.out.println("hello" + s);
+				if (s != null) {
+					this.username = s;
+					fr.close();
+					return;
+				}
+				fr.close();
+			} catch (IOException e) {
+				System.err
+						.println("Got a problem while fetching username from file");
+				e.printStackTrace();
 			}
 		}
 
-		return false;
+		// fetching failed, ask for a name
+		String name;
+		do {
+			name = JOptionPane.showInputDialog(null, "Choose a name",
+					"Name selection", JOptionPane.QUESTION_MESSAGE);
+		} while (name == null);
+		this.username = name;
+
+		// save it
+		try {
+			FileWriter myFile = new FileWriter("name.txt");
+			myFile.write(name);
+			myFile.close();
+		} catch (IOException e) {
+			System.err.println("Got a problem while saving username to file");
+		}
 	}
 
 	public void call(String ip, int port, String ipReceiver) {
