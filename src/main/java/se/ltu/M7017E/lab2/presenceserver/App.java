@@ -12,6 +12,7 @@ import se.ltu.M7017E.lab2.common.messages.AnswerCall;
 import se.ltu.M7017E.lab2.common.messages.Audience;
 import se.ltu.M7017E.lab2.common.messages.Bye;
 import se.ltu.M7017E.lab2.common.messages.Call;
+import se.ltu.M7017E.lab2.common.messages.ConnectedList;
 import se.ltu.M7017E.lab2.common.messages.Hello;
 import se.ltu.M7017E.lab2.common.messages.Join;
 import se.ltu.M7017E.lab2.common.messages.Leave;
@@ -46,6 +47,15 @@ public class App {
 	public void msg(Client client, Hello hello) {
 		client.setName(hello.getName());
 		clients.add(client);
+
+		Set<String> nameClients = new HashSet<String>();
+		for (Client user : clients) {
+			nameClients.add(user.name);
+		}
+		ConnectedList cl = new ConnectedList(nameClients);
+
+		broadcast(cl.toString());
+
 	}
 
 	public void msg(Client client, Bye bye) {
@@ -59,6 +69,15 @@ public class App {
 
 		// removes him from the known clients in the server
 		clients.remove(client);
+
+		Set<String> nameClients = new HashSet<String>();
+		for (Client user : clients) {
+			nameClients.add(user.name);
+		}
+		ConnectedList cl = new ConnectedList(nameClients);
+
+		broadcast(cl.toString());
+
 	}
 
 	public void msg(Client client, Join join) {
@@ -83,7 +102,7 @@ public class App {
 	public void msg(Call call) {
 		Client client = findClientsByName(call.getReceiver());
 		if (client != null) {
-			System.out.println("sending message to" + client.getName());
+			System.out.println("sending message to " + client.getName());
 			client.send(call.toString());
 		} else {
 			client = findClientsByName(call.getSender());

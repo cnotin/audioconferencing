@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -21,17 +22,18 @@ import se.ltu.M7017E.lab2.client.audio.SenderPipeline;
 import se.ltu.M7017E.lab2.client.ui.Gui;
 import se.ltu.M7017E.lab2.common.messages.AnswerCall;
 import se.ltu.M7017E.lab2.common.messages.Call;
+import se.ltu.M7017E.lab2.common.messages.ConnectedList;
 import se.ltu.M7017E.lab2.common.messages.Hello;
 
 @Getter
 public class App {
 	private ControlChannel control;
 	private Set<String> contacts = new TreeSet<String>();
+	private Set<String> connected = new HashSet<String>();
 	private String username;
 
 	@Setter
 	private Gui gui;
-
 	private ReceiverPipeline receiver;
 	private SenderPipeline sender;
 
@@ -114,13 +116,16 @@ public class App {
 	 * send a message to the server
 	 */
 	public void askToCall(String receiver) {
+		if (receiver.endsWith("(Disconnected)")) {
+			receiver = receiver.substring(0, receiver.length() - 15);
+		}
 		Call call = new Call();
 		call.setSender(username);
 		call.setReceiver(receiver);
 		control.send(call.toString());
 	}
 
-	public void call(String ip, int port, String ipReceiver) {
+	public void call(int port, String ipReceiver) {
 		System.out.println("IP: " + ipReceiver);
 		sender.streamTo(ipReceiver, port);
 	}
@@ -192,5 +197,22 @@ public class App {
 	public void removeContact(String username) {
 		this.contacts.remove(username);
 		saveContacts();
+	}
+
+	public void setConnected(String connectedMessage) {
+		ConnectedList connectedList = ConnectedList
+				.fromString(connectedMessage);
+		connected = connectedList.getConnected();
+		String deleteme = "List of connected persons : ";
+		for (String c : connected) {
+			deleteme += "\n " + c;
+		}
+
+		System.out.println(deleteme);
+		if (gui != null) {
+			System.out.println("plooouf");
+			gui.refreshContactsList();
+		}
+
 	}
 }

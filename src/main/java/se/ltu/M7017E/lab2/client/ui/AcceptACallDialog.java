@@ -17,6 +17,16 @@ public class AcceptACallDialog extends JDialog {
 	private App app;
 	private AcceptACallDialog me = this;
 
+	/**
+	 * Create a Jdialog to tell the user that someone want to call him. The user
+	 * can accept or refuse.
+	 * 
+	 * @param App
+	 *            app
+	 * @param Call
+	 *            call : the Call object from the message received by the client
+	 */
+
 	public AcceptACallDialog(final App app, final Call call) {
 		this.app = app;
 		this.setSize(400, 115);

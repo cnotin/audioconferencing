@@ -99,7 +99,11 @@ public class Gui extends JFrame {
 	public void refreshContactsList() {
 		model.clear();
 		for (String contact : app.getContacts()) {
-			model.addElement(contact);
+			if (app.getConnected().contains(contact)) {
+				model.addElement(contact);
+			} else {
+				model.addElement(contact + " (Disconnected)");
+			}
 		}
 	}
 

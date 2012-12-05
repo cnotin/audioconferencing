@@ -77,7 +77,7 @@ public class ControlChannel implements Runnable {
 			if (answer.getAnswer().equals("yes")) {
 				app.getGui().showMessage(
 						answer.getReceiver() + " accepted the call");
-				app.call("test", Integer.parseInt(answer.getPortReceiver()),
+				app.call(Integer.parseInt(answer.getPortReceiver()),
 						answer.getIpReceiver());
 
 			}
@@ -88,6 +88,9 @@ public class ControlChannel implements Runnable {
 
 		} else if (message.startsWith("ERROR")) {
 			app.getGui().showMessage(message.substring(6, message.length()));
+		} else if (message.startsWith("CONNECTEDLIST")) {
+			app.setConnected(message);
+
 		}
 		;
 	}
