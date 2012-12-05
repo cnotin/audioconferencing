@@ -99,6 +99,9 @@ public class Gui extends JFrame {
 				}
 			}
 		});
+		app.createAllRoomList();
+		// app.createMyRoomsList();
+		displayRoomList(app.getAllRooms());
 	}
 
 	public class RefreshContactsListRunnable implements Runnable {
@@ -133,16 +136,16 @@ public class Gui extends JFrame {
 		setRoomListBtn = new JButton("SetList");
 		setRoomListBtn.setVisible(true);
 
-		setRoomListBtn.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				app.createAllRoomList();
-				// app.createMyRoomsList();
-				displayRoomList(app.getAllRooms());
-				setRoomListBtn.setVisible(false);
-				joinBtn.setVisible(true);
-			}
-		});
+		// setRoomListBtn.addActionListener(new ActionListener() {
+		// @Override
+		// public void actionPerformed(ActionEvent e) {
+		// app.createAllRoomList();
+		// // app.createMyRoomsList();
+		// displayRoomList(app.getAllRooms());
+		// setRoomListBtn.setVisible(false);
+		// joinBtn.setVisible(true);
+		// }
+		// });
 
 		subPanel.setLayout(new BoxLayout(subPanel, BoxLayout.X_AXIS));
 
@@ -235,7 +238,7 @@ public class Gui extends JFrame {
 	private JPanel createButtonPanel() {
 		JPanel panel = new JPanel();
 		joinBtn = new JButton("Join room", joinIcon);
-		joinBtn.setVisible(false);
+		joinBtn.setVisible(true);
 		joinBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -245,10 +248,12 @@ public class Gui extends JFrame {
 				if (node.getLevel() == 0) {
 					showMessage("No Room selected");
 				}
-				// the selectiion is a room
+				// the selection is a room
 				else if (node.getLevel() == 1) {
 					app.joinRoom(((Room) node.getUserObject()).getId());
-				} else {
+				}
+				// the selection is a name in a Room
+				else {
 					DefaultMutableTreeNode parentnode = new DefaultMutableTreeNode();
 					parentnode = (DefaultMutableTreeNode) node.getParent();
 					app.joinRoom(((Room) parentnode.getUserObject()).getId());

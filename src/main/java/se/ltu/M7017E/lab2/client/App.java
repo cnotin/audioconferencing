@@ -68,7 +68,7 @@ public class App {
 		control.send(new Hello(this.username).toString());
 
 		// ############ GSTREAMER STUFF ###############
-		Gst.init("Audioconferencing", new String[] { "--gst-debug-level=3",
+		Gst.init("Audioconferencing", new String[] { "--gst-debug-level=2",
 				"--gst-debug-no-color" });
 		receiver = new ReceiverPipeline();
 		receiver.play();
@@ -266,9 +266,8 @@ public class App {
 				getControl().send(new ListMsg().toString());
 				// wait for the semaphore
 				control.getRoomsListFinished().acquire();
-				System.out.println(control.msgList);
-
-				updateMsgFromServer(control.msgList);
+				System.out.println(control.getMsgList());
+				updateMsgFromServer(control.getMsgList());
 				for (String oneRoom : msgFromServer) {
 					Room newRoom = new Room();
 					Set<String> roomContactList = new TreeSet<String>();
@@ -289,7 +288,7 @@ public class App {
 				System.out.println("End of the Server message");
 			} catch (NumberFormatException n) {
 				n.printStackTrace();
-				System.out.println("Number error for parseint");
+				System.out.println("NumberFormatException for parseint");
 			}
 			// Debug : create the list when the server is down
 		} else {
