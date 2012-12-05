@@ -87,6 +87,7 @@ public class App {
 	public void msg(StopCall stopCall) {
 		// stop streaming to friend
 		sender.stopStreamingToUnicast();
+		receiver.stopUnicastReceiving();
 	}
 
 	public void joinRoom(int roomId) {
@@ -167,6 +168,8 @@ public class App {
 	public void stopCall() {
 		// stop streaming to friend
 		sender.stopStreamingToUnicast();
+		// stop streaming from friend
+		receiver.stopUnicastReceiving();
 
 		StopCall stop = new StopCall();
 		stop.setReceiver(receiverCallName);
