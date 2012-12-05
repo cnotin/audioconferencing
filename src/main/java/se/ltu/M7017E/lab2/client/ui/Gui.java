@@ -291,9 +291,9 @@ public class Gui extends JFrame {
 
 	public void acceptACall(String message, App app) {
 		Call call = Call.fromString(message);
-		int ret = JOptionPane.showConfirmDialog(this, "Incoming call",
+		int ret = JOptionPane.showConfirmDialog(this,
 				"Do you accept to talk with" + call.getSender(),
-				JOptionPane.YES_NO_OPTION);
+				"Incoming call", JOptionPane.YES_NO_OPTION);
 		if (ret == JOptionPane.YES_OPTION) {
 			app.answerCall("yes", call);
 		} else {
