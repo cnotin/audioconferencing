@@ -1,7 +1,5 @@
 package se.ltu.M7017E.lab2.client;
 
-import java.io.IOException;
-import java.net.DatagramSocket;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -61,42 +59,4 @@ public class App {
 		return null;
 	}
 
-	/**
-	 * 
-	 * return an available port
-	 */
-	public int selectAPort() {
-		int port = 5000;
-		while (portIsAvailable(port) == false) {
-			System.out.println("port=" + port);
-			port++;
-		}
-
-		System.out.println("PORT SELECTED : " + port);
-		return port;
-	}
-
-	// source :
-	// http://stackoverflow.com/questions/434718/sockets-discover-port-availability-using-java
-	/**
-	 * 
-	 * check if the port is available
-	 */
-	public static boolean portIsAvailable(int port) {
-
-		DatagramSocket ds = null;
-		try {
-
-			ds = new DatagramSocket(port);
-			ds.setReuseAddress(true);
-			return true;
-		} catch (IOException e) {
-		} finally {
-			if (ds != null) {
-				ds.close();
-			}
-		}
-
-		return false;
-	}
 }
