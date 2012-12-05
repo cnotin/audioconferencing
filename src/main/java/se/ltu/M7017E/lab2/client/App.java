@@ -6,6 +6,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -19,10 +24,12 @@ import org.gstreamer.Gst;
 import se.ltu.M7017E.lab2.client.audio.ReceiverPipeline;
 import se.ltu.M7017E.lab2.client.audio.SenderPipeline;
 import se.ltu.M7017E.lab2.client.ui.Gui;
+import se.ltu.M7017E.lab2.common.Room;
 import se.ltu.M7017E.lab2.common.messages.AnswerCall;
 import se.ltu.M7017E.lab2.common.messages.Call;
 import se.ltu.M7017E.lab2.common.messages.Hello;
 import se.ltu.M7017E.lab2.common.messages.Left;
+import se.ltu.M7017E.lab2.common.messages.ListMsg;
 
 @Getter
 public class App {
@@ -32,7 +39,13 @@ public class App {
 
 	@Setter
 	private Gui gui;
-
+	@Getter
+	private Map<Integer, Room> allRooms = new HashMap<Integer, Room>();
+	private Map<Integer, Room> myRooms = new HashMap<Integer, Room>();
+	@Setter
+	@Getter
+	private boolean serverIsWriting = false;
+	private List<String> msgFromServer = new LinkedList<String>();
 	private ReceiverPipeline receiver;
 	private SenderPipeline sender;
 
@@ -49,7 +62,7 @@ public class App {
 		control.send(new Hello(this.username).toString());
 
 		// ############ GSTREAMER STUFF ###############
-		Gst.init("Audioconferencing", new String[] { "--gst-debug-level=3",
+		Gst.init("Audioconferencing", new String[] { "--gst-debug-level=2",
 				"--gst-debug-no-color" });
 		receiver = new ReceiverPipeline();
 		receiver.play();
@@ -68,6 +81,9 @@ public class App {
 	public void joinRoom(int roomId) {
 		long mySSRC = sender.streamTo(roomId);
 		receiver.receiveFromRoom(roomId, mySSRC);
+		// TODO: connect sender too
+		getControl().send("JOIN," + roomId);
+		// updateallRoomsList();
 	}
 
 	public void leaveRoom(int roomId) {
@@ -201,5 +217,70 @@ public class App {
 	public void removeContact(String username) {
 		this.contacts.remove(username);
 		saveContacts();
+	}
+
+	/**
+	 * Initiate the allRooms global variable, which contains all the rooms where
+	 * there is at least one person
+	 */
+	public void createAllRoomList() {
+
+		boolean server = true;
+
+		if (server) {
+			try {
+				// ask the server for the list
+				getControl().send(new ListMsg().toString());
+				// wait for the semaphore
+				control.getRoomsListFinished().acquire();
+				System.out.println(control.msgList);
+
+				updateMsgFromServer(control.msgList);
+				for (String oneRoom : msgFromServer) {
+					Room newRoom = new Room();
+					Set<String> roomContactList = new TreeSet<String>();
+					String split[] = oneRoom.split(",", 0);
+
+					newRoom.setId(Integer.parseInt(split[1]));
+					for (int i = 2; i < split.length; i++) {
+						roomContactList.add(split[i]);
+					}
+					newRoom.setAudience(roomContactList);
+					allRooms.put(msgFromServer.indexOf(oneRoom), newRoom);
+				}
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+				System.out.println("Error when the thread is waiting");
+			} catch (NoSuchElementException e1) {
+				e1.printStackTrace();
+				System.out.println("End of the Server message");
+			} catch (NumberFormatException n) {
+				n.printStackTrace();
+				System.out.println("Number error for parseint");
+			}
+			// Debug : create the list when the server is down
+		} else {
+			for (int i = 0; i < 3; i++) {
+				Room newRoom = new Room();
+				Set<String> roomContactList = new TreeSet<String>();
+				newRoom.setId(i);
+				if (i < 2) {
+					for (int j = 0; j < 2; j++) {
+						roomContactList.add("Contact " + i);
+					}
+				} else {
+					roomContactList.add("Contact 1");
+				}
+				newRoom.setAudience(roomContactList);
+				allRooms.put(i, newRoom);
+			}
+		}
+	}
+
+	public void updateMsgFromServer(List<String> CloneArray) {
+		msgFromServer.clear();
+		for (String string : CloneArray) {
+			msgFromServer.add(string);
+		}
 	}
 }

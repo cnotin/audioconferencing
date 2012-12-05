@@ -31,7 +31,6 @@ import javax.swing.tree.MutableTreeNode;
 import se.ltu.M7017E.lab2.client.App;
 import se.ltu.M7017E.lab2.common.Room;
 import se.ltu.M7017E.lab2.common.messages.Call;
-import se.ltu.M7017E.lab2.common.messages.ListMsg;
 
 public class Gui extends JFrame {
 
@@ -42,6 +41,7 @@ public class Gui extends JFrame {
 	private JButton joinBtn;
 	private JButton newBtn;
 	private JButton deleteBtn;
+	private JButton setRoomListBtn;
 	private JList contactsList;
 	public JTree roomList;
 	private ImageIcon callIcon = new ImageIcon(getClass().getResource(
@@ -113,14 +113,35 @@ public class Gui extends JFrame {
 	private JPanel createRoomPanel() {
 
 		JPanel panel = new JPanel();
+		JPanel subPanel = new JPanel();
 
+		setRoomListBtn = new JButton("SetList");
+		setRoomListBtn.setVisible(true);
+
+		setRoomListBtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				app.createAllRoomList();
+				// app.createMyRoomsList();
+				displayRoomList(app.getAllRooms());
+				// setRoomListBtn.setVisible(false);
+			}
+		});
+
+		subPanel.setLayout(new BoxLayout(subPanel, BoxLayout.X_AXIS));
+
+		// initialize the RoomList as a treemodel
 		DefaultMutableTreeNode racine = new DefaultMutableTreeNode("All rooms");
-		DefaultTreeModel treemodel = new DefaultTreeModel(racine);
-		roomList = new JTree(treemodel);
+		modeltree = new DefaultTreeModel(racine);
+		roomList = new JTree(modeltree);
 
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		JScrollPane roomListPane = new JScrollPane(roomList);
-		panel.add(new JLabel("Room list"));
+		subPanel.add(new JLabel("Room list"));
+		subPanel.add(Box.createHorizontalGlue());
+		subPanel.add(setRoomListBtn);
+		panel.setSize(200, 300);
+		panel.add(subPanel);
 		panel.add(roomListPane);
 
 		return panel;
@@ -199,16 +220,6 @@ public class Gui extends JFrame {
 		joinBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				try {
-					app.getControl().send(new ListMsg().toString());
-					System.out.println("avant");
-					app.getControl().getRoomsListFinished().acquire();
-					System.out.println("fini");
-					System.out.println(app.getControl().getMsgList());
-				} catch (InterruptedException e1) {
-					System.err.println("interrupted");
-					e1.printStackTrace();
-				}
 			}
 		});
 		callBtn = new JButton("Call contact", callIcon);
