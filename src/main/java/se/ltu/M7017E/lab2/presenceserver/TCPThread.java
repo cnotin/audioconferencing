@@ -80,7 +80,7 @@ public class TCPThread implements Runnable {
 								+ answer.getSender() + " and "
 								+ answer.getReceiver() + " on ports "
 								+ answer.getPortReceiver());
-					app.msg(answer);
+					app.msg(me, answer);
 				}
 
 			}

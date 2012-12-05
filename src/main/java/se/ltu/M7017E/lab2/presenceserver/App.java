@@ -116,12 +116,12 @@ public class App {
 		client.send(stop.toString());
 	}
 
-	public void msg(AnswerCall answer) {
-		Client client = findClientsByName(answer.getSender());
+	public void msg(Client answerer, AnswerCall answer) {
+		Client requester = findClientsByName(answer.getSender());
 		System.out.println(answer.toString());
-		System.out.println("sending message to" + client.getName());
-		answer.setIpReceiver(findClientsByName(answer.getReceiver()).getIp());
-		client.send(answer.toString());
+		System.out.println("sending message to" + requester.getName());
+		answer.setIpReceiver(answerer.getIp());
+		requester.send(answer.toString());
 	}
 
 	public void msg(Client client, Leave leave) {
