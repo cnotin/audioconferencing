@@ -7,7 +7,12 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Contact {
+public class Contact implements Comparable<Contact> {
 	protected String name;
 	protected String ip;
+
+	@Override
+	public int compareTo(Contact contact) {
+		return this.name.compareTo(contact.name);
+	}
 }

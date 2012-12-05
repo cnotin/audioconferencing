@@ -5,15 +5,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Vector;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -48,9 +39,8 @@ public class Gui extends JFrame {
 	private JButton hangUpBtn;
 	private JButton joinBtn;
 	private JButton newBtn;
-	private JButton dltBtn;
+	private JButton deleteBtn;
 	private JList contactsList;
-	private ArrayList<Contact> contacts;
 	public JTree roomList;
 	private ImageIcon callIcon = new ImageIcon(getClass().getResource(
 			"/icons/call_button.png"));
@@ -58,12 +48,12 @@ public class Gui extends JFrame {
 			"/icons/hang_button.png"));
 	private ImageIcon newIcon = new ImageIcon(getClass().getResource(
 			"/icons/new_button.png"));
-	private ImageIcon dltIcon = new ImageIcon(getClass().getResource(
+	private ImageIcon deleteIcon = new ImageIcon(getClass().getResource(
 			"/icons/dlt_button.png"));
 	private ImageIcon joinIcon = new ImageIcon(getClass().getResource(
 			"/icons/door_button.png"));
 
-	private DefaultListModel model;
+	private DefaultListModel model = new DefaultListModel();
 	private App app;
 
 	/**
@@ -89,7 +79,6 @@ public class Gui extends JFrame {
 		this.setResizable(true);
 		this.setLocationRelativeTo(null);// center window on screen
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		this.setContactsList();
 		this.setJMenuBar(createMenu());
 		this.getContentPane().setLayout(
 				new BoxLayout(this.getContentPane(), BoxLayout.Y_AXIS));
@@ -107,54 +96,13 @@ public class Gui extends JFrame {
 	}
 
 	/**
-	 * Read the "contact.txt" file to display all the saved contacts in the list
-	 */
-	public void setContactsList() {
-		File file = new File("contacts.txt");
-		if (!file.exists()) // check if the file already exist, else the
-							// file is created
-			try {
-				file.createNewFile();
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
-
-		String s;
-		try {
-			FileReader fr = new FileReader("contacts.txt");
-			BufferedReader br = new BufferedReader(fr);
-			int i = 0;
-			this.contacts = new ArrayList<Contact>();
-			while ((s = br.readLine()) != null) {
-				Contact contact = new Contact();
-				contact.setName(s);
-				contacts.add(contact);
-				System.out.println(s);
-				i++;
-			}
-			fr.close();
-		} catch (IOException e) {
-
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		for (int k = 0; k < contacts.size(); k++) {
-			Contact contact = (Contact) contacts.get(k);
-		}
-	}
-
-	/**
 	 * Refresh the JList with the saved contact list
 	 */
-	public void refreshJList() {
-		model = new DefaultListModel();
-		for (int i = 0; i < this.contacts.size(); i++) {
-			Contact contact = (Contact) this.contacts.get(i);
+	public void refreshContactsList() {
+		model.clear();
+		for (Contact contact : app.getContacts()) {
 			model.addElement(contact.getName());
 		}
-		this.contactsList.setModel(this.model);
-
 	}
 
 	/**
@@ -192,15 +140,11 @@ public class Gui extends JFrame {
 		JPanel subContactPanel = new JPanel();
 
 		newBtn = new JButton(newIcon);
-		dltBtn = new JButton(dltIcon);
+		deleteBtn = new JButton(deleteIcon);
 
 		roomPanel = createRoomPanel();
 
-		model = new DefaultListModel();
-		for (int i = 0; i < this.contacts.size(); i++) {
-			Contact contact = (Contact) this.contacts.get(i);
-			model.addElement(contact.getName());
-		}
+		refreshContactsList();
 		this.contactsList = new JList(model);
 		contactPanel.setLayout(new BoxLayout(contactPanel, BoxLayout.Y_AXIS));
 
@@ -211,56 +155,26 @@ public class Gui extends JFrame {
 		newBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				new AddContactDialog(Gui.this);
-
+				String name = JOptionPane.showInputDialog(null,
+						"Choose a name", "Name selection",
+						JOptionPane.QUESTION_MESSAGE);
+				if (name != null) {
+					app.addContact(name);
+					refreshContactsList();
+				}
 			}
 		});
 
-		dltBtn.addActionListener(new ActionListener() {
+		deleteBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("delete " + contactsList.getSelectedIndex());
-				Vector monVector = new Vector();
-				File f = new File("contacts.txt");
-				BufferedReader B = null;
-				try {
-					B = new BufferedReader(new FileReader(f));
-				} catch (FileNotFoundException e1) {
-					e1.printStackTrace();
-				}
-				String ligne = "";
-				try {
-					ligne = B.readLine();
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				}
-				while (ligne != null) {
-					monVector.addElement(ligne);
-					try {
-						ligne = B.readLine();
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					}
-				}
-				monVector.removeElementAt(contactsList.getSelectedIndex());
-				PrintWriter P = null;
-				try {
-					P = new PrintWriter(new FileWriter(f));
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				for (int i = 0; i < monVector.size(); i++) {
-					P.println(monVector.get(i));
-				}
-				P.close();
-				setContactsList();
-				refreshJList();
+				app.removeContact((String) contactsList.getSelectedValue());
+				refreshContactsList();
 			}
 		});
 
 		subContactPanel.add(newBtn);
-		subContactPanel.add(dltBtn);
+		subContactPanel.add(deleteBtn);
 
 		contactPanel.add(subContactPanel);
 		JScrollPane contactToCallScrollPane = new JScrollPane(this.contactsList);
@@ -316,18 +230,6 @@ public class Gui extends JFrame {
 	 */
 	private JMenuBar createMenu() {
 		this.menu = new JMenuBar();
-
-		JMenu contacts = new JMenu("Contacts");
-		JMenuItem addContact = new JMenuItem("Add");
-		addContact.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				new AddContactDialog(Gui.this);
-			}
-		});
-		contacts.add(addContact);
-
-		menu.add(contacts);
 
 		JMenu help = new JMenu("?");
 		JMenuItem about = new JMenuItem("About");
