@@ -62,4 +62,18 @@ public class SenderBin extends Bin {
 		int ssrcEnd = caps.indexOf(";", ssrcBegin);
 		return new Long(caps.substring(ssrcBegin, ssrcEnd));
 	}
+
+	/**
+	 * Called to cleanly remove this Bin from its parent. Assumption: it was
+	 * connected upstream through a request pad (that will also be cleanly
+	 * released)
+	 */
+	public void getOut() {
+		// clean request pad from adder
+		Pad upstreamPeer = sink.getPeer();
+		upstreamPeer.getParentElement().releaseRequestPad(upstreamPeer);
+
+		System.out.println("Remove from parent bin "
+				+ ((Bin) this.getParent()).remove(this));
+	}
 }

@@ -27,8 +27,8 @@ public class UnicastReceiver extends Bin {
 	 *            unicast port, we will connect the src of this bin to this
 	 *            Element
 	 */
-	public UnicastReceiver(final Element connectSrcTo) {
-		super();
+	public UnicastReceiver(String name, final Element connectSrcTo) {
+		super(name);
 
 		udpSource = ElementFactory.make("udpsrc", null);
 		udpSource.set("port", 0);
@@ -92,5 +92,19 @@ public class UnicastReceiver extends Bin {
 		port = (Integer) udpSource.get("port");
 		System.out.println("Got assigned port: " + port);
 		setName("unicast_" + port);
+	}
+
+	/**
+	 * Called to cleanly remove this Bin from its parent. Assumption: it was
+	 * connected downstream through a request pad (that will also be cleanly
+	 * released)
+	 */
+	public void getOut() {
+		// clean request pad from adder
+		Pad downstreamPeer = src.getPeer();
+		downstreamPeer.getParentElement().releaseRequestPad(downstreamPeer);
+
+		System.out.println("Remove from parent bin "
+				+ ((Bin) this.getParent()).remove(this));
 	}
 }
