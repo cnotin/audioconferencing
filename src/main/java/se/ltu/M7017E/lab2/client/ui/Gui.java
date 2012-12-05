@@ -5,7 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Map;
+import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -27,6 +27,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreeSelectionModel;
 
 import se.ltu.M7017E.lab2.client.App;
 import se.ltu.M7017E.lab2.common.Room;
@@ -58,6 +59,7 @@ public class Gui extends JFrame {
 	private DefaultListModel contactsListModel = new DefaultListModel();
 	private DefaultTreeModel modeltree;
 	private App app;
+	private int roomSelected = 1000;
 
 	/**
 	 * Interface of the application. Display the main window
@@ -129,7 +131,8 @@ public class Gui extends JFrame {
 				app.createAllRoomList();
 				// app.createMyRoomsList();
 				displayRoomList(app.getAllRooms());
-				// setRoomListBtn.setVisible(false);
+				setRoomListBtn.setVisible(false);
+				joinBtn.setVisible(true);
 			}
 		});
 
@@ -139,6 +142,8 @@ public class Gui extends JFrame {
 		DefaultMutableTreeNode racine = new DefaultMutableTreeNode("All rooms");
 		modeltree = new DefaultTreeModel(racine);
 		roomList = new JTree(modeltree);
+		roomList.getSelectionModel().setSelectionMode(
+				TreeSelectionModel.SINGLE_TREE_SELECTION);
 
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		JScrollPane roomListPane = new JScrollPane(roomList);
@@ -222,9 +227,26 @@ public class Gui extends JFrame {
 	private JPanel createButtonPanel() {
 		JPanel panel = new JPanel();
 		joinBtn = new JButton("Join room", joinIcon);
+		joinBtn.setVisible(false);
 		joinBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				DefaultMutableTreeNode node = (DefaultMutableTreeNode) roomList
+						.getLastSelectedPathComponent();
+				// the selection is the Root
+				if (node.getLevel() == 0) {
+					showMessage("No Room selected");
+				}
+				// the selectiion is a room
+				else if (node.getLevel() == 1) {
+					app.joinRoom(((Room) node.getUserObject()).getId());
+				} else {
+					DefaultMutableTreeNode parentnode = new DefaultMutableTreeNode();
+					parentnode = (DefaultMutableTreeNode) node.getParent();
+					app.joinRoom(((Room) parentnode.getUserObject()).getId());
+				}
+				app.createAllRoomList();
+				displayRoomList(app.getAllRooms());
 			}
 		});
 		callBtn = new JButton("Call contact", callIcon);
@@ -313,20 +335,21 @@ public class Gui extends JFrame {
 	 * 
 	 * use "nc localhost 4000" in a terminal to create a server and test
 	 */
-	private void displayRoomList(Map<Integer, Room> roomListToDisplay) {
+	private void displayRoomList(List<Room> roomListToDisplay) {
 
-		for (int i = 0; i < roomListToDisplay.size(); i++) {
-			MutableTreeNode newRoom = new DefaultMutableTreeNode("Room "
-					+ roomListToDisplay.get(i).getId());
-			for (int j = 0; j < roomListToDisplay.get(i).getAudience().size(); j++) {
-				MutableTreeNode contact = new DefaultMutableTreeNode(
-						roomListToDisplay.get(i).getAudienceAsStrings().get(j));
+		for (Room room : roomListToDisplay) {
+			MutableTreeNode newRoom = new DefaultMutableTreeNode(room);
+			for (int j = 0; j < room.getAudience().size(); j++) {
+				MutableTreeNode contact = new DefaultMutableTreeNode(room
+						.getAudienceAsStrings().get(j));
 				newRoom.insert(contact, j);
 			}
-			modeltree.insertNodeInto(newRoom,
-					(MutableTreeNode) modeltree.getRoot(), i);
+			((DefaultMutableTreeNode) modeltree.getRoot()).add(newRoom);
 		}
-		// roomList = new JTree(treeModel);
 		roomList.setModel(modeltree);
+	}
+
+	public int getRoomSelected() {
+		return roomSelected;
 	}
 }
