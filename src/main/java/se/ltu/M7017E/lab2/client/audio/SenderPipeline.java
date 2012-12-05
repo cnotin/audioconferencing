@@ -102,7 +102,7 @@ public class SenderPipeline extends Pipeline {
 			pause();
 		}
 
-		remove(getElementByName("send_unicast"));
+		((SenderBin) getElementByName("send_unicast")).getOut();
 
 		play();
 	}

@@ -47,7 +47,7 @@ public class ReceiverPipeline extends Pipeline {
 
 	public int receiveFromUnicast() {
 		// create the receiver bin
-		UnicastReceiver friend = new UnicastReceiver(adder);
+		UnicastReceiver friend = new UnicastReceiver("receive_unicast", adder);
 		// add it to this
 		add(friend);
 		friend.syncStateWithParent();
@@ -58,7 +58,7 @@ public class ReceiverPipeline extends Pipeline {
 		return friend.getPort();
 	}
 
-	public void stopUnicastReceiving(int port) {
-		// TODO
+	public void stopUnicastReceiving() {
+		((UnicastReceiver) getElementByName("receive_unicast")).getOut();
 	}
 }
