@@ -91,7 +91,6 @@ public class UnicastReceiver extends Bin {
 
 		port = (Integer) udpSource.get("port");
 		System.out.println("Got assigned port: " + port);
-		setName("unicast_" + port);
 	}
 
 	/**
