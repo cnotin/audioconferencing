@@ -100,8 +100,9 @@ public class App {
 		return false;
 	}
 
-	public void call(String ip, int port) {
-		getSender().streamTo("130.240.53.166", port);
+	public void call(String ip, int port, String ipReceiver) {
+		System.out.println("IP: " + ipReceiver);
+		getSender().streamTo(ipReceiver, port);
 	}
 
 }

@@ -42,9 +42,8 @@ public class AcceptACallDialog extends JDialog {
 				System.out.println("yes");
 				int port = controlChannel.getApp().getReceiver()
 						.receiveFromUnicast();
-				control.send("ANSWERCALL" + "," + call.getPort() + "," + port
-						+ "," + call.getSender() + "," + call.getReceiver()
-						+ ",yes");
+				control.send("ANSWERCALL" + "," + port + "," + call.getSender()
+						+ "," + call.getReceiver() + ",yes" + "," + "0");
 				me.dispose();
 			}
 		});

@@ -93,7 +93,9 @@ public class App {
 
 	public void msg(AnswerCall answer) {
 		Client client = findClientsByName(answer.getSender());
+		System.out.println(answer.toString());
 		System.out.println("sending message to" + client.getName());
+		answer.setIpReceiver(client.getIp());
 		client.send(answer.toString());
 	}
 
