@@ -347,6 +347,7 @@ public class Gui extends JFrame {
 			((DefaultMutableTreeNode) modeltree.getRoot()).add(newRoom);
 		}
 		roomList.setModel(modeltree);
+
 	}
 
 	public int getRoomSelected() {
