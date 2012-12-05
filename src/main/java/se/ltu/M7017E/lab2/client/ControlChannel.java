@@ -13,7 +13,7 @@ import java.util.concurrent.Semaphore;
 import lombok.Getter;
 import lombok.Setter;
 import se.ltu.M7017E.lab2.common.messages.AnswerCall;
-import se.ltu.M7017E.lab2.common.messages.Hello;
+import se.ltu.M7017E.lab2.common.messages.Joined;
 import se.ltu.M7017E.lab2.common.messages.Left;
 
 /**
@@ -74,15 +74,17 @@ public class ControlChannel implements Runnable {
 	public void caseMessage(String message) {
 		if (message.startsWith("JOINED")) {
 			// someone joins a room
-			app.msg(Hello.fromString(message));
+			app.msg(Joined.fromString(message));
 		} else if (message.startsWith("LEFT")) {
 			// someone left a room
 			app.msg(Left.fromString(message));
 		} else if (message.startsWith("ROOMS_START")) {
 			msgList.clear();
 		} else if (message.startsWith("AUDIENCE")) {
-			msgList.add(index, message);
-			index++;
+			if (msgList.isEmpty()) {
+				msgList.add(index, message);
+				index++;
+			}
 		} else if (message.startsWith("ROOMS_STOP")) {
 			index = 0;
 			// release the semaphore so the APP can continue

@@ -39,4 +39,7 @@ public class Room {
 		return audience.contains(client);
 	}
 
+	public String toString() {
+		return ("Room " + id);
+	}
 }

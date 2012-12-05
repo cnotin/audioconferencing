@@ -6,11 +6,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.TreeSet;
@@ -30,6 +28,7 @@ import se.ltu.M7017E.lab2.common.messages.AnswerCall;
 import se.ltu.M7017E.lab2.common.messages.Call;
 import se.ltu.M7017E.lab2.common.messages.ConnectedList;
 import se.ltu.M7017E.lab2.common.messages.Hello;
+import se.ltu.M7017E.lab2.common.messages.Joined;
 import se.ltu.M7017E.lab2.common.messages.Left;
 import se.ltu.M7017E.lab2.common.messages.ListMsg;
 import se.ltu.M7017E.lab2.common.messages.StopCall;
@@ -46,8 +45,8 @@ public class App {
 	private Gui gui;
 
 	@Getter
-	private Map<Integer, Room> allRooms = new HashMap<Integer, Room>();
-	private Map<Integer, Room> myRooms = new HashMap<Integer, Room>();
+	private List<Room> allRooms = new LinkedList<Room>();
+	private List<Room> myRooms = new LinkedList<Room>();
 	@Setter
 	@Getter
 	private boolean serverIsWriting = false;
@@ -77,7 +76,7 @@ public class App {
 		sender = new SenderPipeline();
 	}
 
-	public void msg(Hello hello) {
+	public void msg(Joined joined) {
 		// TODO: update tree
 	}
 
@@ -248,7 +247,7 @@ public class App {
 	 * there is at least one person
 	 */
 	public void createAllRoomList() {
-
+		allRooms.clear();
 		boolean server = true;
 
 		if (server) {
@@ -270,7 +269,7 @@ public class App {
 						roomContactList.add(split[i]);
 					}
 					newRoom.setAudience(roomContactList);
-					allRooms.put(msgFromServer.indexOf(oneRoom), newRoom);
+					allRooms.add(newRoom);
 				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
@@ -296,7 +295,7 @@ public class App {
 					roomContactList.add("Contact 1");
 				}
 				newRoom.setAudience(roomContactList);
-				allRooms.put(i, newRoom);
+				allRooms.add(newRoom);
 			}
 		}
 	}
