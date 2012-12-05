@@ -84,6 +84,11 @@ public class App {
 		// TODO: update tree
 	}
 
+	public void msg(StopCall stopCall) {
+		// stop streaming to friend
+		sender.stopStreamingToUnicast();
+	}
+
 	public void joinRoom(int roomId) {
 		long mySSRC = sender.streamTo(roomId);
 		receiver.receiveFromRoom(roomId, mySSRC);
@@ -93,7 +98,7 @@ public class App {
 	}
 
 	public void leaveRoom(int roomId) {
-		sender.stopStreamingTo(roomId);
+		sender.stopStreamingToRoom(roomId);
 		receiver.stopRoomReceiving(roomId);
 	}
 
@@ -160,8 +165,9 @@ public class App {
 	}
 
 	public void stopCall() {
-		if (sender.isPlaying())
-			sender.stop();
+		// stop streaming to friend
+		sender.stopStreamingToUnicast();
+
 		StopCall stop = new StopCall();
 		stop.setReceiver(receiverCallName);
 		control.send(stop.toString());

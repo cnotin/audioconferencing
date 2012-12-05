@@ -62,7 +62,7 @@ public class SenderPipeline extends Pipeline {
 		return -1;
 	}
 
-	public void stopStreamingTo(int roomId) {
+	public void stopStreamingToRoom(int roomId) {
 		// can't leave if not joined
 		if (rooms.containsKey(roomId)) {
 			// TODO
@@ -85,8 +85,7 @@ public class SenderPipeline extends Pipeline {
 		}
 
 		// create the sender bin
-		SenderBin friend = new SenderBin("send_unicast_" + ip + "_" + port, ip,
-				port, false);
+		SenderBin friend = new SenderBin("send_unicast", ip, port, false);
 		// add it to this
 		add(friend);
 
@@ -98,7 +97,13 @@ public class SenderPipeline extends Pipeline {
 		play();
 	}
 
-	public void stopStreamingTo(String ip, int port) {
-		// TODO
+	public void stopStreamingToUnicast() {
+		if (isPlaying()) {
+			pause();
+		}
+
+		remove(getElementByName("send_unicast"));
+
+		play();
 	}
 }
