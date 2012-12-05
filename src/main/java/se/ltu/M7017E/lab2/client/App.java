@@ -150,8 +150,7 @@ public class App {
 			receiver = receiver.substring(0, receiver.length() - 15);
 		}
 		int port = this.receiver.receiveFromUnicast();
-		control.send(new Call(username, receiver, Integer.toString(port), "0")
-				.toString());
+		control.send(new Call(username, receiver, "0", port).toString());
 		this.receiverCallName = receiver;
 	}
 

@@ -98,6 +98,7 @@ public class TCPThread implements Runnable {
 	 *            without any formatting (no '\n' at the end for example)
 	 */
 	public void send(String message) {
+		System.out.println("Server send: " + message);
 		out.println(message);
 	}
 }

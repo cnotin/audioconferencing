@@ -104,6 +104,7 @@ public class App {
 		Client receiver = findClientsByName(call.getReceiver());
 		if (receiver != null) {
 			System.out.println("sending message to " + receiver.getName());
+			System.out.println(sender.getIp());
 			call.setIpSender(sender.getIp());
 			receiver.send(call.toString());
 		} else {
