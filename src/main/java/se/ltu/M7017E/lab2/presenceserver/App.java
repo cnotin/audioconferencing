@@ -100,12 +100,8 @@ public class App {
 	}
 
 	public void msg(Client client, Leave leave) {
-		int roomId = leave.getRoom();
-		Room room = this.rooms.get(roomId);
-
-		// TODO Stop player
-
-		room.left(client);
+		// removes him properly from the room
+		this.rooms.get(leave.getRoom()).left(client);
 	}
 
 	public void msg(Client client, ListMsg list) {
