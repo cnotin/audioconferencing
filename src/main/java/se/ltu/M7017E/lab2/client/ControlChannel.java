@@ -15,6 +15,7 @@ import lombok.Setter;
 import se.ltu.M7017E.lab2.common.messages.AnswerCall;
 import se.ltu.M7017E.lab2.common.messages.Joined;
 import se.ltu.M7017E.lab2.common.messages.Left;
+import se.ltu.M7017E.lab2.common.messages.StopCall;
 
 /**
  * Manage the control channel
@@ -98,7 +99,6 @@ public class ControlChannel implements Runnable {
 				app.getGui().showMessage(
 						answer.getReceiver() + " accepted the call");
 				app.call(answer.getIpReceiver(), answer.getPortReceiver());
-				int port = app.getReceiver().receiveFromUnicast();
 			}
 			if (answer.getAnswer().equals("no")) {
 				app.getGui().showMessage(
@@ -109,12 +109,9 @@ public class ControlChannel implements Runnable {
 			app.getGui().showMessage(message.substring(6, message.length()));
 		} else if (message.startsWith("CONNECTEDLIST")) {
 			app.setConnected(message);
-
-		} else if (message.startsWith("CONNECTEDLIST")) {
-			app.stopCall();
-
+		} else if (message.startsWith("STOPCALL")) {
+			app.msg(StopCall.fromString(message));
 		}
-		;
 	}
 
 	/**
@@ -124,6 +121,7 @@ public class ControlChannel implements Runnable {
 	 *            without any formatting (no '\n' at the end for example)
 	 */
 	public void send(String message) {
+		System.out.println("Client send: " + message);
 		out.println(message);
 	}
 }

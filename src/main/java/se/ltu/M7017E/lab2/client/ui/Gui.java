@@ -22,6 +22,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -100,16 +101,23 @@ public class Gui extends JFrame {
 		});
 	}
 
-	public void refreshContactsList() {
-		contactsListModel.clear();
+	public class RefreshContactsListRunnable implements Runnable {
+		@Override
+		public void run() {
+			contactsListModel.clear();
 
-		for (String contact : app.getContacts()) {
-			if (app.getConnected().contains(contact)) {
-				contactsListModel.addElement(contact);
-			} else {
-				contactsListModel.addElement(contact + " (Disconnected)");
+			for (String contact : app.getContacts()) {
+				if (app.getConnected().contains(contact)) {
+					contactsListModel.addElement(contact);
+				} else {
+					contactsListModel.addElement(contact + " (Disconnected)");
+				}
 			}
 		}
+	}
+
+	public void refreshContactsList() {
+		SwingUtilities.invokeLater(new RefreshContactsListRunnable());
 	}
 
 	/**
@@ -347,6 +355,7 @@ public class Gui extends JFrame {
 			((DefaultMutableTreeNode) modeltree.getRoot()).add(newRoom);
 		}
 		roomList.setModel(modeltree);
+
 	}
 
 	public int getRoomSelected() {
