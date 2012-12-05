@@ -120,7 +120,7 @@ public class App {
 		Client client = findClientsByName(answer.getSender());
 		System.out.println(answer.toString());
 		System.out.println("sending message to" + client.getName());
-		answer.setIpReceiver(client.getIp());
+		answer.setIpReceiver(findClientsByName(answer.getReceiver()).getIp());
 		client.send(answer.toString());
 	}
 

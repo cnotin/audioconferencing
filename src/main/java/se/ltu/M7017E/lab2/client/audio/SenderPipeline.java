@@ -45,8 +45,8 @@ public class SenderPipeline extends Pipeline {
 			}
 
 			// create the sender bin
-			SenderBin room = new SenderBin("room" + roomId, Config.BASE_IP
-					+ roomId, Config.RTP_MULTICAST_PORT, true);
+			SenderBin room = new SenderBin("sender_room" + roomId,
+					Config.BASE_IP + roomId, Config.RTP_MULTICAST_PORT, true);
 			rooms.put(roomId, room);
 			// add it to this
 			add(room);
@@ -85,7 +85,7 @@ public class SenderPipeline extends Pipeline {
 		}
 
 		// create the sender bin
-		SenderBin friend = new SenderBin("unicast_" + ip + "_" + port, ip,
+		SenderBin friend = new SenderBin("send_unicast_" + ip + "_" + port, ip,
 				port, false);
 		// add it to this
 		add(friend);
