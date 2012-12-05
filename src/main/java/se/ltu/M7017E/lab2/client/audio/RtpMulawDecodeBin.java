@@ -1,4 +1,5 @@
 package se.ltu.M7017E.lab2.client.audio;
+
 import lombok.AllArgsConstructor;
 
 import org.gstreamer.Bin;

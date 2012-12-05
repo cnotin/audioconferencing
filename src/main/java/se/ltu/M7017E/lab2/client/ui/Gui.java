@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Map;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -25,8 +26,10 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.MutableTreeNode;
 
 import se.ltu.M7017E.lab2.client.App;
+import se.ltu.M7017E.lab2.common.Room;
 import se.ltu.M7017E.lab2.common.messages.Call;
 
 public class Gui extends JFrame {
@@ -38,6 +41,7 @@ public class Gui extends JFrame {
 	private JButton joinBtn;
 	private JButton newBtn;
 	private JButton deleteBtn;
+	private JButton setRoomListBtn;
 	private JList contactsList;
 	public JTree roomList;
 	private ImageIcon callIcon = new ImageIcon(getClass().getResource(
@@ -51,7 +55,8 @@ public class Gui extends JFrame {
 	private ImageIcon joinIcon = new ImageIcon(getClass().getResource(
 			"/icons/door_button.png"));
 
-	private DefaultListModel model = new DefaultListModel();
+	private DefaultListModel contactsListModel = new DefaultListModel();
+	private DefaultTreeModel modeltree;
 	private App app;
 
 	/**
@@ -93,16 +98,14 @@ public class Gui extends JFrame {
 		});
 	}
 
-	/**
-	 * Refresh the JList with the saved contact list
-	 */
 	public void refreshContactsList() {
-		model.clear();
+		contactsListModel.clear();
+
 		for (String contact : app.getContacts()) {
 			if (app.getConnected().contains(contact)) {
-				model.addElement(contact);
+				contactsListModel.addElement(contact);
 			} else {
-				model.addElement(contact + " (Disconnected)");
+				contactsListModel.addElement(contact + " (Disconnected)");
 			}
 		}
 	}
@@ -115,14 +118,35 @@ public class Gui extends JFrame {
 	private JPanel createRoomPanel() {
 
 		JPanel panel = new JPanel();
+		JPanel subPanel = new JPanel();
 
+		setRoomListBtn = new JButton("SetList");
+		setRoomListBtn.setVisible(true);
+
+		setRoomListBtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				app.createAllRoomList();
+				// app.createMyRoomsList();
+				displayRoomList(app.getAllRooms());
+				// setRoomListBtn.setVisible(false);
+			}
+		});
+
+		subPanel.setLayout(new BoxLayout(subPanel, BoxLayout.X_AXIS));
+
+		// initialize the RoomList as a treemodel
 		DefaultMutableTreeNode racine = new DefaultMutableTreeNode("All rooms");
-		DefaultTreeModel treemodel = new DefaultTreeModel(racine);
-		roomList = new JTree(treemodel);
+		modeltree = new DefaultTreeModel(racine);
+		roomList = new JTree(modeltree);
 
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		JScrollPane roomListPane = new JScrollPane(roomList);
-		panel.add(new JLabel("Room list"));
+		subPanel.add(new JLabel("Room list"));
+		subPanel.add(Box.createHorizontalGlue());
+		subPanel.add(setRoomListBtn);
+		panel.setSize(200, 300);
+		panel.add(subPanel);
 		panel.add(roomListPane);
 
 		return panel;
@@ -147,7 +171,7 @@ public class Gui extends JFrame {
 		roomPanel = createRoomPanel();
 
 		refreshContactsList();
-		this.contactsList = new JList(model);
+		this.contactsList = new JList(contactsListModel);
 		contactPanel.setLayout(new BoxLayout(contactPanel, BoxLayout.Y_AXIS));
 
 		subContactPanel.setLayout(new BoxLayout(subContactPanel,
@@ -198,6 +222,11 @@ public class Gui extends JFrame {
 	private JPanel createButtonPanel() {
 		JPanel panel = new JPanel();
 		joinBtn = new JButton("Join room", joinIcon);
+		joinBtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
 		callBtn = new JButton("Call contact", callIcon);
 		hangUpBtn = new JButton("Hang up", hangIcon);
 		callBtn.addActionListener(new ActionListener() {
@@ -255,9 +284,15 @@ public class Gui extends JFrame {
 	}
 
 	public void acceptACall(String message, App app) {
-
 		Call call = Call.fromString(message);
-		new AcceptACallDialog(app, call);
+		int ret = JOptionPane.showConfirmDialog(this, "Incoming call",
+				"Do you accept to talk with" + call.getSender(),
+				JOptionPane.YES_NO_OPTION);
+		if (ret == JOptionPane.YES_OPTION) {
+			app.answerCall("yes", call);
+		} else {
+			app.answerCall("no", call);
+		}
 	}
 
 	public void showMessage(String message) {
@@ -267,30 +302,24 @@ public class Gui extends JFrame {
 	}
 
 	/**
-	 * Dummy, create a tree, only for the test
+	 * Display the room List in the RoomPanel
 	 * 
-	 * @return a tree
+	 * use "nc localhost 4000" in a terminal to create a server and test
 	 */
-	// private JTree buildTree() {
-	// // Root creation
-	// DefaultMutableTreeNode racine = new DefaultMutableTreeNode("All rooms");
-	//
-	// // Add leaves and way from the root
-	// for (int i = 1; i < 6; i++) {
-	// DefaultMutableTreeNode rep = new DefaultMutableTreeNode("Room" + i);
-	//
-	// // Add 4 ways
-	// if (i < 4) {
-	// DefaultMutableTreeNode rep2 = new DefaultMutableTreeNode(
-	// "Contact" + i);
-	// rep.add(rep2);
-	// }
-	// // Add leaves to the root
-	// racine.add(rep);
-	// }
-	// // create tree
-	// JTree arbre = new JTree(racine);
-	// return arbre;
-	// }
+	private void displayRoomList(Map<Integer, Room> roomListToDisplay) {
 
+		for (int i = 0; i < roomListToDisplay.size(); i++) {
+			MutableTreeNode newRoom = new DefaultMutableTreeNode("Room "
+					+ roomListToDisplay.get(i).getId());
+			for (int j = 0; j < roomListToDisplay.get(i).getAudience().size(); j++) {
+				MutableTreeNode contact = new DefaultMutableTreeNode(
+						roomListToDisplay.get(i).getAudienceAsStrings().get(j));
+				newRoom.insert(contact, j);
+			}
+			modeltree.insertNodeInto(newRoom,
+					(MutableTreeNode) modeltree.getRoot(), i);
+		}
+		// roomList = new JTree(treeModel);
+		roomList.setModel(modeltree);
+	}
 }

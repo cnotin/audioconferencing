@@ -1,10 +1,12 @@
 package se.ltu.M7017E.lab2.common.messages;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
 public class AnswerCall {
-	private String portReceiver;
+	private int portReceiver;
 	private String sender;
 	private String receiver;
 	private String answer;
@@ -16,14 +18,9 @@ public class AnswerCall {
 	}
 
 	public static AnswerCall fromString(String str) {
-		AnswerCall ret = new AnswerCall();
 		String[] tokens = str.split(",");
-		ret.portReceiver = tokens[1];
-		ret.sender = tokens[2];
-		ret.receiver = tokens[3];
-		ret.answer = tokens[4];
-		ret.ipReceiver = tokens[5];
 
-		return ret;
+		return new AnswerCall(new Integer(tokens[1]), tokens[2], tokens[3],
+				tokens[4], tokens[5]);
 	}
 }

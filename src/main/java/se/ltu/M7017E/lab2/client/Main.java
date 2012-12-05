@@ -11,8 +11,7 @@ public class Main {
 		System.out.println("Welcome");
 
 		final App app = new App();
-		final Gui gui = new Gui(app);
-		app.setGui(gui);
+
 		if (args.length > 0 && args[0].equals("NO_UI")) {
 			System.out.println("DEBUG: Don't display UI.");
 
@@ -32,7 +31,8 @@ public class Main {
 		} else {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
-
+					final Gui gui = new Gui(app);
+					app.setGui(gui);
 					gui.setVisible(true);
 				}
 			});
