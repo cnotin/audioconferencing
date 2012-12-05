@@ -107,6 +107,9 @@ public class ControlChannel implements Runnable {
 		} else if (message.startsWith("CONNECTEDLIST")) {
 			app.setConnected(message);
 
+		} else if (message.startsWith("CONNECTEDLIST")) {
+			app.stopCall();
+
 		}
 		;
 	}

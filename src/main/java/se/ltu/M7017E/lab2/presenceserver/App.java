@@ -19,6 +19,7 @@ import se.ltu.M7017E.lab2.common.messages.Leave;
 import se.ltu.M7017E.lab2.common.messages.ListMsg;
 import se.ltu.M7017E.lab2.common.messages.RoomsStart;
 import se.ltu.M7017E.lab2.common.messages.RoomsStop;
+import se.ltu.M7017E.lab2.common.messages.StopCall;
 
 public class App {
 	@Getter
@@ -108,6 +109,11 @@ public class App {
 			client = findClientsByName(call.getSender());
 			client.send("ERROR," + call.getReceiver() + " is not connected :(");
 		}
+	}
+
+	public void msg(StopCall stop) {
+		Client client = findClientsByName(stop.getReceiver());
+		client.send(stop.toString());
 	}
 
 	public void msg(AnswerCall answer) {

@@ -235,6 +235,12 @@ public class Gui extends JFrame {
 				callContact();
 			}
 		});
+		hangUpBtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				app.stopCall();
+			}
+		});
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
 		panel.add(joinBtn);
 		panel.add(callBtn);

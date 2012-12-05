@@ -13,6 +13,7 @@ import se.ltu.M7017E.lab2.common.messages.Hello;
 import se.ltu.M7017E.lab2.common.messages.Join;
 import se.ltu.M7017E.lab2.common.messages.Leave;
 import se.ltu.M7017E.lab2.common.messages.ListMsg;
+import se.ltu.M7017E.lab2.common.messages.StopCall;
 
 public class TCPThread implements Runnable {
 	private App app;
@@ -70,6 +71,8 @@ public class TCPThread implements Runnable {
 				} else if (message.startsWith("CALL")) {
 					app.msg(Call.fromString(message));
 
+				} else if (message.startsWith("STOPCALL")) {
+					app.msg(StopCall.fromString(message));
 				} else if (message.startsWith("ANSWERCALL")) {
 					AnswerCall answer = AnswerCall.fromString(message);
 					if (answer.getAnswer().equals("yes"))

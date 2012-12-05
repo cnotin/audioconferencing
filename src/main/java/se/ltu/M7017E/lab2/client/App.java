@@ -32,6 +32,7 @@ import se.ltu.M7017E.lab2.common.messages.ConnectedList;
 import se.ltu.M7017E.lab2.common.messages.Hello;
 import se.ltu.M7017E.lab2.common.messages.Left;
 import se.ltu.M7017E.lab2.common.messages.ListMsg;
+import se.ltu.M7017E.lab2.common.messages.StopCall;
 
 @Getter
 public class App {
@@ -39,6 +40,7 @@ public class App {
 	private Set<String> contacts = new TreeSet<String>();
 	private Set<String> connected = new HashSet<String>();
 	private String username;
+	private String receiverCallName;
 
 	@Setter
 	private Gui gui;
@@ -144,15 +146,25 @@ public class App {
 	 * send a message to the server to try to call someone
 	 */
 	public void askToCall(String receiver) {
+
 		if (receiver.endsWith("(Disconnected)")) {
 			receiver = receiver.substring(0, receiver.length() - 15);
 		}
 		control.send(new Call(username, receiver).toString());
+		this.receiverCallName = receiver;
 	}
 
 	public void call(String ipReceiver, int port) {
 		System.out.println("IP: " + ipReceiver);
 		sender.streamTo(ipReceiver, port);
+	}
+
+	public void stopCall() {
+		if (sender.isPlaying())
+			sender.stop();
+		StopCall stop = new StopCall();
+		stop.setReceiver(receiverCallName);
+		control.send(stop.toString());
 	}
 
 	public void answerCall(String answer, Call call) {
