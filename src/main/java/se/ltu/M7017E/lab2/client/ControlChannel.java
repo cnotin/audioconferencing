@@ -7,8 +7,10 @@ import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.concurrent.Semaphore;
 
 import lombok.Getter;
+import lombok.Setter;
 import se.ltu.M7017E.lab2.common.messages.AnswerCall;
 import se.ltu.M7017E.lab2.common.messages.Hello;
 import se.ltu.M7017E.lab2.common.messages.Left;
@@ -24,7 +26,12 @@ public class ControlChannel implements Runnable {
 	private PrintStream out;
 	private boolean quit = false; // set to true to exit thread
 	private int index = 0;
+	@Getter
 	public ArrayList<String> msgList = new ArrayList<String>();
+
+	@Getter
+	@Setter
+	private Semaphore roomsListFinished = new Semaphore(0);
 
 	public ControlChannel(App app) {
 		System.out.println("Creating control channel");
@@ -71,14 +78,15 @@ public class ControlChannel implements Runnable {
 			// someone left a room
 			app.msg(Left.fromString(message));
 		} else if (message.startsWith("ROOMS_START")) {
-			app.setServerIsWriting(true);
+			// app.setServerIsWriting(true);
 			msgList.clear();
 		} else if (message.startsWith("AUDIENCE")) {
 			msgList.add(index, message);
 			index++;
 		} else if (message.startsWith("ROOMS_STOP")) {
 			index = 0;
-			app.setServerIsWriting(false);
+			// app.setServerIsWriting(false);
+			this.roomsListFinished.release();
 		} else if (message.startsWith("CALL")) {
 			System.out.println("allo");
 			app.getGui().acceptACall(message, this.app);

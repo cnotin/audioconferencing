@@ -31,6 +31,7 @@ import javax.swing.tree.MutableTreeNode;
 import se.ltu.M7017E.lab2.client.App;
 import se.ltu.M7017E.lab2.common.Room;
 import se.ltu.M7017E.lab2.common.messages.Call;
+import se.ltu.M7017E.lab2.common.messages.ListMsg;
 
 public class Gui extends JFrame {
 
@@ -195,6 +196,21 @@ public class Gui extends JFrame {
 	private JPanel createButtonPanel() {
 		JPanel panel = new JPanel();
 		joinBtn = new JButton("Join room", joinIcon);
+		joinBtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					app.getControl().send(new ListMsg().toString());
+					System.out.println("avant");
+					app.getControl().getRoomsListFinished().acquire();
+					System.out.println("fini");
+					System.out.println(app.getControl().getMsgList());
+				} catch (InterruptedException e1) {
+					System.err.println("interrupted");
+					e1.printStackTrace();
+				}
+			}
+		});
 		callBtn = new JButton("Call contact", callIcon);
 		hangUpBtn = new JButton("Hang up", hangIcon);
 		callBtn.addActionListener(new ActionListener() {
