@@ -86,7 +86,7 @@ public class App {
 				br = new BufferedReader(fr);
 				String s = br.readLine();
 				System.out.println("hello" + s);
-				if (s != null) {
+				if (s != null && !s.isEmpty()) {
 					this.username = s;
 					fr.close();
 					return;
