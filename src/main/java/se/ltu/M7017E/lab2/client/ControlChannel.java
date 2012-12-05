@@ -7,6 +7,7 @@ import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Semaphore;
 
 import lombok.Getter;
@@ -26,8 +27,7 @@ public class ControlChannel implements Runnable {
 	private PrintStream out;
 	private boolean quit = false; // set to true to exit thread
 	private int index = 0;
-	@Getter
-	public ArrayList<String> msgList = new ArrayList<String>();
+	public List<String> msgList = new ArrayList<String>();
 
 	@Getter
 	@Setter
@@ -78,14 +78,13 @@ public class ControlChannel implements Runnable {
 			// someone left a room
 			app.msg(Left.fromString(message));
 		} else if (message.startsWith("ROOMS_START")) {
-			// app.setServerIsWriting(true);
 			msgList.clear();
 		} else if (message.startsWith("AUDIENCE")) {
 			msgList.add(index, message);
 			index++;
 		} else if (message.startsWith("ROOMS_STOP")) {
 			index = 0;
-			// app.setServerIsWriting(false);
+			// release the semaphore so the APP can continue
 			this.roomsListFinished.release();
 		} else if (message.startsWith("CALL")) {
 			System.out.println("allo");
@@ -119,13 +118,4 @@ public class ControlChannel implements Runnable {
 	public void send(String message) {
 		out.println(message);
 	}
-
-	// public void updateMsgFromServer(ArrayList<String> CloneArray) {
-	// app.msgFromserver = new ArrayList<String>();
-	//
-	// for (int i = 0; i < CloneArray.size(); i++) {
-	// app.msgFromserver.add(i, CloneArray.get(i));
-	// }
-	// }
-
 }
