@@ -11,6 +11,7 @@ public class Main {
 		System.out.println("Welcome");
 
 		final App app = new App();
+
 		if (args.length > 0 && args[0].equals("NO_UI")) {
 			System.out.println("DEBUG: Don't display UI.");
 

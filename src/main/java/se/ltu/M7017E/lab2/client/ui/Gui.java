@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Map;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -25,8 +26,10 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.MutableTreeNode;
 
 import se.ltu.M7017E.lab2.client.App;
+import se.ltu.M7017E.lab2.common.Room;
 import se.ltu.M7017E.lab2.common.messages.Call;
 
 public class Gui extends JFrame {
@@ -52,6 +55,7 @@ public class Gui extends JFrame {
 			"/icons/door_button.png"));
 
 	private DefaultListModel model = new DefaultListModel();
+	private DefaultTreeModel modeltree;
 	private App app;
 
 	/**
@@ -93,9 +97,6 @@ public class Gui extends JFrame {
 		});
 	}
 
-	/**
-	 * Refresh the JList with the saved contact list
-	 */
 	public void refreshContactsList() {
 		model.clear();
 		for (String contact : app.getContacts()) {
@@ -263,30 +264,24 @@ public class Gui extends JFrame {
 	}
 
 	/**
-	 * Dummy, create a tree, only for the test
+	 * Display the room List in the RoomPanel
 	 * 
-	 * @return a tree
+	 * use "nc localhost 4000" in a terminal to create a server and test
 	 */
-	// private JTree buildTree() {
-	// // Root creation
-	// DefaultMutableTreeNode racine = new DefaultMutableTreeNode("All rooms");
-	//
-	// // Add leaves and way from the root
-	// for (int i = 1; i < 6; i++) {
-	// DefaultMutableTreeNode rep = new DefaultMutableTreeNode("Room" + i);
-	//
-	// // Add 4 ways
-	// if (i < 4) {
-	// DefaultMutableTreeNode rep2 = new DefaultMutableTreeNode(
-	// "Contact" + i);
-	// rep.add(rep2);
-	// }
-	// // Add leaves to the root
-	// racine.add(rep);
-	// }
-	// // create tree
-	// JTree arbre = new JTree(racine);
-	// return arbre;
-	// }
+	private void displayRoomList(Map<Integer, Room> roomListToDisplay) {
 
+		for (int i = 0; i < roomListToDisplay.size(); i++) {
+			MutableTreeNode newRoom = new DefaultMutableTreeNode("Room "
+					+ roomListToDisplay.get(i).getId());
+			for (int j = 0; j < roomListToDisplay.get(i).getAudience().size(); j++) {
+				MutableTreeNode contact = new DefaultMutableTreeNode(
+						roomListToDisplay.get(i).getAudienceAsStrings().get(j));
+				newRoom.insert(contact, j);
+			}
+			modeltree.insertNodeInto(newRoom,
+					(MutableTreeNode) modeltree.getRoot(), i);
+		}
+		// roomList = new JTree(treeModel);
+		roomList.setModel(modeltree);
+	}
 }

@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.ArrayList;
 
 import lombok.Getter;
 import se.ltu.M7017E.lab2.common.messages.AnswerCall;
@@ -16,9 +17,12 @@ import se.ltu.M7017E.lab2.common.messages.AnswerCall;
 public class ControlChannel implements Runnable {
 	@Getter
 	private App app;
+	@Getter
 	private BufferedReader in;
 	private PrintStream out;
 	private boolean quit = false; // set to true to exit thread
+	private int index = 0;
+	public ArrayList<String> msgList = new ArrayList<String>();
 
 	public ControlChannel(App app) {
 		System.out.println("Creating control channel");
@@ -29,6 +33,7 @@ public class ControlChannel implements Runnable {
 			in = new BufferedReader(new InputStreamReader(
 					socket.getInputStream()));
 			out = new PrintStream(socket.getOutputStream());
+			// socket.setSoTimeout(2000);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -37,12 +42,12 @@ public class ControlChannel implements Runnable {
 
 	@Override
 	public void run() {
+		// int static index = 0;
 		String message = null;
 		while (!quit) {
 			try {
 				message = in.readLine();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			if (message == null) {
@@ -62,10 +67,15 @@ public class ControlChannel implements Runnable {
 		} else if (message.startsWith("LEFT")) {
 
 		} else if (message.startsWith("ROOMS_START")) {
-
-		} else if (message.startsWith("ROOM")) {
-
+			app.setServerIsWriting(true);
+			msgList.clear();
+		} else if (message.startsWith("AUDIENCE")) {
+			msgList.add(index, message);
+			index++;
 		} else if (message.startsWith("ROOMS_STOP")) {
+			index = 0;
+			app.setServerIsWriting(false);
+		} else if (message.startsWith("ROOM")) {
 
 		} else if (message.startsWith("CALL")) {
 
@@ -101,4 +111,13 @@ public class ControlChannel implements Runnable {
 	public void send(String message) {
 		out.println(message);
 	}
+
+	// public void updateMsgFromServer(ArrayList<String> CloneArray) {
+	// app.msgFromserver = new ArrayList<String>();
+	//
+	// for (int i = 0; i < CloneArray.size(); i++) {
+	// app.msgFromserver.add(i, CloneArray.get(i));
+	// }
+	// }
+
 }

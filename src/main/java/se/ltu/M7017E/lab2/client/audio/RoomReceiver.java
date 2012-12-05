@@ -40,6 +40,7 @@ public class RoomReceiver extends Bin {
 			@Override
 			public void padAdded(Element element, Pad pad) {
 				if (pad.getName().startsWith("recv_rtp_src")) {
+
 					System.out.println("Got new sound input pad: " + pad);
 
 					/*
