@@ -2,11 +2,12 @@ package se.ltu.M7017E.lab2.presenceserver;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import se.ltu.M7017E.lab2.common.Contact;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class Client extends Contact {
+@EqualsAndHashCode
+public class Client {
+	protected String name;
+	protected String ip;
 	private TCPThread tcpThread;
 
 	public Client(String ip, TCPThread tcpThread) {

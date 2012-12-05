@@ -28,7 +28,6 @@ import javax.swing.tree.DefaultTreeModel;
 
 import se.ltu.M7017E.lab2.client.App;
 import se.ltu.M7017E.lab2.client.ControlChannel;
-import se.ltu.M7017E.lab2.common.Contact;
 import se.ltu.M7017E.lab2.common.messages.Call;
 
 public class Gui extends JFrame {
@@ -100,8 +99,8 @@ public class Gui extends JFrame {
 	 */
 	public void refreshContactsList() {
 		model.clear();
-		for (Contact contact : app.getContacts()) {
-			model.addElement(contact.getName());
+		for (String contact : app.getContacts()) {
+			model.addElement(contact);
 		}
 	}
 

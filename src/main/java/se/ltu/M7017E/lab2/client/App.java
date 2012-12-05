@@ -19,13 +19,12 @@ import org.gstreamer.Gst;
 import se.ltu.M7017E.lab2.client.audio.ReceiverPipeline;
 import se.ltu.M7017E.lab2.client.audio.SenderPipeline;
 import se.ltu.M7017E.lab2.client.ui.Gui;
-import se.ltu.M7017E.lab2.common.Contact;
 import se.ltu.M7017E.lab2.common.messages.Hello;
 
 @Getter
 public class App {
 	private ControlChannel control;
-	private Set<Contact> contacts = new TreeSet<Contact>();
+	private Set<String> contacts = new TreeSet<String>();
 	private String username;
 
 	@Setter
@@ -63,16 +62,6 @@ public class App {
 	public void leaveRoom(int roomId) {
 		sender.stopStreamingTo(roomId);
 		receiver.stopRoomReceiving(roomId);
-	}
-
-	public Contact findcontactsByName(String name) {
-		for (Contact contact : contacts) {
-			if (contact.getName().equals(name)) {
-				return contact;
-			}
-		}
-
-		return null;
 	}
 
 	public void fetchUsername() {
@@ -142,8 +131,7 @@ public class App {
 			FileReader fr = new FileReader("contacts.txt");
 			BufferedReader br = new BufferedReader(fr);
 			while ((s = br.readLine()) != null) {
-				Contact contact = new Contact(s, "");
-				contacts.add(contact);
+				contacts.add(s);
 			}
 			fr.close();
 		} catch (IOException e) {
@@ -156,8 +144,8 @@ public class App {
 		try {
 			file = new FileWriter("contacts.txt");
 			BufferedWriter out = new BufferedWriter(file);
-			for (Contact contact : contacts) {
-				out.write(contact.getName());
+			for (String contact : contacts) {
+				out.write(contact);
 				out.newLine();
 			}
 			out.close();
@@ -169,12 +157,12 @@ public class App {
 	}
 
 	public void addContact(String username) {
-		this.contacts.add(new Contact(username, ""));
+		this.contacts.add(username);
 		saveContacts();
 	}
 
 	public void removeContact(String username) {
-		this.contacts.remove(new Contact(username, ""));
+		this.contacts.remove(username);
 		saveContacts();
 	}
 }
