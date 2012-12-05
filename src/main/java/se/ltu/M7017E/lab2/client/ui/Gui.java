@@ -55,7 +55,7 @@ public class Gui extends JFrame {
 	private ImageIcon joinIcon = new ImageIcon(getClass().getResource(
 			"/icons/door_button.png"));
 
-	private DefaultListModel model = new DefaultListModel();
+	private DefaultListModel contactsListModel = new DefaultListModel();
 	private DefaultTreeModel modeltree;
 	private App app;
 
@@ -99,9 +99,9 @@ public class Gui extends JFrame {
 	}
 
 	public void refreshContactsList() {
-		model.clear();
+		contactsListModel.clear();
 		for (String contact : app.getContacts()) {
-			model.addElement(contact);
+			contactsListModel.addElement(contact);
 		}
 	}
 
@@ -166,7 +166,7 @@ public class Gui extends JFrame {
 		roomPanel = createRoomPanel();
 
 		refreshContactsList();
-		this.contactsList = new JList(model);
+		this.contactsList = new JList(contactsListModel);
 		contactPanel.setLayout(new BoxLayout(contactPanel, BoxLayout.Y_AXIS));
 
 		subContactPanel.setLayout(new BoxLayout(subContactPanel,
