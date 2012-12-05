@@ -70,14 +70,15 @@ public class ControlChannel implements Runnable {
 		} else if (message.startsWith("CALL")) {
 
 			System.out.println("allo");
-			app.getGui().acceptACall(message, this);
+			app.getGui().acceptACall(message, this.app);
 
 		} else if (message.startsWith("ANSWERCALL")) {
 			AnswerCall answer = AnswerCall.fromString(message);
 			if (answer.getAnswer().equals("yes")) {
 				app.getGui().showMessage(
 						answer.getReceiver() + " accepted the call");
-				app.call("test", Integer.parseInt(answer.getPortReceiver()),answer.getIpReceiver());
+				app.call("test", Integer.parseInt(answer.getPortReceiver()),
+						answer.getIpReceiver());
 
 			}
 			if (answer.getAnswer().equals("no")) {

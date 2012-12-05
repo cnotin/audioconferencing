@@ -27,7 +27,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
 import se.ltu.M7017E.lab2.client.App;
-import se.ltu.M7017E.lab2.client.ControlChannel;
 import se.ltu.M7017E.lab2.common.messages.Call;
 
 public class Gui extends JFrame {
@@ -215,8 +214,7 @@ public class Gui extends JFrame {
 		System.out.println(contactsList.getSelectedValue());
 
 		if (contactsList.getSelectedValue() != null) {
-			// TODO use app's method to do this. Don't create a fucking message
-			// in this GUI.
+			this.app.askToCall((String) contactsList.getSelectedValue());
 		} else {
 			showMessage("Please select a person to call!");
 		}
@@ -252,10 +250,10 @@ public class Gui extends JFrame {
 		return menu;
 	}
 
-	public void acceptACall(String message, ControlChannel control) {
+	public void acceptACall(String message, App app) {
 
 		Call call = Call.fromString(message);
-		new AcceptACallDialog(control, call);
+		new AcceptACallDialog(app, call);
 	}
 
 	public void showMessage(String message) {

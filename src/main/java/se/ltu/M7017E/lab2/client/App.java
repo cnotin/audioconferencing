@@ -19,6 +19,8 @@ import org.gstreamer.Gst;
 import se.ltu.M7017E.lab2.client.audio.ReceiverPipeline;
 import se.ltu.M7017E.lab2.client.audio.SenderPipeline;
 import se.ltu.M7017E.lab2.client.ui.Gui;
+import se.ltu.M7017E.lab2.common.messages.AnswerCall;
+import se.ltu.M7017E.lab2.common.messages.Call;
 import se.ltu.M7017E.lab2.common.messages.Hello;
 
 @Getter
@@ -108,9 +110,35 @@ public class App {
 		}
 	}
 
+	/**
+	 * send a message to the server
+	 */
+	public void askToCall(String receiver) {
+		Call call = new Call();
+		call.setSender(username);
+		call.setReceiver(receiver);
+		control.send(call.toString());
+	}
+
 	public void call(String ip, int port, String ipReceiver) {
 		System.out.println("IP: " + ipReceiver);
 		sender.streamTo(ipReceiver, port);
+	}
+
+	public String buildAnswer(String answer, Call call) {
+		AnswerCall answerCall = new AnswerCall();
+		answerCall.setAnswer(answer);
+		answerCall.setReceiver(call.getReceiver());
+		answerCall.setSender(call.getSender());
+		answerCall.setIpReceiver("0");
+		String port = Integer.toString(control.getApp().getReceiver()
+				.receiveFromUnicast());
+		answerCall.setPortReceiver(port);
+		return answerCall.toString();
+	}
+
+	public void answerCall(String answer, Call call) {
+		control.send(buildAnswer(answer, call));
 	}
 
 	/**

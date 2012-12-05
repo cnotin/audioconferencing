@@ -9,17 +9,16 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import se.ltu.M7017E.lab2.client.ControlChannel;
+import se.ltu.M7017E.lab2.client.App;
 import se.ltu.M7017E.lab2.common.messages.Call;
 
 public class AcceptACallDialog extends JDialog {
 
-	private ControlChannel control;
+	private App app;
 	private AcceptACallDialog me = this;
 
-	public AcceptACallDialog(final ControlChannel controlChannel,
-			final Call call) {
-		this.control = controlChannel;
+	public AcceptACallDialog(final App app, final Call call) {
+		this.app = app;
 		this.setSize(400, 115);
 		this.setTitle(call.getSender() + " want to  discuss with you");
 		this.setModal(true);
@@ -38,12 +37,8 @@ public class AcceptACallDialog extends JDialog {
 		yesButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// save the contact
 				System.out.println("yes");
-				int port = controlChannel.getApp().getReceiver()
-						.receiveFromUnicast();
-				control.send("ANSWERCALL" + "," + port + "," + call.getSender()
-						+ "," + call.getReceiver() + ",yes" + "," + "0");
+				app.answerCall("yes", call);
 				me.dispose();
 			}
 		});
@@ -51,11 +46,8 @@ public class AcceptACallDialog extends JDialog {
 		noButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// save the contact
 				System.out.println("no");
-				control.send("ANSWERCALL" + "," + 0 + "," + 0 + ","
-						+ call.getSender() + "," + call.getReceiver() + ",no");
-
+				app.answerCall("no", call);
 				me.dispose();
 			}
 		});
@@ -69,4 +61,5 @@ public class AcceptACallDialog extends JDialog {
 		this.setVisible(true);
 
 	}
+
 }
