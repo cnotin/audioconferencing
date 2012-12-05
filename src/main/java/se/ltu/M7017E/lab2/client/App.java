@@ -116,4 +116,10 @@ public class App {
 			System.err.println("Got a problem while saving username to file");
 		}
 	}
+
+	public void call(String ip, int port, String ipReceiver) {
+		System.out.println("IP: " + ipReceiver);
+		getSender().streamTo(ipReceiver, port);
+	}
+
 }

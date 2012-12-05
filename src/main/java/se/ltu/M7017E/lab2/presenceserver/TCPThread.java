@@ -76,7 +76,6 @@ public class TCPThread implements Runnable {
 						System.out.println("discussion between "
 								+ answer.getSender() + " and "
 								+ answer.getReceiver() + " on ports "
-								+ answer.getPortSender() + " and "
 								+ answer.getPortReceiver());
 					app.msg(answer);
 				}

@@ -4,26 +4,25 @@ import lombok.Data;
 
 @Data
 public class AnswerCall {
-	private String portSender;
 	private String portReceiver;
 	private String sender;
 	private String receiver;
 	private String answer;
+	private String ipReceiver;
 
 	public String toString() {
-		return "ANSWERCALL," + portSender + "," + portReceiver + "," + sender
-				+ "," + receiver + "," + answer;
+		return "ANSWERCALL," + portReceiver + "," + sender + "," + receiver
+				+ "," + answer + "," + ipReceiver;
 	}
 
 	public static AnswerCall fromString(String str) {
 		AnswerCall ret = new AnswerCall();
-
 		String[] tokens = str.split(",");
-		ret.portSender = tokens[1];
-		ret.portReceiver = tokens[2];
-		ret.sender = tokens[3];
-		ret.receiver = tokens[4];
-		ret.answer = tokens[5];
+		ret.portReceiver = tokens[1];
+		ret.sender = tokens[2];
+		ret.receiver = tokens[3];
+		ret.answer = tokens[4];
+		ret.ipReceiver = tokens[5];
 
 		return ret;
 	}

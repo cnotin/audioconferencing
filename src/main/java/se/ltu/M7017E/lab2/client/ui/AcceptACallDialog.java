@@ -17,7 +17,8 @@ public class AcceptACallDialog extends JDialog {
 	private ControlChannel control;
 	private AcceptACallDialog me = this;
 
-	public AcceptACallDialog(ControlChannel controlChannel, final Call call) {
+	public AcceptACallDialog(final ControlChannel controlChannel,
+			final Call call) {
 		this.control = controlChannel;
 		this.setSize(400, 115);
 		this.setTitle(call.getSender() + " want to  discuss with you");
@@ -39,10 +40,10 @@ public class AcceptACallDialog extends JDialog {
 			public void actionPerformed(ActionEvent e) {
 				// save the contact
 				System.out.println("yes");
-				int port = control.getApp().selectAPort();
-				control.send("ANSWERCALL" + "," + call.getPort() + "," + port
-						+ "," + call.getSender() + "," + call.getReceiver()
-						+ ",yes");
+				int port = controlChannel.getApp().getReceiver()
+						.receiveFromUnicast();
+				control.send("ANSWERCALL" + "," + port + "," + call.getSender()
+						+ "," + call.getReceiver() + ",yes" + "," + "0");
 				me.dispose();
 			}
 		});
