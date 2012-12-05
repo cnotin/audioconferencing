@@ -22,6 +22,7 @@ import se.ltu.M7017E.lab2.client.ui.Gui;
 import se.ltu.M7017E.lab2.common.messages.AnswerCall;
 import se.ltu.M7017E.lab2.common.messages.Call;
 import se.ltu.M7017E.lab2.common.messages.Hello;
+import se.ltu.M7017E.lab2.common.messages.Left;
 
 @Getter
 public class App {
@@ -54,6 +55,14 @@ public class App {
 		receiver.play();
 
 		sender = new SenderPipeline();
+	}
+
+	public void msg(Hello hello) {
+		// TODO: update tree
+	}
+
+	public void msg(Left left) {
+		// TODO: update tree
 	}
 
 	public void joinRoom(int roomId) {

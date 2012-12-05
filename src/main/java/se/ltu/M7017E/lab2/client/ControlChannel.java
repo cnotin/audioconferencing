@@ -10,6 +10,8 @@ import java.util.ArrayList;
 
 import lombok.Getter;
 import se.ltu.M7017E.lab2.common.messages.AnswerCall;
+import se.ltu.M7017E.lab2.common.messages.Hello;
+import se.ltu.M7017E.lab2.common.messages.Left;
 
 /**
  * Manage the control channel
@@ -63,9 +65,11 @@ public class ControlChannel implements Runnable {
 
 	public void caseMessage(String message) {
 		if (message.startsWith("JOINED")) {
-
+			// someone joins a room
+			app.msg(Hello.fromString(message));
 		} else if (message.startsWith("LEFT")) {
-
+			// someone left a room
+			app.msg(Left.fromString(message));
 		} else if (message.startsWith("ROOMS_START")) {
 			app.setServerIsWriting(true);
 			msgList.clear();
@@ -75,13 +79,9 @@ public class ControlChannel implements Runnable {
 		} else if (message.startsWith("ROOMS_STOP")) {
 			index = 0;
 			app.setServerIsWriting(false);
-		} else if (message.startsWith("ROOM")) {
-
 		} else if (message.startsWith("CALL")) {
-
 			System.out.println("allo");
 			app.getGui().acceptACall(message, this.app);
-
 		} else if (message.startsWith("ANSWERCALL")) {
 			AnswerCall answer = AnswerCall.fromString(message);
 			if (answer.getAnswer().equals("yes")) {
