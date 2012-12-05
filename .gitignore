@@ -4,3 +4,5 @@
 *.ear
 .*
 target
+contacts.txt
+name.txt
