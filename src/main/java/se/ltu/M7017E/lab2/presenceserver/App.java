@@ -100,14 +100,15 @@ public class App {
 		client.send(audience);
 	}
 
-	public void msg(Call call) {
-		Client client = findClientsByName(call.getReceiver());
-		if (client != null) {
-			System.out.println("sending message to " + client.getName());
-			client.send(call.toString());
+	public void msg(Client sender, Call call) {
+		Client receiver = findClientsByName(call.getReceiver());
+		if (receiver != null) {
+			System.out.println("sending message to " + receiver.getName());
+			call.setIpSender(sender.getIp());
+			receiver.send(call.toString());
 		} else {
-			client = findClientsByName(call.getSender());
-			client.send("ERROR," + call.getReceiver() + " is not connected :(");
+			sender = findClientsByName(call.getSender());
+			sender.send("ERROR," + call.getReceiver() + " is not connected :(");
 		}
 	}
 

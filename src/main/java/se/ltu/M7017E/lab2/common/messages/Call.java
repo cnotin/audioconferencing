@@ -8,14 +8,17 @@ import lombok.Data;
 public class Call {
 	private String sender;
 	private String receiver;
+	private String ipSender;
+	private String portSender;
 
 	public String toString() {
-		return "CALL," + sender + "," + receiver;
+		return "CALL," + sender + "," + receiver + "," + ipSender + ","
+				+ portSender;
 	}
 
 	public static Call fromString(String str) {
 		String[] tokens = str.split(",");
 
-		return new Call(tokens[1], tokens[2]);
+		return new Call(tokens[1], tokens[2], tokens[3], tokens[4]);
 	}
 }

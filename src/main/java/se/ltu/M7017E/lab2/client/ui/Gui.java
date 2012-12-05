@@ -296,6 +296,7 @@ public class Gui extends JFrame {
 				"Incoming call", JOptionPane.YES_NO_OPTION);
 		if (ret == JOptionPane.YES_OPTION) {
 			app.answerCall("yes", call);
+			app.call(call.getIpSender(), Integer.parseInt(call.getPortSender()));
 		} else {
 			app.answerCall("no", call);
 		}

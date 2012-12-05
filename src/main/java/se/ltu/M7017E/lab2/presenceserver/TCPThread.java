@@ -69,7 +69,7 @@ public class TCPThread implements Runnable {
 				} else if (message.startsWith("BYE")) {
 					quit = true; // the msg will be sent after quitting the loop
 				} else if (message.startsWith("CALL")) {
-					app.msg(Call.fromString(message));
+					app.msg(me, Call.fromString(message));
 
 				} else if (message.startsWith("STOPCALL")) {
 					app.msg(StopCall.fromString(message));

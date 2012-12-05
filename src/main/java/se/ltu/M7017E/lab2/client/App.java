@@ -150,7 +150,9 @@ public class App {
 		if (receiver.endsWith("(Disconnected)")) {
 			receiver = receiver.substring(0, receiver.length() - 15);
 		}
-		control.send(new Call(username, receiver).toString());
+		int port = this.receiver.receiveFromUnicast();
+		control.send(new Call(username, receiver, Integer.toString(port), "0")
+				.toString());
 		this.receiverCallName = receiver;
 	}
 

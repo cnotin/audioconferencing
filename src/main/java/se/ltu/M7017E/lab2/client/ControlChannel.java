@@ -97,7 +97,7 @@ public class ControlChannel implements Runnable {
 				app.getGui().showMessage(
 						answer.getReceiver() + " accepted the call");
 				app.call(answer.getIpReceiver(), answer.getPortReceiver());
-
+				int port = app.getReceiver().receiveFromUnicast();
 			}
 			if (answer.getAnswer().equals("no")) {
 				app.getGui().showMessage(
