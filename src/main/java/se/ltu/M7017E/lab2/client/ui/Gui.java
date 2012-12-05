@@ -64,13 +64,14 @@ public class Gui extends JFrame {
 			"/icons/door_button.png"));
 
 	private DefaultListModel model;
-	private String userName;
 	private App app;
 
 	/**
 	 * Interface of the application. Display the main window
 	 */
 	public Gui(final App app) {
+		this.app = app;
+
 		// use OS' native look'n'feel
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -83,9 +84,7 @@ public class Gui extends JFrame {
 		} catch (UnsupportedLookAndFeelException e) {
 			e.printStackTrace();
 		}
-		this.app = app;
-		this.setGuiTitleWithName();
-		app.getControl().send("HELLO," + userName);
+		this.setTitle("Audio conferencing tool. Hello " + app.getUsername());
 		this.setSize(600, 500);
 		this.setResizable(true);
 		this.setLocationRelativeTo(null);// center window on screen
@@ -105,35 +104,6 @@ public class Gui extends JFrame {
 				}
 			}
 		});
-	}
-
-	/**
-	 * Set the title of the gui
-	 */
-	public void setGuiTitleWithName() {
-		File file = new File("name.txt");
-		if (!file.exists()) // check if the file already exist, else the
-			new ChangeNameDialog(this);
-		else
-			try {
-				FileReader fr = new FileReader("name.txt");
-				BufferedReader br = new BufferedReader(fr);
-				br = new BufferedReader(fr);
-				String s = br.readLine();
-				System.out.println("hello" + s);
-				if (s == null)
-					new ChangeNameDialog(this);
-				else
-					this.setUserName(s);
-
-				this.setTitle("Audio conferencing tool"
-						+ "                 Hello " + userName);
-
-				fr.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
 	}
 
 	/**
@@ -331,12 +301,12 @@ public class Gui extends JFrame {
 
 		System.out.println(contactsList.getSelectedValue());
 
-		if (contactsList.getSelectedValue() != null)
-			app.getControl().send(
-					"CALL," + app.selectAPort() + "," + userName + ","
-							+ contactsList.getSelectedValue());
-		else
+		if (contactsList.getSelectedValue() != null) {
+			// TODO use app's method to do this. Don't create a fucking message
+			// in this GUI.
+		} else {
 			showMessage("Please select a person to call!");
+		}
 	}
 
 	/**
@@ -347,25 +317,17 @@ public class Gui extends JFrame {
 	private JMenuBar createMenu() {
 		this.menu = new JMenuBar();
 
-		JMenu edit = new JMenu("Edit");
-		JMenuItem setName = new JMenuItem("Change your name");
-		setName.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				new ChangeNameDialog(Gui.this);
-			}
-		});
-		JMenuItem addContact = new JMenuItem("Add a contact");
+		JMenu contacts = new JMenu("Contacts");
+		JMenuItem addContact = new JMenuItem("Add");
 		addContact.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				new AddContactDialog(Gui.this);
 			}
 		});
-		edit.add(addContact);
-		edit.add(setName);
+		contacts.add(addContact);
 
-		menu.add(edit);
+		menu.add(contacts);
 
 		JMenu help = new JMenu("?");
 		JMenuItem about = new JMenuItem("About");
@@ -428,11 +390,4 @@ public class Gui extends JFrame {
 	// return arbre;
 	// }
 
-	public String getUserName() {
-		return userName;
-	}
-
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
 }

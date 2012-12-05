@@ -1,8 +1,10 @@
 package se.ltu.M7017E.lab2.common.messages;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
 public class Hello {
 	private String name;
 
@@ -11,11 +13,8 @@ public class Hello {
 	}
 
 	public static Hello fromString(String str) {
-		Hello ret = new Hello();
-
 		String[] tokens = str.split(",");
-		ret.name = tokens[1];
 
-		return ret;
+		return new Hello(tokens[1]);
 	}
 }
