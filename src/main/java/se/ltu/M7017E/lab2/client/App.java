@@ -162,6 +162,7 @@ public class App {
 	public void stopCall() {
 		if (sender.isPlaying())
 			sender.stop();
+
 		StopCall stop = new StopCall();
 		stop.setReceiver(receiverCallName);
 		control.send(stop.toString());
