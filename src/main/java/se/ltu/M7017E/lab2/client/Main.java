@@ -18,9 +18,21 @@ public class Main {
 		if (args.length > 0 && args[0].equals("NO_UI")) {
 			System.out.println("DEBUG: Don't display UI.");
 
-			System.out.println("See the dot?");
+			System.out.println("Receive");
 			new java.util.Scanner(System.in).nextLine();
-			app.getSender().debugToDotFile(Bin.DEBUG_GRAPH_SHOW_ALL, "sender");
+			app.getReceiver().receiveFromUnicast();
+
+			System.out.println("Stop receive");
+			new java.util.Scanner(System.in).nextLine();
+			app.getReceiver().stopUnicastReceiving();
+
+			System.out.println("Receive again");
+			new java.util.Scanner(System.in).nextLine();
+			app.getReceiver().receiveFromUnicast();
+
+			System.out.println("Stop receive again");
+			new java.util.Scanner(System.in).nextLine();
+			app.getReceiver().stopUnicastReceiving();
 		} else {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
@@ -29,19 +41,20 @@ public class Main {
 					gui.setVisible(true);
 				}
 			});
-
-			String s;
-			Scanner scanner = new Scanner(System.in);
-			do {
-				System.out.println("See the dot?");
-				s = scanner.next();
-				long timestamp = new Date().getTime();
-				app.getSender().debugToDotFile(Bin.DEBUG_GRAPH_SHOW_ALL,
-						"lab2_" + timestamp + "_sender");
-				app.getReceiver().debugToDotFile(Bin.DEBUG_GRAPH_SHOW_ALL,
-						"lab2_" + timestamp + "_receiver");
-			} while (s.equals("d"));
 		}
+
+		String s;
+		Scanner scanner = new Scanner(System.in);
+		do {
+			System.out.println("See the dot?");
+			s = scanner.next();
+			long timestamp = new Date().getTime();
+			app.getSender().debugToDotFile(Bin.DEBUG_GRAPH_SHOW_ALL,
+					"lab2_" + timestamp + "_sender");
+			app.getReceiver().debugToDotFile(Bin.DEBUG_GRAPH_SHOW_ALL,
+					"lab2_" + timestamp + "_receiver");
+		} while (s.equals("d"));
+
 		System.out.println("Bye ?");
 		new java.util.Scanner(System.in).nextLine();
 		System.out.println("See you");

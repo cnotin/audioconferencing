@@ -58,7 +58,7 @@ public class RoomReceiver extends Bin {
 										PadLinkReturn.OK));
 					} else {
 						// create elements
-						RtpMulawDecodeBin decoder = new RtpMulawDecodeBin();
+						RtpMulawDecodeBin decoder = new RtpMulawDecodeBin(true);
 
 						// add them
 						RoomReceiver.this.add(decoder);
