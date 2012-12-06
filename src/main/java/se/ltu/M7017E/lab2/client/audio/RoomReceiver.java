@@ -38,7 +38,7 @@ public class RoomReceiver extends Bin {
 		// ####################### CONNECT EVENTS ######################"
 		rtpBin.connect(new Element.PAD_ADDED() {
 			@Override
-			public void padAdded(Element element, Pad pad) {
+			public synchronized void padAdded(Element element, Pad pad) {
 				if (pad.getName().startsWith("recv_rtp_src")) {
 
 					System.out.println("Got new sound input pad: " + pad);
