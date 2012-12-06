@@ -7,6 +7,7 @@ import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
 import org.gstreamer.PadLinkReturn;
 import org.gstreamer.Pipeline;
+import org.gstreamer.State;
 import org.gstreamer.elements.BaseSrc;
 
 import se.ltu.M7017E.lab2.client.Config;
@@ -80,10 +81,6 @@ public class SenderPipeline extends Pipeline {
 	 *            the port on which he listens
 	 */
 	public void streamTo(String ip, int port) {
-		if (isPlaying()) {
-			pause();
-		}
-
 		// create the sender bin
 		SenderBin friend = new SenderBin("send_unicast", ip, port, false);
 		// add it to this
@@ -98,12 +95,8 @@ public class SenderPipeline extends Pipeline {
 	}
 
 	public void stopStreamingToUnicast() {
-		if (isPlaying()) {
-			pause();
-		}
+		setState(State.NULL);
 
 		((SenderBin) getElementByName("send_unicast")).getOut();
-
-		play();
 	}
 }
