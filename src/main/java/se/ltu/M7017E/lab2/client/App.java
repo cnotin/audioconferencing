@@ -39,7 +39,7 @@ public class App {
 	private Set<String> contacts = new TreeSet<String>();
 	private Set<String> connected = new HashSet<String>();
 	private String username;
-	private String receiverCallName;
+	private String friend;
 
 	@Setter
 	private Gui gui;
@@ -168,7 +168,7 @@ public class App {
 		}
 		int port = this.receiver.receiveFromUnicast();
 		control.send(new Call(username, receiver, "0", port).toString());
-		this.receiverCallName = receiver;
+		this.friend = receiver;
 	}
 
 	public void call(String ipReceiver, int port) {
@@ -181,14 +181,13 @@ public class App {
 	 * the other client the call is finished
 	 */
 	public void stopCall() {
-
 		// stop streaming from friend
 		receiver.stopUnicastReceiving();
 		// stop streaming to friend
 		sender.stopStreamingToUnicast();
 
 		StopCall stop = new StopCall();
-		stop.setReceiver(receiverCallName);
+		stop.setReceiver(friend);
 		control.send(stop.toString());
 	}
 
@@ -203,6 +202,11 @@ public class App {
 	 */
 	public void answerCall(String answer, Call call) {
 		int port = receiver.receiveFromUnicast();
+
+		if (answer.equals("yes")) {
+			this.friend = call.getSender();
+			System.out.println("My friend is the wonderful " + this.friend);
+		}
 
 		control.send(new AnswerCall(port, call.getSender(), call.getReceiver(),
 				answer, "0").toString());
