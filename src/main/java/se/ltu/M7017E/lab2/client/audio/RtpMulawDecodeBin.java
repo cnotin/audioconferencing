@@ -7,6 +7,7 @@ import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
 import org.gstreamer.GhostPad;
 import org.gstreamer.Pad;
+import org.gstreamer.PadDirection;
 
 public class RtpMulawDecodeBin extends Bin {
 	private Element rtpDepay;
@@ -55,7 +56,9 @@ public class RtpMulawDecodeBin extends Bin {
 
 		@Override
 		public void unlinked(Pad complainer, Pad gonePad) {
-			parentBin.getOut();
+			if (gonePad.getDirection().equals(PadDirection.SRC)) {
+				parentBin.getOut();
+			}
 		}
 	}
 }
