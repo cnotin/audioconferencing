@@ -209,9 +209,10 @@ public class App {
 	 *            call : the Call message received from the server
 	 */
 	public void answerCall(String answer, Call call) {
-		int port = receiver.receiveFromUnicast();
+		int port = -1;
 
 		if (answer.equals("yes")) {
+			port = receiver.receiveFromUnicast();
 			this.friend = call.getSender();
 			System.out.println("My friend is the wonderful " + this.friend);
 		}
