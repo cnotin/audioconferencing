@@ -9,6 +9,7 @@ import org.gstreamer.ElementFactory;
 import org.gstreamer.GhostPad;
 import org.gstreamer.Pad;
 import org.gstreamer.PadLinkReturn;
+import org.gstreamer.State;
 
 import se.ltu.M7017E.lab2.client.Tool;
 
@@ -101,9 +102,13 @@ public class UnicastReceiver extends Bin {
 	public void getOut() {
 		// clean request pad from adder
 		Pad downstreamPeer = src.getPeer();
-		downstreamPeer.getParentElement().releaseRequestPad(downstreamPeer);
+		downstreamPeer.setBlocked(true);
+
+		this.setState(State.NULL);
 
 		System.out.println("Remove from parent bin "
 				+ ((Bin) this.getParent()).remove(this));
+
+		downstreamPeer.getParentElement().releaseRequestPad(downstreamPeer);
 	}
 }
