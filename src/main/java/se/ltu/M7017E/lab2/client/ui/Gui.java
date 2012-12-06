@@ -37,10 +37,12 @@ import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreeSelectionModel;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import se.ltu.M7017E.lab2.client.App;
 import se.ltu.M7017E.lab2.common.Room;
 import se.ltu.M7017E.lab2.common.messages.Call;
 
+@Getter
 public class Gui extends JFrame {
 
 	private static final long serialVersionUID = -9219551892569083659L;
@@ -180,6 +182,30 @@ public class Gui extends JFrame {
 			}
 		});
 
+		roomList.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent evt) {
+				if (evt.getClickCount() == 2) {
+					System.out.println("the game");
+					DefaultMutableTreeNode node = (DefaultMutableTreeNode) roomList
+							.getLastSelectedPathComponent();
+					if (node == null) {
+						displayRoomList(app.getAllRooms());
+					} else if (node.getLevel() == 0) {
+						// the selection is the Root
+						showMessage("No Room selected");
+					} else if (node.getLevel() == 1) {
+						// the selection is a room, no node change
+						app.joinRoom(((Room) node.getUserObject()).getId());
+					} else if (node.getLevel() == 2) {
+						// the selection is a name in a Room, get the room
+						node = (DefaultMutableTreeNode) node.getParent();
+						app.joinRoom(((Room) node.getUserObject()).getId());
+					}
+					app.createMyRooms(app.getAllRooms());
+					displayRoomList(app.getAllRooms());
+				}
+			}
+		});
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		JScrollPane roomListPane = new JScrollPane(roomList);
 		subPanel.add(new JLabel("Room list"));
@@ -249,7 +275,7 @@ public class Gui extends JFrame {
 				String name = JOptionPane.showInputDialog(null,
 						"Choose a name", "Name selection",
 						JOptionPane.QUESTION_MESSAGE);
-				if (name != null) {
+				if (name != null && !name.isEmpty()) {
 					app.addContact(name);
 					refreshContactsList();
 				}
@@ -339,6 +365,7 @@ public class Gui extends JFrame {
 
 		callBtn = new JButton("Call contact", callIcon);
 		hangUpBtn = new JButton("Hang up", hangIcon);
+		hangUpBtn.setVisible(false);
 		callBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -348,7 +375,7 @@ public class Gui extends JFrame {
 		hangUpBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				app.stopCall();
+				app.askToStopCall();
 			}
 		});
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));

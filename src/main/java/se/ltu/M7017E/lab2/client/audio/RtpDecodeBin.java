@@ -9,7 +9,7 @@ import org.gstreamer.GhostPad;
 import org.gstreamer.Pad;
 import org.gstreamer.PadDirection;
 
-public class RtpMulawDecodeBin extends Bin {
+public class RtpDecodeBin extends Bin {
 	private Element rtpDepay;
 	private Element decoder;
 	private Element convert;
@@ -17,11 +17,11 @@ public class RtpMulawDecodeBin extends Bin {
 	private Pad sink;
 	private Pad src;
 
-	public RtpMulawDecodeBin(boolean autoDisconnect) {
+	public RtpDecodeBin(boolean autoDisconnect) {
 		super();
 
-		rtpDepay = ElementFactory.make("rtppcmudepay", null);
-		decoder = ElementFactory.make("mulawdec", null);
+		rtpDepay = ElementFactory.make("rtpspeexdepay", null);
+		decoder = ElementFactory.make("speexdec", null);
 		convert = ElementFactory.make("audioconvert", null);
 
 		this.addMany(rtpDepay, decoder, convert);
@@ -54,7 +54,7 @@ public class RtpMulawDecodeBin extends Bin {
 
 	@AllArgsConstructor
 	private class OnPadUnlinked implements GhostPad.UNLINKED {
-		RtpMulawDecodeBin parentBin;
+		RtpDecodeBin parentBin;
 
 		@Override
 		public void unlinked(Pad complainer, Pad gonePad) {

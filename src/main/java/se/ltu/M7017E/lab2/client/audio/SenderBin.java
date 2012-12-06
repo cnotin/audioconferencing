@@ -17,14 +17,14 @@ import se.ltu.M7017E.lab2.client.Tool;
 public class SenderBin extends Bin {
 	private final Pad sink;
 	@Getter
-	private final RtpMulawEncodeBin encoder;
+	private final RtpEncodeBin encoder;
 	private final Element udpSink;
 	private final RTPBin rtpBin;
 
 	public SenderBin(String name, String ip, int port, boolean multicast) {
 		super(name);
 
-		encoder = new RtpMulawEncodeBin();
+		encoder = new RtpEncodeBin();
 		encoder.syncStateWithParent();
 		rtpBin = new RTPBin((String) null);
 		Pad rtpSink0 = rtpBin.getRequestPad("send_rtp_sink_0");

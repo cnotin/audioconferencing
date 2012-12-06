@@ -69,7 +69,7 @@ public class App {
 		control.send(new Hello(this.username).toString());
 
 		// ############ GSTREAMER STUFF ###############
-		Gst.init("Audioconferencing", new String[] { "--gst-debug-level=2",
+		Gst.init("Audioconferencing", new String[] { "--gst-debug-level=3",
 				"--gst-debug-no-color" });
 		receiver = new ReceiverPipeline();
 		receiver.play();
@@ -87,8 +87,7 @@ public class App {
 	}
 
 	public void msg(StopCall stopCall) {
-		receiver.stopUnicastReceiving();
-		sender.stopStreamingToUnicast();
+		stopCall();
 	}
 
 	public void joinRoom(int roomId) {
@@ -183,11 +182,25 @@ public class App {
 	public void call(String ipReceiver, int port) {
 		System.out.println("IP: " + ipReceiver);
 		sender.streamTo(ipReceiver, port);
+
+		gui.getCallBtn().setVisible(false);
+		gui.getHangUpBtn().setVisible(true);
 	}
 
 	/**
 	 * hang up. Stop the pipelines and send a message to the server for telling
 	 * the other client the call is finished
+	 */
+	public void askToStopCall() {
+		stopCall();
+
+		StopCall stop = new StopCall();
+		stop.setReceiver(friend);
+		control.send(stop.toString());
+	}
+
+	/**
+	 * Stop streaming from/to friend and update UI buttons.
 	 */
 	public void stopCall() {
 		// stop streaming from friend
@@ -195,9 +208,8 @@ public class App {
 		// stop streaming to friend
 		sender.stopStreamingToUnicast();
 
-		StopCall stop = new StopCall();
-		stop.setReceiver(friend);
-		control.send(stop.toString());
+		gui.getCallBtn().setVisible(true);
+		gui.getHangUpBtn().setVisible(false);
 	}
 
 	/**
@@ -210,11 +222,15 @@ public class App {
 	 *            call : the Call message received from the server
 	 */
 	public void answerCall(String answer, Call call) {
-		int port = receiver.receiveFromUnicast();
+		int port = -1;
 
 		if (answer.equals("yes")) {
+			port = receiver.receiveFromUnicast();
 			this.friend = call.getSender();
 			System.out.println("My friend is the wonderful " + this.friend);
+
+			gui.getCallBtn().setVisible(false);
+			gui.getHangUpBtn().setVisible(true);
 		}
 
 		control.send(new AnswerCall(port, call.getSender(), call.getReceiver(),
@@ -279,11 +295,14 @@ public class App {
 	 * Remove a contact from the list of contacts.
 	 */
 	public void removeContact(String contact) {
-		if (username.endsWith("(Disconnected)")) {
-			username = username.substring(0, username.length() - 15);
-		}
+		System.out.println("espece de contact " + contact);
+		if (contact.endsWith("(Disconnected)")) {
+			System.out.println("espece de deconnecte " + contact);
+			contact = contact.substring(0, contact.length() - 15);
+		} else
+			System.out.println("espece deconnecte " + contact);
 
-		this.contacts.remove(username);
+		this.contacts.remove(contact);
 		saveContacts();
 	}
 

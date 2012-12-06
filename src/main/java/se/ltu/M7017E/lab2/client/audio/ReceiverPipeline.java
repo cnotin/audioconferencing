@@ -17,7 +17,7 @@ public class ReceiverPipeline extends Pipeline {
 	private final Element adder = ElementFactory.make("liveadder", null);
 	private final Element sink = ElementFactory.make("autoaudiosink", null);
 	// THE UnicastReceiver to talk with somebody
-	UnicastReceiver unicastReceiver;
+	UnicastReceiver unicastReceiver = null;
 
 	public ReceiverPipeline() {
 		super("receiver_pipeline");
@@ -62,6 +62,9 @@ public class ReceiverPipeline extends Pipeline {
 	}
 
 	public void stopUnicastReceiving() {
-		unicastReceiver.getOut();
+		if (unicastReceiver != null) {
+			unicastReceiver.getOut();
+		}
+		unicastReceiver = null;
 	}
 }
