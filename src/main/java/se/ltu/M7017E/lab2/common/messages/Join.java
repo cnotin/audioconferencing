@@ -6,10 +6,17 @@ import lombok.Data;
 public class Join {
 	private int room;
 
+	/**
+	 * transform the object into a string
+	 */
 	public String toString() {
 		return "JOIN," + room;
 	}
 
+	/**
+	 * build a Hello object from a String. The format of the string must be:
+	 * "JOIN",room
+	 */
 	public static Join fromString(String str) {
 		Join ret = new Join();
 
