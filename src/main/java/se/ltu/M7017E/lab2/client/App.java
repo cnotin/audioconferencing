@@ -279,11 +279,14 @@ public class App {
 	 * Remove a contact from the list of contacts.
 	 */
 	public void removeContact(String contact) {
-		if (username.endsWith("(Disconnected)")) {
-			username = username.substring(0, username.length() - 15);
-		}
+		System.out.println("espece de contact " + contact);
+		if (contact.endsWith("(Disconnected)")) {
+			System.out.println("espece de deconnecte " + contact);
+			contact = contact.substring(0, contact.length() - 15);
+		} else
+			System.out.println("espece deconnecte " + contact);
 
-		this.contacts.remove(username);
+		this.contacts.remove(contact);
 		saveContacts();
 	}
 
