@@ -23,6 +23,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -43,7 +44,6 @@ public class Gui extends JFrame {
 	private JButton joinBtn;
 	private JButton newBtn;
 	private JButton deleteBtn;
-	private JButton setRoomListBtn;
 	private JList contactsList;
 	public JTree roomList;
 	private ImageIcon callIcon = new ImageIcon(getClass().getResource(
@@ -99,6 +99,9 @@ public class Gui extends JFrame {
 				}
 			}
 		});
+		app.createAllRoomList();
+		// app.createMyRoomsList();
+		displayRoomList(app.getAllRooms());
 	}
 
 	public class RefreshContactsListRunnable implements Runnable {
@@ -130,20 +133,6 @@ public class Gui extends JFrame {
 		JPanel panel = new JPanel();
 		JPanel subPanel = new JPanel();
 
-		setRoomListBtn = new JButton("SetList");
-		setRoomListBtn.setVisible(true);
-
-		setRoomListBtn.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				app.createAllRoomList();
-				// app.createMyRoomsList();
-				displayRoomList(app.getAllRooms());
-				setRoomListBtn.setVisible(false);
-				joinBtn.setVisible(true);
-			}
-		});
-
 		subPanel.setLayout(new BoxLayout(subPanel, BoxLayout.X_AXIS));
 
 		// initialize the RoomList as a treemodel
@@ -152,12 +141,12 @@ public class Gui extends JFrame {
 		roomList = new JTree(modeltree);
 		roomList.getSelectionModel().setSelectionMode(
 				TreeSelectionModel.SINGLE_TREE_SELECTION);
+		roomList.expandRow(1);
 
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		JScrollPane roomListPane = new JScrollPane(roomList);
 		subPanel.add(new JLabel("Room list"));
 		subPanel.add(Box.createHorizontalGlue());
-		subPanel.add(setRoomListBtn);
 		panel.setSize(200, 300);
 		panel.add(subPanel);
 		panel.add(roomListPane);
@@ -235,25 +224,29 @@ public class Gui extends JFrame {
 	private JPanel createButtonPanel() {
 		JPanel panel = new JPanel();
 		joinBtn = new JButton("Join room", joinIcon);
-		joinBtn.setVisible(false);
+		joinBtn.setVisible(true);
 		joinBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				DefaultMutableTreeNode node = (DefaultMutableTreeNode) roomList
 						.getLastSelectedPathComponent();
-				// the selection is the Root
-				if (node.getLevel() == 0) {
+				if (node == null) {
+					displayRoomList(app.getAllRooms());
+				} else if (node.getLevel() == 0) {
+					// the selection is the Root
 					showMessage("No Room selected");
 				}
-				// the selectiion is a room
+				// the selection is a room
 				else if (node.getLevel() == 1) {
 					app.joinRoom(((Room) node.getUserObject()).getId());
-				} else {
+				}
+				// the selection is a name in a Room
+				else if (node.getLevel() == 2) {
 					DefaultMutableTreeNode parentnode = new DefaultMutableTreeNode();
 					parentnode = (DefaultMutableTreeNode) node.getParent();
 					app.joinRoom(((Room) parentnode.getUserObject()).getId());
 				}
-				app.createAllRoomList();
+				// app.createAllRoomList();
 				displayRoomList(app.getAllRooms());
 			}
 		});
@@ -279,14 +272,19 @@ public class Gui extends JFrame {
 	}
 
 	private void callContact() {
+		new SwingWorker<Object, Object>() {
+			@Override
+			protected Object doInBackground() throws Exception {
+				System.out.println(contactsList.getSelectedValue());
 
-		System.out.println(contactsList.getSelectedValue());
-
-		if (contactsList.getSelectedValue() != null) {
-			this.app.askToCall((String) contactsList.getSelectedValue());
-		} else {
-			showMessage("Please select a person to call!");
-		}
+				if (contactsList.getSelectedValue() != null) {
+					app.askToCall((String) contactsList.getSelectedValue());
+				} else {
+					showMessage("Please select a person to call!");
+				}
+				return null;
+			}
+		}.execute();
 	}
 
 	/**
@@ -344,18 +342,21 @@ public class Gui extends JFrame {
 	 * use "nc localhost 4000" in a terminal to create a server and test
 	 */
 	private void displayRoomList(List<Room> roomListToDisplay) {
-
+		// clear the modeltree if there is already something
+		((DefaultMutableTreeNode) modeltree.getRoot()).removeAllChildren();
 		for (Room room : roomListToDisplay) {
 			MutableTreeNode newRoom = new DefaultMutableTreeNode(room);
 			for (int j = 0; j < room.getAudience().size(); j++) {
-				MutableTreeNode contact = new DefaultMutableTreeNode(room
-						.getAudienceAsStrings().get(j));
+				String contactName = room.getAudienceAsStrings().get(j);
+				MutableTreeNode contact = new DefaultMutableTreeNode(
+						contactName);
 				newRoom.insert(contact, j);
 			}
 			((DefaultMutableTreeNode) modeltree.getRoot()).add(newRoom);
 		}
+		// To update the tree
+		modeltree.reload();
 		roomList.setModel(modeltree);
-
 	}
 
 	public int getRoomSelected() {

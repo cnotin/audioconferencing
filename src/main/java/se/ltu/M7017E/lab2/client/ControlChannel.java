@@ -28,7 +28,11 @@ public class ControlChannel implements Runnable {
 	private PrintStream out;
 	private boolean quit = false; // set to true to exit thread
 	private int index = 0;
-	public List<String> msgList = new ArrayList<String>();
+	@Getter
+	private List<String> msgList = new ArrayList<String>();
+	@Getter
+	private String updatedAudience;
+	private boolean sendingRoomList = false;
 
 	@Getter
 	@Setter
@@ -39,21 +43,20 @@ public class ControlChannel implements Runnable {
 		this.app = app;
 
 		try {
-			Socket socket = new Socket(InetAddress.getByName("130.240.53.166"),
-					4000);
+			Socket socket = new Socket(InetAddress.getByName("localhost"), 4000);
+			// Socket socket = new
+			// Socket(InetAddress.getByName("130.240.53.166"),
+			// 4000);
 			in = new BufferedReader(new InputStreamReader(
 					socket.getInputStream()));
 			out = new PrintStream(socket.getOutputStream());
-			// socket.setSoTimeout(2000);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
 	@Override
 	public void run() {
-		// int static index = 0;
 		String message = null;
 		while (!quit) {
 			try {
@@ -76,18 +79,26 @@ public class ControlChannel implements Runnable {
 		if (message.startsWith("JOINED")) {
 			// someone joins a room
 			app.msg(Joined.fromString(message));
+			// updatedAudience = new String();
 		} else if (message.startsWith("LEFT")) {
 			// someone left a room
 			app.msg(Left.fromString(message));
 		} else if (message.startsWith("ROOMS_START")) {
 			msgList.clear();
+			sendingRoomList = true;
 		} else if (message.startsWith("AUDIENCE")) {
-			if (msgList.isEmpty()) {
+			if (sendingRoomList) {
+				// Part of a list
 				msgList.add(index, message);
 				index++;
+			} else {
+				// Someone just joined the room
+				updatedAudience = message;
+				this.getRoomsListFinished().release();
 			}
 		} else if (message.startsWith("ROOMS_STOP")) {
 			index = 0;
+			sendingRoomList = false;
 			// release the semaphore so the APP can continue
 			this.roomsListFinished.release();
 		} else if (message.startsWith("CALL")) {

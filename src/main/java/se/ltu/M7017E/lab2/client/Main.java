@@ -1,5 +1,8 @@
 package se.ltu.M7017E.lab2.client;
 
+import java.util.Date;
+import java.util.Scanner;
+
 import javax.swing.SwingUtilities;
 
 import org.gstreamer.Bin;
@@ -15,19 +18,9 @@ public class Main {
 		if (args.length > 0 && args[0].equals("NO_UI")) {
 			System.out.println("DEBUG: Don't display UI.");
 
-			// TODO, remove. This is an example. It shouldn't be done this way
-			// at all.
-			int port = app.getReceiver().receiveFromUnicast();
-			app.getSender().streamTo("127.0.0.01", port);
-
 			System.out.println("See the dot?");
 			new java.util.Scanner(System.in).nextLine();
 			app.getSender().debugToDotFile(Bin.DEBUG_GRAPH_SHOW_ALL, "sender");
-
-			System.out.println("Bye ?");
-			new java.util.Scanner(System.in).nextLine();
-			System.out.println("See you");
-			System.exit(0);
 		} else {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
@@ -36,7 +29,22 @@ public class Main {
 					gui.setVisible(true);
 				}
 			});
-		}
 
+			String s;
+			Scanner scanner = new Scanner(System.in);
+			do {
+				System.out.println("See the dot?");
+				s = scanner.next();
+				long timestamp = new Date().getTime();
+				app.getSender().debugToDotFile(Bin.DEBUG_GRAPH_SHOW_ALL,
+						"lab2_" + timestamp + "_sender");
+				app.getReceiver().debugToDotFile(Bin.DEBUG_GRAPH_SHOW_ALL,
+						"lab2_" + timestamp + "_receiver");
+			} while (s.equals("d"));
+		}
+		System.out.println("Bye ?");
+		new java.util.Scanner(System.in).nextLine();
+		System.out.println("See you");
+		System.exit(0);
 	}
 }
