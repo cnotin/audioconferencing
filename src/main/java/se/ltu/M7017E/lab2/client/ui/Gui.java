@@ -186,7 +186,7 @@ public class Gui extends JFrame {
 				String name = JOptionPane.showInputDialog(null,
 						"Choose a name", "Name selection",
 						JOptionPane.QUESTION_MESSAGE);
-				if (name != null) {
+				if (name != null && !name.isEmpty()) {
 					app.addContact(name);
 					refreshContactsList();
 				}
