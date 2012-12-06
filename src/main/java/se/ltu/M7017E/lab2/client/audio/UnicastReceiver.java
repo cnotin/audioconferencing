@@ -48,7 +48,7 @@ public class UnicastReceiver extends Bin {
 				if (pad.getName().startsWith("recv_rtp_src")) {
 					System.out.println("Got new sound input pad: " + pad);
 					// create elements
-					RtpMulawDecodeBin decoder = new RtpMulawDecodeBin();
+					RtpMulawDecodeBin decoder = new RtpMulawDecodeBin(false);
 
 					// add them
 					UnicastReceiver.this.add(decoder);
@@ -102,7 +102,9 @@ public class UnicastReceiver extends Bin {
 	public void getOut() {
 		// clean request pad from adder
 		Pad downstreamPeer = src.getPeer();
+		System.out.println("avant");
 		src.setBlocked(true);
+		System.out.println("apres");
 
 		this.setState(State.NULL);
 

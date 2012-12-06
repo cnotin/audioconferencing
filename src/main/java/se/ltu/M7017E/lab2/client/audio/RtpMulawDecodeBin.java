@@ -17,7 +17,7 @@ public class RtpMulawDecodeBin extends Bin {
 	private Pad sink;
 	private Pad src;
 
-	public RtpMulawDecodeBin() {
+	public RtpMulawDecodeBin(boolean autoDisconnect) {
 		super();
 
 		rtpDepay = ElementFactory.make("rtppcmudepay", null);
@@ -33,7 +33,9 @@ public class RtpMulawDecodeBin extends Bin {
 		this.addPad(sink);
 		this.addPad(src);
 
-		this.sink.connect(new OnPadUnlinked(this));
+		if (autoDisconnect) {
+			this.sink.connect(new OnPadUnlinked(this));
+		}
 	}
 
 	/**
