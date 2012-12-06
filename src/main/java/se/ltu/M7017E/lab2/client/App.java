@@ -85,8 +85,7 @@ public class App {
 	}
 
 	public void msg(StopCall stopCall) {
-		receiver.stopUnicastReceiving();
-		sender.stopStreamingToUnicast();
+		stopCall();
 	}
 
 	public void joinRoom(int roomId) {
@@ -174,6 +173,9 @@ public class App {
 	public void call(String ipReceiver, int port) {
 		System.out.println("IP: " + ipReceiver);
 		sender.streamTo(ipReceiver, port);
+
+		gui.getCallBtn().setVisible(false);
+		gui.getHangUpBtn().setVisible(true);
 	}
 
 	/**
@@ -189,7 +191,7 @@ public class App {
 	}
 
 	/**
-	 * Stop streaming from/to friend.
+	 * Stop streaming from/to friend and update UI buttons.
 	 */
 	public void stopCall() {
 		// stop streaming from friend
@@ -197,6 +199,8 @@ public class App {
 		// stop streaming to friend
 		sender.stopStreamingToUnicast();
 
+		gui.getCallBtn().setVisible(true);
+		gui.getHangUpBtn().setVisible(false);
 	}
 
 	/**
@@ -215,6 +219,9 @@ public class App {
 			port = receiver.receiveFromUnicast();
 			this.friend = call.getSender();
 			System.out.println("My friend is the wonderful " + this.friend);
+
+			gui.getCallBtn().setVisible(false);
+			gui.getHangUpBtn().setVisible(true);
 		}
 
 		control.send(new AnswerCall(port, call.getSender(), call.getReceiver(),

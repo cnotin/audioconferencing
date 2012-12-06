@@ -31,10 +31,12 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeSelectionModel;
 
+import lombok.Getter;
 import se.ltu.M7017E.lab2.client.App;
 import se.ltu.M7017E.lab2.common.Room;
 import se.ltu.M7017E.lab2.common.messages.Call;
 
+@Getter
 public class Gui extends JFrame {
 
 	private static final long serialVersionUID = -9219551892569083659L;
@@ -249,6 +251,7 @@ public class Gui extends JFrame {
 		});
 		callBtn = new JButton("Call contact", callIcon);
 		hangUpBtn = new JButton("Hang up", hangIcon);
+		hangUpBtn.setVisible(false);
 		callBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
