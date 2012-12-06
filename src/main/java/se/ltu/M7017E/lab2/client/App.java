@@ -68,7 +68,7 @@ public class App {
 		control.send(new Hello(this.username).toString());
 
 		// ############ GSTREAMER STUFF ###############
-		Gst.init("Audioconferencing", new String[] { "--gst-debug-level=2",
+		Gst.init("Audioconferencing", new String[] { "--gst-debug-level=3",
 				"--gst-debug-no-color" });
 		receiver = new ReceiverPipeline();
 		receiver.play();
