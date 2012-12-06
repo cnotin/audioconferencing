@@ -102,9 +102,9 @@ public class UnicastReceiver extends Bin {
 	public void getOut() {
 		// clean request pad from adder
 		Pad downstreamPeer = src.getPeer();
-		System.out.println("avant");
-		src.setBlocked(true);
-		System.out.println("apres");
+		// System.out.println("avant");
+		// src.setBlocked(true);
+		// System.out.println("apres");
 
 		this.setState(State.NULL);
 
