@@ -258,7 +258,7 @@ public class Gui extends JFrame {
 		hangUpBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				app.stopCall();
+				app.askToStopCall();
 			}
 		});
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));

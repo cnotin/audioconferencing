@@ -20,7 +20,7 @@ public class SenderPipeline extends Pipeline {
 	private final BaseSrc src = (BaseSrc) ElementFactory.make("alsasrc", null);
 	private final Element tee = ElementFactory.make("tee", null);
 	// THE SenderBin to talk with somebody
-	SenderBin unicastSender;
+	SenderBin unicastSender = null;
 
 	public SenderPipeline() {
 		super("sender_pipeline");
@@ -100,6 +100,9 @@ public class SenderPipeline extends Pipeline {
 	}
 
 	public void stopStreamingToUnicast() {
-		((SenderBin) getElementByName(SENDER_UNICAST)).getOut();
+		if (unicastSender != null) {
+			unicastSender.getOut();
+		}
+		unicastSender = null;
 	}
 }

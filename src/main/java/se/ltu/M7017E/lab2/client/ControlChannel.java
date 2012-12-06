@@ -120,6 +120,7 @@ public class ControlChannel implements Runnable {
 			if (answer.getAnswer().equals("no")) {
 				app.getGui().showMessage(
 						answer.getReceiver() + " declined the call");
+				app.stopCall();
 			}
 
 		} else if (message.startsWith("ERROR")) {
