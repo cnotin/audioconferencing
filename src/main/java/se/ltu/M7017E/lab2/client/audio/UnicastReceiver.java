@@ -33,11 +33,14 @@ public class UnicastReceiver extends Bin {
 
 		udpSource = ElementFactory.make("udpsrc", null);
 		udpSource.set("port", 0);
-		Tool.successOrDie("caps",
-				udpSource.getStaticPad("src").setCaps(
-						Caps.fromString("application/x-rtp, media=audio, "
-								+ "clock-rate=8000, channel=1, payload=0, "
-								+ "encoding-name=PCMU")));
+		Tool.successOrDie(
+				"caps",
+				udpSource
+						.getStaticPad("src")
+						.setCaps(
+								Caps.fromString("application/x-rtp, media=(string)audio, "
+										+ "clock-rate=(int)16000, encoding-name=(string)SPEEX, "
+										+ "encoding-params=(string)1, payload=(int)110")));
 
 		rtpBin = ElementFactory.make("gstrtpbin", null);
 
@@ -48,7 +51,7 @@ public class UnicastReceiver extends Bin {
 				if (pad.getName().startsWith("recv_rtp_src")) {
 					System.out.println("Got new sound input pad: " + pad);
 					// create elements
-					RtpMulawDecodeBin decoder = new RtpMulawDecodeBin(false);
+					RtpDecodeBin decoder = new RtpDecodeBin(false);
 
 					// add them
 					UnicastReceiver.this.add(decoder);

@@ -27,11 +27,14 @@ public class RoomReceiver extends Bin {
 		udpSource.set("auto-multicast", true);
 		udpSource.set("port", port);
 
-		Tool.successOrDie("caps",
-				udpSource.getStaticPad("src").setCaps(
-						Caps.fromString("application/x-rtp, media=audio, "
-								+ "clock-rate=8000, channel=1, payload=0, "
-								+ "encoding-name=PCMU")));
+		Tool.successOrDie(
+				"caps",
+				udpSource
+						.getStaticPad("src")
+						.setCaps(
+								Caps.fromString("application/x-rtp, media=(string)audio, "
+										+ "clock-rate=(int)16000, encoding-name=(string)SPEEX, "
+										+ "encoding-params=(string)1, payload=(int)110")));
 
 		rtpBin = ElementFactory.make("gstrtpbin", null);
 		adder = ElementFactory.make("liveadder", null);
@@ -59,7 +62,7 @@ public class RoomReceiver extends Bin {
 										PadLinkReturn.OK));
 					} else {
 						// create elements
-						RtpMulawDecodeBin decoder = new RtpMulawDecodeBin(true);
+						RtpDecodeBin decoder = new RtpDecodeBin(true);
 
 						// add them
 						RoomReceiver.this.add(decoder);
