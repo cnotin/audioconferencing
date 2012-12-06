@@ -92,10 +92,22 @@ public class App {
 
 	public void joinRoom(int roomId) {
 		long mySSRC = sender.streamTo(roomId);
+		Room newRoom = new Room();
 		receiver.receiveFromRoom(roomId, mySSRC);
 		// TODO: connect sender too
-		getControl().send("JOIN," + roomId);
-		// updateallRoomsList();
+		try {
+			getControl().send("JOIN," + roomId);
+			control.getRoomsListFinished().acquire();
+			newRoom = updateAfterJoin(control.getUpdatedAudience());
+			for (Room oldRoom : allRooms) {
+				if (oldRoom.getId() == newRoom.getId()) {
+					allRooms.set(allRooms.indexOf(oldRoom), newRoom);
+				}
+			}
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public void leaveRoom(int roomId) {
@@ -309,9 +321,23 @@ public class App {
 		}
 	}
 
-	public void updateMsgFromServer(List<String> CloneArray) {
+	public Room updateAfterJoin(String newAudience) {
+		Room updatedRoom = new Room();
+		Set<String> updatedContactList = new TreeSet<String>();
+		String splitnewAudience[] = newAudience.split(",", 0);
+
+		updatedRoom.setId(Integer.parseInt(splitnewAudience[1]));
+		for (int i = 2; i < splitnewAudience.length; i++) {
+			String string = splitnewAudience[i];
+			updatedContactList.add(string);
+		}
+		updatedRoom.setAudience(updatedContactList);
+		return updatedRoom;
+	}
+
+	public void updateMsgFromServer(List<String> CloneList) {
 		msgFromServer.clear();
-		for (String string : CloneArray) {
+		for (String string : CloneList) {
 			msgFromServer.add(string);
 		}
 	}

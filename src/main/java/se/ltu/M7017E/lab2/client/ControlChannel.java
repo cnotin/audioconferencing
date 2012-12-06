@@ -30,6 +30,8 @@ public class ControlChannel implements Runnable {
 	private int index = 0;
 	@Getter
 	private List<String> msgList = new ArrayList<String>();
+	@Getter
+	private String updatedAudience;
 	private boolean sendingRoomList = false;
 
 	@Getter
@@ -75,8 +77,10 @@ public class ControlChannel implements Runnable {
 
 	public void caseMessage(String message) {
 		if (message.startsWith("JOINED")) {
+			// if (message.startsWith("JOIN")) {
 			// someone joins a room
 			app.msg(Joined.fromString(message));
+			// updatedAudience = new String();
 		} else if (message.startsWith("LEFT")) {
 			// someone left a room
 			app.msg(Left.fromString(message));
@@ -85,8 +89,13 @@ public class ControlChannel implements Runnable {
 			sendingRoomList = true;
 		} else if (message.startsWith("AUDIENCE")) {
 			if (sendingRoomList) {
+				// Part of a list
 				msgList.add(index, message);
 				index++;
+			} else {
+				// Someone just joined the room
+				updatedAudience = message;
+				this.getRoomsListFinished().release();
 			}
 		} else if (message.startsWith("ROOMS_STOP")) {
 			index = 0;

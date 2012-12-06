@@ -43,7 +43,6 @@ public class Gui extends JFrame {
 	private JButton joinBtn;
 	private JButton newBtn;
 	private JButton deleteBtn;
-	private JButton setRoomListBtn;
 	private JList contactsList;
 	public JTree roomList;
 	private ImageIcon callIcon = new ImageIcon(getClass().getResource(
@@ -133,20 +132,6 @@ public class Gui extends JFrame {
 		JPanel panel = new JPanel();
 		JPanel subPanel = new JPanel();
 
-		setRoomListBtn = new JButton("SetList");
-		setRoomListBtn.setVisible(true);
-
-		// setRoomListBtn.addActionListener(new ActionListener() {
-		// @Override
-		// public void actionPerformed(ActionEvent e) {
-		// app.createAllRoomList();
-		// // app.createMyRoomsList();
-		// displayRoomList(app.getAllRooms());
-		// setRoomListBtn.setVisible(false);
-		// joinBtn.setVisible(true);
-		// }
-		// });
-
 		subPanel.setLayout(new BoxLayout(subPanel, BoxLayout.X_AXIS));
 
 		// initialize the RoomList as a treemodel
@@ -155,12 +140,12 @@ public class Gui extends JFrame {
 		roomList = new JTree(modeltree);
 		roomList.getSelectionModel().setSelectionMode(
 				TreeSelectionModel.SINGLE_TREE_SELECTION);
+		roomList.expandRow(1);
 
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		JScrollPane roomListPane = new JScrollPane(roomList);
 		subPanel.add(new JLabel("Room list"));
 		subPanel.add(Box.createHorizontalGlue());
-		subPanel.add(setRoomListBtn);
 		panel.setSize(200, 300);
 		panel.add(subPanel);
 		panel.add(roomListPane);
@@ -258,7 +243,7 @@ public class Gui extends JFrame {
 					parentnode = (DefaultMutableTreeNode) node.getParent();
 					app.joinRoom(((Room) parentnode.getUserObject()).getId());
 				}
-				app.createAllRoomList();
+				// app.createAllRoomList();
 				displayRoomList(app.getAllRooms());
 			}
 		});
@@ -349,7 +334,8 @@ public class Gui extends JFrame {
 	 * use "nc localhost 4000" in a terminal to create a server and test
 	 */
 	private void displayRoomList(List<Room> roomListToDisplay) {
-
+		// clear the modeltree if there is something
+		((DefaultMutableTreeNode) modeltree.getRoot()).removeAllChildren();
 		for (Room room : roomListToDisplay) {
 			MutableTreeNode newRoom = new DefaultMutableTreeNode(room);
 			for (int j = 0; j < room.getAudience().size(); j++) {
@@ -359,8 +345,9 @@ public class Gui extends JFrame {
 			}
 			((DefaultMutableTreeNode) modeltree.getRoot()).add(newRoom);
 		}
+		// To update the tree
+		modeltree.reload();
 		roomList.setModel(modeltree);
-
 	}
 
 	public int getRoomSelected() {
