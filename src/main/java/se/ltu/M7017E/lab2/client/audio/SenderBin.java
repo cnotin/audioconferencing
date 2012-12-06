@@ -74,9 +74,9 @@ public class SenderBin extends Bin {
 		Pad upstreamPeer = sink.getPeer();
 		upstreamPeer.setBlocked(true);
 
+		this.setState(State.NULL);
 		System.out.println("Remove from parent bin "
 				+ ((Bin) this.getParent()).remove(this));
-		this.setState(State.NULL);
 
 		upstreamPeer.getParentElement().releaseRequestPad(upstreamPeer);
 	}
