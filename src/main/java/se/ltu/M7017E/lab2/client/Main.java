@@ -18,21 +18,21 @@ public class Main {
 		if (args.length > 0 && args[0].equals("NO_UI")) {
 			System.out.println("DEBUG: Don't display UI.");
 
-			System.out.println("Receive");
+			System.out.println("Send");
 			new java.util.Scanner(System.in).nextLine();
-			app.getReceiver().receiveFromUnicast();
+			app.getSender().streamTo("127.0.0.1", 5050);
 
-			System.out.println("Stop receive");
+			System.out.println("Stop send");
 			new java.util.Scanner(System.in).nextLine();
-			app.getReceiver().stopUnicastReceiving();
+			app.getSender().stopStreamingToUnicast();
 
-			System.out.println("Receive again");
+			System.out.println("Send again");
 			new java.util.Scanner(System.in).nextLine();
-			app.getReceiver().receiveFromUnicast();
+			app.getSender().streamTo("127.0.0.1", 5050);
 
-			System.out.println("Stop receive again");
+			System.out.println("Stop send again");
 			new java.util.Scanner(System.in).nextLine();
-			app.getReceiver().stopUnicastReceiving();
+			app.getSender().stopStreamingToUnicast();
 		} else {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
