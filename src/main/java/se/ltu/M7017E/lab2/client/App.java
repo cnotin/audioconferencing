@@ -69,7 +69,7 @@ public class App {
 		control.send(new Hello(this.username).toString());
 
 		// ############ GSTREAMER STUFF ###############
-		Gst.init("Audioconferencing", new String[] { "--gst-debug-level=3",
+		Gst.init("Audioconferencing", new String[] { "--gst-debug-level=2",
 				"--gst-debug-no-color" });
 		receiver = new ReceiverPipeline();
 		receiver.play();
@@ -109,17 +109,22 @@ public class App {
 		}
 	}
 
+	/**
+	 * Send a message to the server to leave the room and disconnect the user
+	 * 
+	 * @param roomId
+	 *            the room to leave
+	 */
 	public void leaveRoom(int roomId) {
-		sender.stopStreamingToRoom(roomId);
-		receiver.stopRoomReceiving(roomId);
-
 		getControl().send(new Leave(roomId).toString());
 		for (Room room : allRooms) {
-			if (room.getAudienceAsStrings().contains(username)) {
+			if (room.getId() == roomId) {
 				allRooms.get(allRooms.indexOf(room)).getAudience()
 						.remove(username);
 			}
 		}
+		sender.stopStreamingToRoom(roomId);
+		receiver.stopRoomReceiving(roomId);
 	}
 
 	public void fetchUsername() {

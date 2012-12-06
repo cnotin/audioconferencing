@@ -89,7 +89,6 @@ public class ControlChannel implements Runnable {
 			// someone left a room
 			app.msg(Left.fromString(message));
 			updatedAudience = message;
-			// this.getRoomsListFinished().release();
 		} else if (message.startsWith("ROOMS_START")) {
 			msgList.clear();
 			sendingRoomList = true;
