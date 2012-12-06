@@ -52,9 +52,6 @@ public class ReceiverPipeline extends Pipeline {
 		add(friend);
 		friend.syncStateWithParent();
 
-		// connect its output to the adder
-		friend.link(adder);
-
 		return friend.getPort();
 	}
 
