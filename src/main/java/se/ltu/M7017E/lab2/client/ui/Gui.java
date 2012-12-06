@@ -141,7 +141,7 @@ public class Gui extends JFrame {
 		roomList = new JTree(modeltree);
 		roomList.getSelectionModel().setSelectionMode(
 				TreeSelectionModel.SINGLE_TREE_SELECTION);
-		roomList.expandRow(1);
+		roomList.expandRow(2);
 
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		JScrollPane roomListPane = new JScrollPane(roomList);
@@ -235,18 +235,14 @@ public class Gui extends JFrame {
 				} else if (node.getLevel() == 0) {
 					// the selection is the Root
 					showMessage("No Room selected");
+				} else if (node.getLevel() == 1) {
+					// the selection is a room, no node change
+				} else if (node.getLevel() == 2) {
+					// the selection is a name in a Room, get the room
+					node = (DefaultMutableTreeNode) node.getParent();
 				}
-				// the selection is a room
-				else if (node.getLevel() == 1) {
-					app.joinRoom(((Room) node.getUserObject()).getId());
-				}
-				// the selection is a name in a Room
-				else if (node.getLevel() == 2) {
-					DefaultMutableTreeNode parentnode = new DefaultMutableTreeNode();
-					parentnode = (DefaultMutableTreeNode) node.getParent();
-					app.joinRoom(((Room) parentnode.getUserObject()).getId());
-				}
-				// app.createAllRoomList();
+				app.joinRoom(((Room) node.getUserObject()).getId());
+				app.createMyRooms(app.getAllRooms());
 				displayRoomList(app.getAllRooms());
 			}
 		});
@@ -346,11 +342,11 @@ public class Gui extends JFrame {
 		((DefaultMutableTreeNode) modeltree.getRoot()).removeAllChildren();
 		for (Room room : roomListToDisplay) {
 			MutableTreeNode newRoom = new DefaultMutableTreeNode(room);
-			for (int j = 0; j < room.getAudience().size(); j++) {
-				String contactName = room.getAudienceAsStrings().get(j);
+			for (String contactName : room.getAudience()) {
 				MutableTreeNode contact = new DefaultMutableTreeNode(
 						contactName);
-				newRoom.insert(contact, j);
+				newRoom.insert(contact,
+						room.getAudienceAsStrings().indexOf(contactName));
 			}
 			((DefaultMutableTreeNode) modeltree.getRoot()).add(newRoom);
 		}

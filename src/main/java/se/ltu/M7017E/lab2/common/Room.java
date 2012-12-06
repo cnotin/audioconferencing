@@ -42,5 +42,4 @@ public class Room {
 	public String toString() {
 		return ("Room " + id);
 	}
-
 }

@@ -341,4 +341,17 @@ public class App {
 			msgFromServer.add(string);
 		}
 	}
+
+	public void createMyRooms(List<Room> allRoomList) {
+		Room mynewRoom;
+		myRooms.clear();
+		for (Room rooms : allRoomList) {
+			if (rooms.getAudienceAsStrings().contains(username)) {
+				mynewRoom = new Room();
+				mynewRoom.setAudience(rooms.getAudience());
+				mynewRoom.setId(rooms.getId());
+				myRooms.add(mynewRoom);
+			}
+		}
+	}
 }
