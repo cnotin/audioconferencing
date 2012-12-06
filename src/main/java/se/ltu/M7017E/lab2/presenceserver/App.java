@@ -45,6 +45,14 @@ public class App {
 		}
 	}
 
+	/**
+	 * Refresh the list of clients connected when a Hello message is received,
+	 * and send a list of the connected names to each connected client with a
+	 * ConnectedList message
+	 * 
+	 * @param client
+	 * @param hello
+	 */
 	public void msg(Client client, Hello hello) {
 		client.setName(hello.getName());
 		clients.add(client);
@@ -59,6 +67,14 @@ public class App {
 
 	}
 
+	/**
+	 * Refresh the list of clients connected when a Bye message is received, and
+	 * send a list of the connected names to each connected client with a
+	 * ConnectedList message
+	 * 
+	 * @param client
+	 * @param bye
+	 */
 	public void msg(Client client, Bye bye) {
 		// someone leaves, maybe he forgot to leave properly each room => do it
 		for (Map.Entry<Integer, Room> iter : rooms.entrySet()) {
@@ -100,6 +116,14 @@ public class App {
 		client.send(audience);
 	}
 
+	/**
+	 * Check if the receiver of the call is connected. If he is the call message
+	 * is transmitted to the receiver, else an ERROR message is sent to the
+	 * sender
+	 * 
+	 * @param sender
+	 * @param call
+	 */
 	public void msg(Client sender, Call call) {
 		Client receiver = findClientsByName(call.getReceiver());
 		if (receiver != null) {
@@ -113,11 +137,21 @@ public class App {
 		}
 	}
 
+	/**
+	 * Send a message to tell the receiver that the call is finished
+	 * 
+	 * @param stop
+	 */
 	public void msg(StopCall stop) {
 		Client client = findClientsByName(stop.getReceiver());
 		client.send(stop.toString());
 	}
 
+	/**
+	 * Send the AnswerCall message (information about the answerer + the answer
+	 * yes/no) to the requester of a call
+	 * 
+	 */
 	public void msg(Client answerer, AnswerCall answer) {
 		Client requester = findClientsByName(answer.getSender());
 		System.out.println(answer.toString());
@@ -146,6 +180,9 @@ public class App {
 		client.send(new RoomsStop());
 	}
 
+	/**
+	 * Send a message to all the connected clients
+	 */
 	public void broadcast(String message) {
 		for (Client client : clients) {
 			client.send(message);

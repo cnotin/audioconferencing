@@ -177,6 +177,10 @@ public class App {
 		sender.streamTo(ipReceiver, port);
 	}
 
+	/**
+	 * hang up. Stop the pipelines and send a message to the server for telling
+	 * the other client the call is finished
+	 */
 	public void stopCall() {
 
 		// stop streaming to friend
@@ -189,6 +193,15 @@ public class App {
 		control.send(stop.toString());
 	}
 
+	/**
+	 * send an AnswerCall message to the server which transmit to the other
+	 * client. Used to tell if we accept or refuse the call
+	 * 
+	 * @param String
+	 *            answer : "yes" or "no"
+	 * @param Call
+	 *            call : the Call message received from the server
+	 */
 	public void answerCall(String answer, Call call) {
 		int port = receiver.receiveFromUnicast();
 
@@ -239,12 +252,18 @@ public class App {
 		}
 	}
 
-	public void addContact(String username) {
+	/**
+	 * Add a contact in the list of contacts
+	 */
+	public void addContact(String contact) {
 		this.contacts.add(username);
 		saveContacts();
 	}
 
-	public void removeContact(String username) {
+	/**
+	 * Remove a contact from the list of contacts.
+	 */
+	public void removeContact(String contact) {
 		if (username.endsWith("(Disconnected)")) {
 			username = username.substring(0, username.length() - 15);
 		}
@@ -253,6 +272,10 @@ public class App {
 		saveContacts();
 	}
 
+	/**
+	 * Set the people connected to the server list with the ConnectedMessage
+	 * received from the server
+	 */
 	public void setConnected(String connectedMessage) {
 		ConnectedList connectedList = ConnectedList
 				.fromString(connectedMessage);
