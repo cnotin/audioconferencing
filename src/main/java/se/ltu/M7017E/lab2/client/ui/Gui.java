@@ -237,11 +237,12 @@ public class Gui extends JFrame {
 					showMessage("No Room selected");
 				} else if (node.getLevel() == 1) {
 					// the selection is a room, no node change
+					app.joinRoom(((Room) node.getUserObject()).getId());
 				} else if (node.getLevel() == 2) {
 					// the selection is a name in a Room, get the room
 					node = (DefaultMutableTreeNode) node.getParent();
+					app.joinRoom(((Room) node.getUserObject()).getId());
 				}
-				app.joinRoom(((Room) node.getUserObject()).getId());
 				app.createMyRooms(app.getAllRooms());
 				displayRoomList(app.getAllRooms());
 			}
@@ -339,9 +340,16 @@ public class Gui extends JFrame {
 	 */
 	private void displayRoomList(List<Room> roomListToDisplay) {
 		// clear the modeltree if there is already something
+		MutableTreeNode newRoom;
 		((DefaultMutableTreeNode) modeltree.getRoot()).removeAllChildren();
 		for (Room room : roomListToDisplay) {
-			MutableTreeNode newRoom = new DefaultMutableTreeNode(room);
+			if (app.getMyRooms().contains(room)) {
+				newRoom = new DefaultMutableTreeNode(room.toString()
+						.toUpperCase());
+			} else {
+				newRoom = new DefaultMutableTreeNode(room);
+			}
+			// MutableTreeNode newRoom = new DefaultMutableTreeNode(room);
 			for (String contactName : room.getAudience()) {
 				MutableTreeNode contact = new DefaultMutableTreeNode(
 						contactName);
