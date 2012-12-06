@@ -7,6 +7,7 @@ import org.gstreamer.ElementFactory;
 import org.gstreamer.GhostPad;
 import org.gstreamer.Pad;
 import org.gstreamer.PadLinkReturn;
+import org.gstreamer.State;
 import org.gstreamer.elements.FakeSink;
 
 import se.ltu.M7017E.lab2.client.Tool;
@@ -94,5 +95,22 @@ public class RoomReceiver extends Bin {
 				.link(pad).equals(PadLinkReturn.OK));
 
 		pause();
+	}
+
+	/**
+	 * Called to cleanly remove this Bin from its parent. Assumption: it was
+	 * connected downstream through a request pad (that will also be cleanly
+	 * released)
+	 */
+	public void getOut() {
+		// clean request pad from adder
+		Pad downstreamPeer = src.getPeer();
+
+		this.setState(State.NULL);
+
+		System.out.println("Remove from parent bin "
+				+ ((Bin) this.getParent()).remove(this));
+
+		downstreamPeer.getParentElement().releaseRequestPad(downstreamPeer);
 	}
 }

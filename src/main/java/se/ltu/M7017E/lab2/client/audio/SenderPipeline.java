@@ -13,12 +13,17 @@ import se.ltu.M7017E.lab2.client.Config;
 import se.ltu.M7017E.lab2.client.Tool;
 
 public class SenderPipeline extends Pipeline {
+	private static final String SENDER_UNICAST = "sender_unicast";
+	private static final String SENDER_ROOM_PREFIX = "sender_room";
+
 	private Map<Integer, SenderBin> rooms = new HashMap<Integer, SenderBin>();
 	private final BaseSrc src = (BaseSrc) ElementFactory.make("alsasrc", null);
 	private final Element tee = ElementFactory.make("tee", null);
+	// THE SenderBin to talk with somebody
+	SenderBin unicastSender;
 
 	public SenderPipeline() {
-		super("sender");
+		super("sender_pipeline");
 
 		// live source => drop stream when in paused state
 		src.setLive(true);
@@ -41,7 +46,7 @@ public class SenderPipeline extends Pipeline {
 		// don't join if already joined
 		if (!rooms.containsKey(roomId)) {
 			// create the sender bin
-			SenderBin room = new SenderBin("sender_room" + roomId,
+			SenderBin room = new SenderBin(SENDER_ROOM_PREFIX + roomId,
 					Config.BASE_IP + roomId, Config.RTP_MULTICAST_PORT, true);
 			rooms.put(roomId, room);
 			// add it to this
@@ -62,7 +67,8 @@ public class SenderPipeline extends Pipeline {
 	public void stopStreamingToRoom(int roomId) {
 		// can't leave if not joined
 		if (rooms.containsKey(roomId)) {
-			// TODO
+			((SenderBin) getElementByName(SENDER_ROOM_PREFIX + roomId))
+					.getOut();
 		}
 	}
 
@@ -78,20 +84,22 @@ public class SenderPipeline extends Pipeline {
 	 */
 	public void streamTo(String ip, int port) {
 		// create the sender bin
-		SenderBin friend = new SenderBin("send_unicast", ip, port, false);
+		unicastSender = new SenderBin(SENDER_UNICAST, ip, port, false);
 		// add it to this
-		add(friend);
-		friend.syncStateWithParent();
+		add(unicastSender);
+		unicastSender.syncStateWithParent();
 
 		// connect its input to the tee
-		Tool.successOrDie("tee-unicastSender",
-				tee.getRequestPad("src%d").link(friend.getStaticPad("sink"))
+		Tool.successOrDie(
+				"tee-unicastSender",
+				tee.getRequestPad("src%d")
+						.link(unicastSender.getStaticPad("sink"))
 						.equals(PadLinkReturn.OK));
 
 		play();
 	}
 
 	public void stopStreamingToUnicast() {
-		((SenderBin) getElementByName("send_unicast")).getOut();
+		((SenderBin) getElementByName(SENDER_UNICAST)).getOut();
 	}
 }
