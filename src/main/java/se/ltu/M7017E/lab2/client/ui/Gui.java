@@ -23,6 +23,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -271,14 +272,19 @@ public class Gui extends JFrame {
 	}
 
 	private void callContact() {
+		new SwingWorker<Object, Object>() {
+			@Override
+			protected Object doInBackground() throws Exception {
+				System.out.println(contactsList.getSelectedValue());
 
-		System.out.println(contactsList.getSelectedValue());
-
-		if (contactsList.getSelectedValue() != null) {
-			this.app.askToCall((String) contactsList.getSelectedValue());
-		} else {
-			showMessage("Please select a person to call!");
-		}
+				if (contactsList.getSelectedValue() != null) {
+					app.askToCall((String) contactsList.getSelectedValue());
+				} else {
+					showMessage("Please select a person to call!");
+				}
+				return null;
+			}
+		}.execute();
 	}
 
 	/**
