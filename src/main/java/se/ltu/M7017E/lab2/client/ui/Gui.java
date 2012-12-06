@@ -145,6 +145,30 @@ public class Gui extends JFrame {
 				TreeSelectionModel.SINGLE_TREE_SELECTION);
 		roomList.expandRow(2);
 
+		roomList.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent evt) {
+				if (evt.getClickCount() == 2) {
+					System.out.println("the game");
+					DefaultMutableTreeNode node = (DefaultMutableTreeNode) roomList
+							.getLastSelectedPathComponent();
+					if (node == null) {
+						displayRoomList(app.getAllRooms());
+					} else if (node.getLevel() == 0) {
+						// the selection is the Root
+						showMessage("No Room selected");
+					} else if (node.getLevel() == 1) {
+						// the selection is a room, no node change
+						app.joinRoom(((Room) node.getUserObject()).getId());
+					} else if (node.getLevel() == 2) {
+						// the selection is a name in a Room, get the room
+						node = (DefaultMutableTreeNode) node.getParent();
+						app.joinRoom(((Room) node.getUserObject()).getId());
+					}
+					app.createMyRooms(app.getAllRooms());
+					displayRoomList(app.getAllRooms());
+				}
+			}
+		});
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		JScrollPane roomListPane = new JScrollPane(roomList);
 		subPanel.add(new JLabel("Room list"));
