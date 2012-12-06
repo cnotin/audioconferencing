@@ -255,7 +255,7 @@ public class App {
 	 * Add a contact in the list of contacts
 	 */
 	public void addContact(String contact) {
-		this.contacts.add(username);
+		this.contacts.add(contact);
 		saveContacts();
 	}
 
