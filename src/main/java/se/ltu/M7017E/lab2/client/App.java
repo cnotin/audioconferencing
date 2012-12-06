@@ -245,6 +245,10 @@ public class App {
 	}
 
 	public void removeContact(String username) {
+		if (username.endsWith("(Disconnected)")) {
+			username = username.substring(0, username.length() - 15);
+		}
+
 		this.contacts.remove(username);
 		saveContacts();
 	}
