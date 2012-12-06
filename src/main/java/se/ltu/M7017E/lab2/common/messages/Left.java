@@ -7,10 +7,17 @@ public class Left {
 	private int room;
 	private String name;
 
+	/**
+	 * transform the object into a string
+	 */
 	public String toString() {
 		return "LEFT," + room + "," + name;
 	}
 
+	/**
+	 * build a Left object from a String. The format of the string must be:
+	 * "LEAVE",roomName,name
+	 */
 	public static Left fromString(String str) {
 		Left ret = new Left();
 

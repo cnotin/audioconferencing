@@ -4,7 +4,9 @@ import lombok.Data;
 
 @Data
 public class ListMsg {
-
+	/**
+	 * transform the object into a string
+	 */
 	public String toString() {
 		return "LIST";
 	}

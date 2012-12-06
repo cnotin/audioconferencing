@@ -8,10 +8,18 @@ public class StopCall {
 	@Setter
 	public String receiver;
 
+	/**
+	 * transform the object into a string
+	 */
+
 	public String toString() {
 		return "STOPCALL," + receiver;
 	}
 
+	/**
+	 * build a Left object from a String. The format of the string must be:
+	 * "STOPCALL",receiverName
+	 */
 	public static StopCall fromString(String message) {
 		StopCall ret = new StopCall();
 		String[] tokens = message.split(",");
