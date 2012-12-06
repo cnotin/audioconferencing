@@ -472,7 +472,7 @@ public class Gui extends JFrame {
 	 * @param roomListToDisplay
 	 *            The list of rooms to display in the tree
 	 */
-	private void displayRoomList(List<Room> roomListToDisplay) {
+	public void displayRoomList(List<Room> roomListToDisplay) {
 		// clear the modeltree if there is already something
 		((DefaultMutableTreeNode) modeltree.getRoot()).removeAllChildren();
 		for (Room room : roomListToDisplay) {

@@ -82,8 +82,16 @@ public class App {
 	}
 
 	public void msg(Left left) {
-		// TODO: update tree
+		String splitMessage[] = left.toString().split(",", 0);
 
+		for (Room leftRoom : allRooms) {
+			if (leftRoom.getId() == Integer.parseInt(splitMessage[1])) {
+				allRooms.get(allRooms.indexOf(leftRoom)).getAudience()
+						.remove(splitMessage[2]);
+			}
+		}
+		gui.displayRoomList(allRooms);
+		createMyRooms(allRooms);
 	}
 
 	public void msg(StopCall stopCall) {
