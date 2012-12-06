@@ -7,6 +7,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
@@ -26,6 +27,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
@@ -44,6 +47,7 @@ public class Gui extends JFrame {
 	private JButton joinBtn;
 	private JButton newBtn;
 	private JButton deleteBtn;
+	private JButton quitBtn;
 	private JList contactsList;
 	public JTree roomList;
 	private ImageIcon callIcon = new ImageIcon(getClass().getResource(
@@ -56,6 +60,8 @@ public class Gui extends JFrame {
 			"/icons/dlt_button.png"));
 	private ImageIcon joinIcon = new ImageIcon(getClass().getResource(
 			"/icons/door_button.png"));
+	private ImageIcon quitIcon = new ImageIcon(getClass().getResource(
+			"/icons/quit_button.png"));
 
 	private DefaultListModel contactsListModel = new DefaultListModel();
 	private DefaultTreeModel modeltree;
@@ -132,7 +138,6 @@ public class Gui extends JFrame {
 
 		JPanel panel = new JPanel();
 		JPanel subPanel = new JPanel();
-
 		subPanel.setLayout(new BoxLayout(subPanel, BoxLayout.X_AXIS));
 
 		// initialize the RoomList as a treemodel
@@ -142,6 +147,26 @@ public class Gui extends JFrame {
 		roomList.getSelectionModel().setSelectionMode(
 				TreeSelectionModel.SINGLE_TREE_SELECTION);
 		roomList.expandRow(2);
+
+		roomList.addTreeSelectionListener(new TreeSelectionListener() {
+
+			@Override
+			public void valueChanged(TreeSelectionEvent arg0) {
+				// TODO Auto-generated method stub
+				DefaultMutableTreeNode nodeSelected = (DefaultMutableTreeNode) roomList
+						.getLastSelectedPathComponent();
+				if (nodeSelected == null) {
+				} else if (nodeSelected.toString().contains("<html>")) {
+					// if the room is already joined, display quitBtn
+					joinBtn.setVisible(false);
+					quitBtn.setVisible(true);
+				} else {
+					// otherwise display JoinBtn
+					joinBtn.setVisible(true);
+					quitBtn.setVisible(false);
+				}
+			}
+		});
 
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		JScrollPane roomListPane = new JScrollPane(roomList);
@@ -245,8 +270,38 @@ public class Gui extends JFrame {
 				}
 				app.createMyRooms(app.getAllRooms());
 				displayRoomList(app.getAllRooms());
+				// quitBtn.setVisible(true);
+				// joinBtn.setVisible(false);
 			}
 		});
+
+		quitBtn = new JButton("Quit Room", quitIcon);
+		quitBtn.setVisible(false);
+		quitBtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				DefaultMutableTreeNode node = (DefaultMutableTreeNode) roomList
+						.getLastSelectedPathComponent();
+				// if (node.toString().contains(()))
+				if (node == null) {
+				} else if (node.getLevel() == 0) {
+					// the selection is the Root
+					showMessage("No Room selected");
+				} else if (node.getLevel() == 1) {
+					// the selection is a room, no node change
+					app.leaveRoom(((Room) node.getUserObject()).getId());
+				} else if (node.getLevel() == 2) {
+					// the selection is a name in a Room, get the room
+					node = (DefaultMutableTreeNode) node.getParent();
+					app.leaveRoom(((Room) node.getUserObject()).getId());
+				}
+				app.createMyRooms(app.getAllRooms());
+				displayRoomList(app.getAllRooms());
+				// joinBtn.setVisible(true);
+				// quitBtn.setVisible(false);
+			}
+		});
+
 		callBtn = new JButton("Call contact", callIcon);
 		hangUpBtn = new JButton("Hang up", hangIcon);
 		callBtn.addActionListener(new ActionListener() {
@@ -262,7 +317,10 @@ public class Gui extends JFrame {
 			}
 		});
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+		panel.setBorder(BorderFactory.createEmptyBorder(10, 50, 10, 50));
 		panel.add(joinBtn);
+		panel.add(quitBtn);
+		panel.add(Box.createHorizontalGlue());
 		panel.add(callBtn);
 		panel.add(hangUpBtn);
 		return panel;

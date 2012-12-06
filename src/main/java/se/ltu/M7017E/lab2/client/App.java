@@ -29,6 +29,7 @@ import se.ltu.M7017E.lab2.common.messages.Call;
 import se.ltu.M7017E.lab2.common.messages.ConnectedList;
 import se.ltu.M7017E.lab2.common.messages.Hello;
 import se.ltu.M7017E.lab2.common.messages.Joined;
+import se.ltu.M7017E.lab2.common.messages.Leave;
 import se.ltu.M7017E.lab2.common.messages.Left;
 import se.ltu.M7017E.lab2.common.messages.ListMsg;
 import se.ltu.M7017E.lab2.common.messages.StopCall;
@@ -82,6 +83,7 @@ public class App {
 
 	public void msg(Left left) {
 		// TODO: update tree
+
 	}
 
 	public void msg(StopCall stopCall) {
@@ -104,14 +106,28 @@ public class App {
 				}
 			}
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
 	public void leaveRoom(int roomId) {
+		Room newRoom = new Room();
+
 		sender.stopStreamingToRoom(roomId);
 		receiver.stopRoomReceiving(roomId);
+
+		try {
+			getControl().send(new Leave(roomId).toString());
+			control.getRoomsListFinished().acquire();
+			newRoom = updateAfterLeft(control.getUpdatedAudience());
+			for (Room oldRoom : allRooms) {
+				if (oldRoom.getId() == newRoom.getId()) {
+					allRooms.set(allRooms.indexOf(oldRoom), newRoom);
+				}
+			}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void fetchUsername() {
@@ -371,6 +387,29 @@ public class App {
 		for (int i = 2; i < splitnewAudience.length; i++) {
 			String string = splitnewAudience[i];
 			updatedContactList.add(string);
+		}
+		updatedRoom.setAudience(updatedContactList);
+		return updatedRoom;
+	}
+
+	public Room updateAfterLeft(String leftMessage) {
+		String splitMessage[];
+		String deleteContact;
+		Set<String> updatedContactList = new TreeSet<String>();
+		Room updatedRoom = new Room();
+
+		splitMessage = leftMessage.split(",", 0);
+		deleteContact = splitMessage[2];
+		updatedRoom.setId(Integer.parseInt(splitMessage[1]));
+		// for all the rooms
+		for (Room currentRoom : allRooms) {
+			if (currentRoom.getId() == updatedRoom.getId()) {
+				for (String contactName : currentRoom.getAudienceAsStrings()) {
+					if (contactName != deleteContact) {
+						updatedContactList.add(contactName);
+					}
+				}
+			}
 		}
 		updatedRoom.setAudience(updatedContactList);
 		return updatedRoom;

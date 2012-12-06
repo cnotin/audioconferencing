@@ -43,10 +43,10 @@ public class ControlChannel implements Runnable {
 		this.app = app;
 
 		try {
-			// Socket socket = new Socket(InetAddress.getByName("localhost"),
+			Socket socket = new Socket(InetAddress.getByName("localhost"), 4000);
+			// Socket socket = new
+			// Socket(InetAddress.getByName("130.240.53.166"),
 			// 4000);
-			Socket socket = new Socket(InetAddress.getByName("130.240.53.166"),
-					4000);
 			in = new BufferedReader(new InputStreamReader(
 					socket.getInputStream()));
 			out = new PrintStream(socket.getOutputStream());
@@ -88,6 +88,7 @@ public class ControlChannel implements Runnable {
 		} else if (message.startsWith("LEFT")) {
 			// someone left a room
 			app.msg(Left.fromString(message));
+			this.getRoomsListFinished().release();
 		} else if (message.startsWith("ROOMS_START")) {
 			msgList.clear();
 			sendingRoomList = true;
