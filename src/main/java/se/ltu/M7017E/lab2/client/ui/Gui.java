@@ -476,14 +476,17 @@ public class Gui extends JFrame {
 		// clear the modeltree if there is already something
 		((DefaultMutableTreeNode) modeltree.getRoot()).removeAllChildren();
 		for (Room room : roomListToDisplay) {
-			DefaultMutableTreeNode newRoom = new DefaultMutableTreeNode(room);
-			for (String contactName : room.getAudience()) {
-				MutableTreeNode contact = new DefaultMutableTreeNode(
-						contactName);
-				newRoom.insert(contact,
-						room.getAudienceAsStrings().indexOf(contactName));
+			if (!room.getAudienceAsStrings().isEmpty()) {
+				DefaultMutableTreeNode newRoom = new DefaultMutableTreeNode(
+						room);
+				for (String contactName : room.getAudience()) {
+					MutableTreeNode contact = new DefaultMutableTreeNode(
+							contactName);
+					newRoom.insert(contact, room.getAudienceAsStrings()
+							.indexOf(contactName));
+				}
+				((DefaultMutableTreeNode) modeltree.getRoot()).add(newRoom);
 			}
-			((DefaultMutableTreeNode) modeltree.getRoot()).add(newRoom);
 		}
 		// To update the tree
 		modeltree.reload();

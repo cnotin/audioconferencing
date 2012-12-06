@@ -77,10 +77,36 @@ public class App {
 		sender = new SenderPipeline();
 	}
 
+	/**
+	 * Update the Allroom variable when someone join a room in which the user
+	 * is. If the user is not in the room, the tree is not updated since the
+	 * Join message has not be received
+	 * 
+	 * @param joined
+	 *            the message received from the server
+	 */
 	public void msg(Joined joined) {
-		// TODO: update tree
+		String splitMessage[] = joined.toString().split(",", 0);
+
+		for (Room joinedRoom : allRooms) {
+			if (joinedRoom.getId() == Integer.parseInt(splitMessage[1])) {
+				allRooms.get(allRooms.indexOf(joinedRoom)).getAudience()
+						.remove(splitMessage[2]);
+			}
+		}
+		// TODO : not use the Gui ?
+		gui.displayRoomList(allRooms);
+		createMyRooms(allRooms);
 	}
 
+	/**
+	 * Update the Allroom variable when someone left a room in which the user
+	 * is. If the user is not in the room, the tree is not updated since the
+	 * Left message has not be received
+	 * 
+	 * @param left
+	 *            the message received from the server
+	 */
 	public void msg(Left left) {
 		String splitMessage[] = left.toString().split(",", 0);
 
@@ -90,6 +116,7 @@ public class App {
 						.remove(splitMessage[2]);
 			}
 		}
+		// TODO : not use the Gui ?
 		gui.displayRoomList(allRooms);
 		createMyRooms(allRooms);
 	}
