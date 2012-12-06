@@ -77,7 +77,6 @@ public class ControlChannel implements Runnable {
 
 	public void caseMessage(String message) {
 		if (message.startsWith("JOINED")) {
-			// if (message.startsWith("JOIN")) {
 			// someone joins a room
 			app.msg(Joined.fromString(message));
 			// updatedAudience = new String();

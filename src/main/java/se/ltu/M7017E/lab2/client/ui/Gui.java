@@ -229,8 +229,10 @@ public class Gui extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				DefaultMutableTreeNode node = (DefaultMutableTreeNode) roomList
 						.getLastSelectedPathComponent();
-				// the selection is the Root
-				if (node.getLevel() == 0) {
+				if (node == null) {
+					displayRoomList(app.getAllRooms());
+				} else if (node.getLevel() == 0) {
+					// the selection is the Root
 					showMessage("No Room selected");
 				}
 				// the selection is a room
@@ -238,7 +240,7 @@ public class Gui extends JFrame {
 					app.joinRoom(((Room) node.getUserObject()).getId());
 				}
 				// the selection is a name in a Room
-				else {
+				else if (node.getLevel() == 2) {
 					DefaultMutableTreeNode parentnode = new DefaultMutableTreeNode();
 					parentnode = (DefaultMutableTreeNode) node.getParent();
 					app.joinRoom(((Room) parentnode.getUserObject()).getId());
@@ -334,13 +336,14 @@ public class Gui extends JFrame {
 	 * use "nc localhost 4000" in a terminal to create a server and test
 	 */
 	private void displayRoomList(List<Room> roomListToDisplay) {
-		// clear the modeltree if there is something
+		// clear the modeltree if there is already something
 		((DefaultMutableTreeNode) modeltree.getRoot()).removeAllChildren();
 		for (Room room : roomListToDisplay) {
 			MutableTreeNode newRoom = new DefaultMutableTreeNode(room);
 			for (int j = 0; j < room.getAudience().size(); j++) {
-				MutableTreeNode contact = new DefaultMutableTreeNode(room
-						.getAudienceAsStrings().get(j));
+				String contactName = room.getAudienceAsStrings().get(j);
+				MutableTreeNode contact = new DefaultMutableTreeNode(
+						contactName);
 				newRoom.insert(contact, j);
 			}
 			((DefaultMutableTreeNode) modeltree.getRoot()).add(newRoom);
