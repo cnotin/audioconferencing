@@ -39,7 +39,22 @@ public class Room {
 		return audience.contains(client);
 	}
 
+	/**
+	 * Way to print the room in the tree.
+	 * 
+	 * @return the string with the room Id
+	 */
 	public String toString() {
 		return ("Room " + id);
+	}
+
+	/**
+	 * Way to print the room if the user is in it.
+	 * 
+	 * @return the string with the room Id
+	 */
+	public String toStringBold() {
+		return ("<html><strong>Room " + id + "</html></strong>");
+
 	}
 }

@@ -43,10 +43,10 @@ public class ControlChannel implements Runnable {
 		this.app = app;
 
 		try {
-			Socket socket = new Socket(InetAddress.getByName("localhost"), 4000);
-			// Socket socket = new
-			// Socket(InetAddress.getByName("130.240.53.166"),
+			// Socket socket = new Socket(InetAddress.getByName("localhost"),
 			// 4000);
+			Socket socket = new Socket(InetAddress.getByName("130.240.53.166"),
+					4000);
 			in = new BufferedReader(new InputStreamReader(
 					socket.getInputStream()));
 			out = new PrintStream(socket.getOutputStream());
@@ -75,11 +75,16 @@ public class ControlChannel implements Runnable {
 		}
 	}
 
+	/**
+	 * Apply the method needed depending on the message received from the server
+	 * 
+	 * @param message
+	 *            the message received from the server
+	 */
 	public void caseMessage(String message) {
 		if (message.startsWith("JOINED")) {
 			// someone joins a room
 			app.msg(Joined.fromString(message));
-			// updatedAudience = new String();
 		} else if (message.startsWith("LEFT")) {
 			// someone left a room
 			app.msg(Left.fromString(message));
