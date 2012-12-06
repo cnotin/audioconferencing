@@ -47,14 +47,4 @@ public class Room {
 	public String toString() {
 		return ("Room " + id);
 	}
-
-	/**
-	 * Way to print the room if the user is in it.
-	 * 
-	 * @return the string with the room Id
-	 */
-	public String toStringBold() {
-		return ("<html><strong>Room " + id + "</html></strong>");
-
-	}
 }

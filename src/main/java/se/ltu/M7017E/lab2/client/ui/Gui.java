@@ -1,5 +1,6 @@
 package se.ltu.M7017E.lab2.client.ui;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -32,8 +33,10 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreeSelectionModel;
 
+import lombok.AllArgsConstructor;
 import se.ltu.M7017E.lab2.client.App;
 import se.ltu.M7017E.lab2.common.Room;
 import se.ltu.M7017E.lab2.common.messages.Call;
@@ -147,7 +150,7 @@ public class Gui extends JFrame {
 		roomList.getSelectionModel().setSelectionMode(
 				TreeSelectionModel.SINGLE_TREE_SELECTION);
 		roomList.expandRow(2);
-
+		roomList.setCellRenderer(new CellRender(roomList.getCellRenderer()));
 		roomList.addTreeSelectionListener(new TreeSelectionListener() {
 
 			@Override
@@ -156,7 +159,16 @@ public class Gui extends JFrame {
 				DefaultMutableTreeNode nodeSelected = (DefaultMutableTreeNode) roomList
 						.getLastSelectedPathComponent();
 				if (nodeSelected == null) {
-				} else if (nodeSelected.toString().contains("<html>")) {
+				} else if ((nodeSelected.getLevel() == 1)
+						&& app.getMyRooms().contains(
+								nodeSelected.getUserObject())) {
+					// if the room is already joined, display quitBtn
+					joinBtn.setVisible(false);
+					quitBtn.setVisible(true);
+				} else if ((nodeSelected.getLevel() == 2)
+						&& app.getMyRooms().contains(
+								((DefaultMutableTreeNode) nodeSelected
+										.getParent()).getUserObject())) {
 					// if the room is already joined, display quitBtn
 					joinBtn.setVisible(false);
 					quitBtn.setVisible(true);
@@ -177,6 +189,32 @@ public class Gui extends JFrame {
 		panel.add(roomListPane);
 
 		return panel;
+	}
+
+	@AllArgsConstructor
+	private class CellRender implements TreeCellRenderer {
+		TreeCellRenderer originalRender;
+
+		@Override
+		public Component getTreeCellRendererComponent(JTree tree, Object value,
+				boolean selected, boolean expanded, boolean leaf, int row,
+				boolean hasFocus) {
+			JLabel label = (JLabel) originalRender
+					.getTreeCellRendererComponent(tree, value, selected,
+							expanded, leaf, row, hasFocus);
+
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+			if (node.getLevel() == 1) {
+				Room room = (Room) node.getUserObject();
+				if (app.getMyRooms().contains(room)) {
+					label.setText("<html><strong> Room " + room.getId()
+							+ "</html></strong>");
+				} else {
+					label.setText("Room " + room.getId());
+				}
+			}
+			return label;
+		}
 	}
 
 	/**
@@ -270,8 +308,6 @@ public class Gui extends JFrame {
 				}
 				app.createMyRooms(app.getAllRooms());
 				displayRoomList(app.getAllRooms());
-				// quitBtn.setVisible(true);
-				// joinBtn.setVisible(false);
 			}
 		});
 
@@ -284,6 +320,7 @@ public class Gui extends JFrame {
 						.getLastSelectedPathComponent();
 				// if (node.toString().contains(()))
 				if (node == null) {
+					displayRoomList(app.getAllRooms());
 				} else if (node.getLevel() == 0) {
 					// the selection is the Root
 					showMessage("No Room selected");
@@ -297,8 +334,6 @@ public class Gui extends JFrame {
 				}
 				app.createMyRooms(app.getAllRooms());
 				displayRoomList(app.getAllRooms());
-				// joinBtn.setVisible(true);
-				// quitBtn.setVisible(false);
 			}
 		});
 
@@ -412,15 +447,9 @@ public class Gui extends JFrame {
 	 */
 	private void displayRoomList(List<Room> roomListToDisplay) {
 		// clear the modeltree if there is already something
-		MutableTreeNode newRoom;
 		((DefaultMutableTreeNode) modeltree.getRoot()).removeAllChildren();
 		for (Room room : roomListToDisplay) {
-			if (app.getMyRooms().contains(room)) {
-				// if the user is in the room, the name is bold
-				newRoom = new DefaultMutableTreeNode(room.toStringBold());
-			} else {
-				newRoom = new DefaultMutableTreeNode(room);
-			}
+			DefaultMutableTreeNode newRoom = new DefaultMutableTreeNode(room);
 			for (String contactName : room.getAudience()) {
 				MutableTreeNode contact = new DefaultMutableTreeNode(
 						contactName);

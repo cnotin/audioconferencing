@@ -111,22 +111,15 @@ public class App {
 	}
 
 	public void leaveRoom(int roomId) {
-		Room newRoom = new Room();
-
 		sender.stopStreamingToRoom(roomId);
 		receiver.stopRoomReceiving(roomId);
 
-		try {
-			getControl().send(new Leave(roomId).toString());
-			control.getRoomsListFinished().acquire();
-			newRoom = updateAfterLeft(control.getUpdatedAudience());
-			for (Room oldRoom : allRooms) {
-				if (oldRoom.getId() == newRoom.getId()) {
-					allRooms.set(allRooms.indexOf(oldRoom), newRoom);
-				}
+		getControl().send(new Leave(roomId).toString());
+		for (Room room : allRooms) {
+			if (room.getAudienceAsStrings().contains(username)) {
+				allRooms.get(allRooms.indexOf(room)).getAudience()
+						.remove(username);
 			}
-		} catch (InterruptedException e) {
-			e.printStackTrace();
 		}
 	}
 
@@ -392,7 +385,7 @@ public class App {
 		return updatedRoom;
 	}
 
-	public Room updateAfterLeft(String leftMessage) {
+	public Room updateAfterLeave(String leftMessage) {
 		String splitMessage[];
 		String deleteContact;
 		Set<String> updatedContactList = new TreeSet<String>();
