@@ -8,6 +8,7 @@ import org.gstreamer.ElementFactory;
 import org.gstreamer.GhostPad;
 import org.gstreamer.Pad;
 import org.gstreamer.PadLinkReturn;
+import org.gstreamer.State;
 import org.gstreamer.elements.good.RTPBin;
 
 import se.ltu.M7017E.lab2.client.Tool;
@@ -71,9 +72,12 @@ public class SenderBin extends Bin {
 	public void getOut() {
 		// clean request pad from adder
 		Pad upstreamPeer = sink.getPeer();
-		upstreamPeer.getParentElement().releaseRequestPad(upstreamPeer);
+		upstreamPeer.setBlocked(true);
 
+		this.setState(State.NULL);
 		System.out.println("Remove from parent bin "
 				+ ((Bin) this.getParent()).remove(this));
+
+		upstreamPeer.getParentElement().releaseRequestPad(upstreamPeer);
 	}
 }

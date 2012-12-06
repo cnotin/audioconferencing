@@ -327,6 +327,11 @@ public class Gui extends JFrame {
 		}
 	}
 
+	/**
+	 * Show a message to the user
+	 * 
+	 */
+
 	public void showMessage(String message) {
 
 		JOptionPane.showMessageDialog(app.getGui(), message, null,

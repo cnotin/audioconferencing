@@ -7,7 +7,6 @@ import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
 import org.gstreamer.PadLinkReturn;
 import org.gstreamer.Pipeline;
-import org.gstreamer.State;
 import org.gstreamer.elements.BaseSrc;
 
 import se.ltu.M7017E.lab2.client.Config;
@@ -95,8 +94,6 @@ public class SenderPipeline extends Pipeline {
 	}
 
 	public void stopStreamingToUnicast() {
-		setState(State.NULL);
-
 		((SenderBin) getElementByName("send_unicast")).getOut();
 	}
 }

@@ -17,6 +17,11 @@ public class AnswerCall {
 				+ "," + answer + "," + ipReceiver;
 	}
 
+	/**
+	 * build an AnswerCall object from a String The format of the string must
+	 * be:
+	 * 
+	 */
 	public static AnswerCall fromString(String str) {
 		String[] tokens = str.split(",");
 
