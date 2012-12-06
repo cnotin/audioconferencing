@@ -68,7 +68,7 @@ public class App {
 		control.send(new Hello(this.username).toString());
 
 		// ############ GSTREAMER STUFF ###############
-		Gst.init("Audioconferencing", new String[] { "--gst-debug-level=3",
+		Gst.init("Audioconferencing", new String[] { "--gst-debug-level=2",
 				"--gst-debug-no-color" });
 		receiver = new ReceiverPipeline();
 		receiver.play();
@@ -238,6 +238,9 @@ public class App {
 		}
 	}
 
+	/**
+	 * Save the contact List
+	 */
 	private void saveContacts() {
 		FileWriter file;
 		try {
@@ -352,6 +355,13 @@ public class App {
 		}
 	}
 
+	/**
+	 * Update a room when someone joined it.
+	 * 
+	 * @param newAudience
+	 *            the new contact list in the room joined.
+	 * @return the new state of the room joined
+	 */
 	public Room updateAfterJoin(String newAudience) {
 		Room updatedRoom = new Room();
 		Set<String> updatedContactList = new TreeSet<String>();
@@ -366,6 +376,13 @@ public class App {
 		return updatedRoom;
 	}
 
+	/**
+	 * Update the message received from the server when asking for a list of
+	 * rooms.
+	 * 
+	 * @param CloneList
+	 *            the message List from the server
+	 */
 	public void updateMsgFromServer(List<String> CloneList) {
 		msgFromServer.clear();
 		for (String string : CloneList) {
@@ -373,6 +390,12 @@ public class App {
 		}
 	}
 
+	/**
+	 * Update the list which contains all the room the user is in.
+	 * 
+	 * @param allRoomList
+	 *            the list with all the Rooms currently in use
+	 */
 	public void createMyRooms(List<Room> allRoomList) {
 		Room mynewRoom;
 		myRooms.clear();

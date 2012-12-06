@@ -217,7 +217,7 @@ public class Gui extends JFrame {
 	}
 
 	/**
-	 * Create the part of the main window with the buttons
+	 * Create the top part of the main window with the buttons
 	 * 
 	 * @return the panel with the buttons
 	 */
@@ -268,6 +268,9 @@ public class Gui extends JFrame {
 		return panel;
 	}
 
+	/**
+	 * Ask to call a contact.
+	 */
 	private void callContact() {
 		new SwingWorker<Object, Object>() {
 			@Override
@@ -314,6 +317,11 @@ public class Gui extends JFrame {
 		return menu;
 	}
 
+	/**
+	 * 
+	 * @param message
+	 * @param app
+	 */
 	public void acceptACall(String message, App app) {
 		Call call = Call.fromString(message);
 		int ret = JOptionPane.showConfirmDialog(this,
@@ -339,9 +347,10 @@ public class Gui extends JFrame {
 	}
 
 	/**
-	 * Display the room List in the RoomPanel
+	 * Display a list of rooms in the tree in the main interface
 	 * 
-	 * use "nc localhost 4000" in a terminal to create a server and test
+	 * @param roomListToDisplay
+	 *            The list of rooms to display in the tree
 	 */
 	private void displayRoomList(List<Room> roomListToDisplay) {
 		// clear the modeltree if there is already something
@@ -349,12 +358,11 @@ public class Gui extends JFrame {
 		((DefaultMutableTreeNode) modeltree.getRoot()).removeAllChildren();
 		for (Room room : roomListToDisplay) {
 			if (app.getMyRooms().contains(room)) {
-				newRoom = new DefaultMutableTreeNode(room.toString()
-						.toUpperCase());
+				// if the user is in the room, the name is bold
+				newRoom = new DefaultMutableTreeNode(room.toStringBold());
 			} else {
 				newRoom = new DefaultMutableTreeNode(room);
 			}
-			// MutableTreeNode newRoom = new DefaultMutableTreeNode(room);
 			for (String contactName : room.getAudience()) {
 				MutableTreeNode contact = new DefaultMutableTreeNode(
 						contactName);

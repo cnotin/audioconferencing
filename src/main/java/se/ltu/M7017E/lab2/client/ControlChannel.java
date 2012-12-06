@@ -75,11 +75,16 @@ public class ControlChannel implements Runnable {
 		}
 	}
 
+	/**
+	 * Apply the method needed depending on the message received from the server
+	 * 
+	 * @param message
+	 *            the message received from the server
+	 */
 	public void caseMessage(String message) {
 		if (message.startsWith("JOINED")) {
 			// someone joins a room
 			app.msg(Joined.fromString(message));
-			// updatedAudience = new String();
 		} else if (message.startsWith("LEFT")) {
 			// someone left a room
 			app.msg(Left.fromString(message));
