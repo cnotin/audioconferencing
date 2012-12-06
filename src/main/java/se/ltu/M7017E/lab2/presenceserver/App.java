@@ -191,15 +191,14 @@ public class App {
 
 	public Client findClientsByName(String name) {
 		System.out.println("name to search " + name + "<");
-		Client clientToReturn = null;
 		System.out.println("number of clients" + clients.size());
 		for (Client client : clients) {
 			System.out.println("client name : " + client.getName());
 			if (client.getName().equals(name)) {
-				clientToReturn = client;
+				return client;
 			}
 		}
-		return clientToReturn;
+		return null;
 	}
 
 }
