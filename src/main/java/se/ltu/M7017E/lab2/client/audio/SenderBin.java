@@ -9,6 +9,7 @@ import org.gstreamer.GhostPad;
 import org.gstreamer.Pad;
 import org.gstreamer.PadLinkReturn;
 import org.gstreamer.State;
+import org.gstreamer.elements.Tee;
 import org.gstreamer.elements.good.RTPBin;
 
 import se.ltu.M7017E.lab2.client.Tool;
@@ -72,12 +73,21 @@ public class SenderBin extends Bin {
 	public void getOut() {
 		// clean request pad from adder
 		Pad upstreamPeer = sink.getPeer();
+		Tee teeUpstream = ((Tee) sink.getPeer().getParent());
+		Bin parentBin = ((Bin) this.getParent());
+
 		upstreamPeer.setBlocked(true);
 
 		this.setState(State.NULL);
-		System.out.println("Remove from parent bin "
-				+ ((Bin) this.getParent()).remove(this));
+		System.out.println("Remove from parent bin " + parentBin.remove(this));
 
-		upstreamPeer.getParentElement().releaseRequestPad(upstreamPeer);
+		// if upstream tee has no src anymore, the pipeline will push in the
+		// void and crash, thus we avoid it
+		if (teeUpstream.getSrcPads().size() == 1) {
+			parentBin.setState(State.NULL);
+		}
+		teeUpstream.releaseRequestPad(upstreamPeer);
+
+		System.out.println(teeUpstream.getPads());
 	}
 }
