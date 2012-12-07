@@ -9,12 +9,14 @@ import org.gstreamer.Bin;
 
 import se.ltu.M7017E.lab2.client.ui.Gui;
 
+/** Main class for the client. */
 public class Main {
 	public static void main(String[] args) {
 		System.out.println("Welcome");
 
 		final App app = new App();
 
+		// for debug purpose, don't show UI and do needed stuff
 		if (args.length > 0 && args[0].equals("NO_UI")) {
 			System.out.println("DEBUG: Don't display UI.");
 
@@ -34,6 +36,7 @@ public class Main {
 			new java.util.Scanner(System.in).nextLine();
 			app.getSender().stopStreamingToUnicast();
 		} else {
+			// show GUI
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
 					final Gui gui = new Gui(app);
@@ -43,6 +46,10 @@ public class Main {
 			});
 		}
 
+		/*
+		 * for debug, generate the DOT for both pipelines at any moment during
+		 * execution by entering "d\n" in the console
+		 */
 		String s;
 		Scanner scanner = new Scanner(System.in);
 		do {

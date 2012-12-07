@@ -14,6 +14,9 @@ import org.gstreamer.State;
 import se.ltu.M7017E.lab2.client.Tool;
 
 public class UnicastReceiver extends Bin {
+	/** Name of _the_ unicast bin */
+	private static final String RECEIVER_UNICAST = "receiver_unicast";
+
 	private final Element udpSource;
 	private final Element rtpBin;
 	private Pad src;
@@ -28,8 +31,8 @@ public class UnicastReceiver extends Bin {
 	 *            unicast port, we will connect the src of this bin to this
 	 *            Element
 	 */
-	public UnicastReceiver(String name, final Element connectSrcTo) {
-		super(name);
+	public UnicastReceiver(final Element connectSrcTo) {
+		super(RECEIVER_UNICAST);
 
 		udpSource = ElementFactory.make("udpsrc", null);
 		udpSource.set("port", 0);

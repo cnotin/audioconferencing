@@ -9,14 +9,20 @@ import org.gstreamer.Pipeline;
 
 import se.ltu.M7017E.lab2.client.Config;
 
+/**
+ * GStreamer pipeline for the receiving part. Can manage several multicast (for
+ * rooms) and one unicast channel at the same time.
+ */
 public class ReceiverPipeline extends Pipeline {
+	/** Prefix to name the rooms bins */
 	private static final String RECEIVER_ROOM_PREFIX = "receiver_room";
-	private static final String RECEIVER_UNICAST = "receiver_unicast";
 
+	// TODO: remove
 	private Map<Integer, RoomReceiver> rooms = new HashMap<Integer, RoomReceiver>();
+
 	private final Element adder = ElementFactory.make("liveadder", null);
 	private final Element sink = ElementFactory.make("autoaudiosink", null);
-	// THE UnicastReceiver to talk with somebody
+	// THE UnicastReceiver to talk with someone
 	UnicastReceiver unicastReceiver = null;
 
 	public ReceiverPipeline() {
@@ -26,6 +32,14 @@ public class ReceiverPipeline extends Pipeline {
 		linkMany(adder, sink);
 	}
 
+	/**
+	 * Create the audio stuff to receive from a room.
+	 * 
+	 * @param roomId
+	 *            room number
+	 * @param ssrcToIgnore
+	 *            My SSRC to ignore from the received stream, avoid echo!
+	 */
 	public void receiveFromRoom(int roomId, long ssrcToIgnore) {
 		// don't join if already joined
 		if (!rooms.containsKey(roomId)) {
@@ -43,6 +57,12 @@ public class ReceiverPipeline extends Pipeline {
 		}
 	}
 
+	/**
+	 * Cleanly remove the audio stuff which were used to receive from a room.
+	 * 
+	 * @param roomId
+	 *            the room we were connected to
+	 */
 	public void stopRoomReceiving(int roomId) {
 		// can't leave if not joined
 		if (rooms.containsKey(roomId)) {
@@ -51,9 +71,16 @@ public class ReceiverPipeline extends Pipeline {
 		}
 	}
 
+	/**
+	 * Setup the audio stuff when initiating a call and prepare for the incoming
+	 * stream.
+	 * 
+	 * @return port number that has been opened to receive the incoming stream
+	 *         from friend
+	 */
 	public int receiveFromUnicast() {
 		// create the receiver bin
-		unicastReceiver = new UnicastReceiver(RECEIVER_UNICAST, adder);
+		unicastReceiver = new UnicastReceiver(adder);
 		// add it to this
 		add(unicastReceiver);
 		unicastReceiver.syncStateWithParent();
@@ -61,6 +88,9 @@ public class ReceiverPipeline extends Pipeline {
 		return unicastReceiver.getPort();
 	}
 
+	/**
+	 * Stop receiving from my friend.
+	 */
 	public void stopUnicastReceiving() {
 		if (unicastReceiver != null) {
 			unicastReceiver.getOut();

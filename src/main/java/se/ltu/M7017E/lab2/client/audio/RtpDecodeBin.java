@@ -9,6 +9,11 @@ import org.gstreamer.GhostPad;
 import org.gstreamer.Pad;
 import org.gstreamer.PadDirection;
 
+/**
+ * This is a reusable RTP decoder bin which provides services of: RTP depayload,
+ * audio decoding, audio converting. This must use the same codec as the sender
+ * so it's better to use this with {@link RtpEncodeBin} encoded stream.
+ */
 public class RtpDecodeBin extends Bin {
 	private Element rtpDepay;
 	private Element decoder;
@@ -17,16 +22,28 @@ public class RtpDecodeBin extends Bin {
 	private Pad sink;
 	private Pad src;
 
+	/**
+	 * Create and add all elements.
+	 * 
+	 * @param autoDisconnect
+	 *            If true, then this will automatically disconnect from
+	 *            downstream element when upstream pad is unlinked. Otherwise it
+	 *            just ignores this event and hope that the parent Bin will take
+	 *            care of disconnecting it. We use both modes in this project.
+	 */
 	public RtpDecodeBin(boolean autoDisconnect) {
 		super();
 
+		// this is a speex encoded payload
 		rtpDepay = ElementFactory.make("rtpspeexdepay", null);
+		// use speex codec
 		decoder = ElementFactory.make("speexdec", null);
 		convert = ElementFactory.make("audioconvert", null);
 
 		this.addMany(rtpDepay, decoder, convert);
 		Bin.linkMany(rtpDepay, decoder, convert);
 
+		// create Bin's pads
 		sink = new GhostPad("sink", rtpDepay.getStaticPad("sink"));
 		src = new GhostPad("src", convert.getStaticPad("src"));
 
@@ -34,6 +51,7 @@ public class RtpDecodeBin extends Bin {
 		this.addPad(src);
 
 		if (autoDisconnect) {
+			// detect unlinking of sink pad (= upstream peer is gone)
 			this.sink.connect(new OnPadUnlinked(this));
 		}
 	}

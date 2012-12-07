@@ -133,7 +133,7 @@ public class App {
 			receiver.send(call.toString());
 		} else {
 			sender = findClientsByName(call.getSender());
-			sender.send("ERROR," + call.getReceiver() + " is not connected :(");
+			sender.send(new Error(call.getReceiver() + " is not connected :("));
 		}
 	}
 

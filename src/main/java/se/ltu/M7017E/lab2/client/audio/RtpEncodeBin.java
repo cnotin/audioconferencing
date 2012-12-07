@@ -7,16 +7,27 @@ import org.gstreamer.ElementFactory;
 import org.gstreamer.GhostPad;
 import org.gstreamer.Pad;
 
+/**
+ * This is a reusable RTP encoder bin which provides services of: queuing, audio
+ * resampling, audio encoding and RTP payloading. The receiving part must use
+ * the same codec as this so it's good to use this with {@link RtpDecodeBin}.
+ */
 public class RtpEncodeBin extends Bin {
+	// queue to create a new thread for this branch
 	private Element queue;
+	// could be useful
 	private Element resample;
 	private Element encoder;
 	private Element rtpPay;
+	// helps to set the good stream parameters in this bin
 	private Element capsFilter;
 
 	private Pad sink;
 	private Pad src;
 
+	/**
+	 * Create and add all necessary stuff.
+	 */
 	public RtpEncodeBin() {
 		super();
 
@@ -26,10 +37,11 @@ public class RtpEncodeBin extends Bin {
 		capsFilter = ElementFactory.make("capsfilter", null);
 		capsFilter.set("caps", Caps.fromString("audio/x-raw-int,rate=16000"));
 
+		// speex codec, cf plugin's documentation
 		encoder = ElementFactory.make("speexenc", null);
-		encoder.set("quality", 6);
-		encoder.set("vad", true);
-		encoder.set("dtx", true);
+		encoder.set("quality", 6); // quality in [0,10]
+		encoder.set("vad", true); // voice activity detection
+		encoder.set("dtx", true); // discontinuous transmission
 
 		rtpPay = ElementFactory.make("rtpspeexpay", null);
 

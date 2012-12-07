@@ -13,17 +13,20 @@ import java.util.concurrent.Semaphore;
 import lombok.Getter;
 import lombok.Setter;
 import se.ltu.M7017E.lab2.common.messages.AnswerCall;
+import se.ltu.M7017E.lab2.common.messages.Error;
 import se.ltu.M7017E.lab2.common.messages.Joined;
 import se.ltu.M7017E.lab2.common.messages.Left;
 import se.ltu.M7017E.lab2.common.messages.StopCall;
 
 /**
- * Manage the control channel
+ * Manage the control channel with the central server. Its job is to store who's
+ * connected, what are the existing rooms, who's in which room, and to message
+ * the users when someone joins or leave a room. The server also handle unicast
+ * calls negotiation (UDP ports and approval/refusal by callee).
  */
 public class ControlChannel implements Runnable {
 	@Getter
 	private App app;
-	@Getter
 	private BufferedReader in;
 	private PrintStream out;
 	private boolean quit = false; // set to true to exit thread
@@ -34,15 +37,20 @@ public class ControlChannel implements Runnable {
 	private String updatedAudience;
 	private boolean sendingRoomList = false;
 
+	/**
+	 * Semaphore to signal that this thread has finished to receive a list of
+	 * rooms from the server.
+	 */
 	@Getter
 	@Setter
 	private Semaphore roomsListFinished = new Semaphore(0);
 
 	public ControlChannel(App app) {
-		System.out.println("Creating control channel");
 		this.app = app;
+		System.out.println("Creating control channel");
 
 		try {
+			// connect to server
 			Socket socket = new Socket(InetAddress.getByName("localhost"), 4000);
 			// Socket socket = new
 			// Socket(InetAddress.getByName("130.240.53.166"),
@@ -55,6 +63,7 @@ public class ControlChannel implements Runnable {
 		}
 	}
 
+	/** Read incoming messages in a loop */
 	@Override
 	public void run() {
 		String message = null;
@@ -107,27 +116,39 @@ public class ControlChannel implements Runnable {
 			// release the semaphore so the APP can continue
 			this.roomsListFinished.release();
 		} else if (message.startsWith("CALL")) {
+			// someone called me
 			System.out.println("allo");
 			app.getGui().acceptACall(message, this.app);
 		} else if (message.startsWith("ANSWERCALL")) {
+			// I received someone's answer about my call
 			AnswerCall answer = AnswerCall.fromString(message);
 			if (answer.getAnswer().equals("yes")) {
+				// he accepted
 				System.out.println("ip receiver" + answer.getIpReceiver());
 				app.getGui().showMessage(
 						answer.getReceiver() + " accepted the call");
+				// launch the streaming to him
 				app.call(answer.getIpReceiver(), answer.getPortReceiver());
 			}
 			if (answer.getAnswer().equals("no")) {
 				app.getGui().showMessage(
 						answer.getReceiver() + " declined the call");
+				/*
+				 * when asking for a call, one already open a receiving port and
+				 * send its number to callee. If the callee refuses we must
+				 * cancel this
+				 */
 				app.stopCall();
 			}
 
 		} else if (message.startsWith("ERROR")) {
-			app.getGui().showMessage(message.substring(6, message.length()));
+			// server sent us a textual error message
+			app.getGui().showMessage(Error.fromString(message).getText());
 		} else if (message.startsWith("CONNECTEDLIST")) {
+			// list of people connected to server
 			app.setConnected(message);
 		} else if (message.startsWith("STOPCALL")) {
+			// my friend asks to stop the unicast call
 			app.msg(StopCall.fromString(message));
 		}
 	}

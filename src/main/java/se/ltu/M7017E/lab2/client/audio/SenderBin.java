@@ -1,6 +1,6 @@
 package se.ltu.M7017E.lab2.client.audio;
 
-import lombok.Getter;
+import java.util.List;
 
 import org.gstreamer.Bin;
 import org.gstreamer.Element;
@@ -14,13 +14,32 @@ import org.gstreamer.elements.good.RTPBin;
 
 import se.ltu.M7017E.lab2.client.Tool;
 
+/**
+ * Bin made to be added to {@link SenderPipeline}. Takes care of encoding, and
+ * RTP preparing then sending over UDP the audio input.<br />
+ * Can be used to send to a multicast group or unicast peer. Cf
+ * {@link SenderBin#SenderBin(String, String, int, boolean) boolean "multicast"
+ * parameter}
+ */
 public class SenderBin extends Bin {
 	private final Pad sink;
-	@Getter
 	private final RtpEncodeBin encoder;
 	private final Element udpSink;
 	private final RTPBin rtpBin;
 
+	/**
+	 * Create, configure and setup everything needed.
+	 * 
+	 * @param name
+	 *            GStreamer element name
+	 * @param ip
+	 *            IP to send to, can be private or public or multicast (if
+	 *            multicast then the group will be automatically joined)
+	 * @param port
+	 *            UDP port to send to
+	 * @param multicast
+	 *            set to True if this will be multicasting, False for unicast
+	 */
 	public SenderBin(String name, String ip, int port, boolean multicast) {
 		super(name);
 
@@ -56,10 +75,34 @@ public class SenderBin extends Bin {
 						.equals(PadLinkReturn.OK));
 	}
 
+	/**
+	 * Get the (first) Element from the list which name starts with 'start'. So
+	 * for example if you want the element "rtpsession" no matter if it's really
+	 * called "rtpsession0" or "rtpsession2", you should call this with
+	 * start="rtpsession".
+	 * 
+	 * @param elts
+	 *            list of Element_s to search in
+	 * @param start
+	 *            the String to search at the beginning
+	 * @return the (first, if several) Element. Or null if no name matched.
+	 */
+	private Element getElementByNameStartingWith(List<Element> elts,
+			String start) {
+		Element ret = null;
+
+		for (Element elt : elts) {
+			if (elt.getName().startsWith(start)) {
+				return elt;
+			}
+		}
+
+		return ret;
+	}
+
 	public Long getSSRC() {
-		String caps = Tool
-				.getElementByNameStartingWith(rtpBin.getElements(),
-						"rtpsession").getSinkPads().get(0).getCaps().toString();
+		String caps = getElementByNameStartingWith(rtpBin.getElements(),
+				"rtpsession").getSinkPads().get(0).getCaps().toString();
 		int ssrcBegin = caps.indexOf("ssrc=(uint)") + 11;
 		int ssrcEnd = caps.indexOf(";", ssrcBegin);
 		return new Long(caps.substring(ssrcBegin, ssrcEnd));
