@@ -8,16 +8,13 @@ import lombok.Data;
 public class Hello {
 	private String name;
 
-	/**
-	 * transform the object into a string
-	 */
 	public String toString() {
 		return "HELLO," + name;
 	}
 
 	/**
 	 * build a Hello object from a String. The format of the string must be:
-	 * "HELLO",userName
+	 * HELLO,<userName>
 	 */
 	public static Hello fromString(String str) {
 		String[] tokens = str.split(",");

@@ -4,9 +4,6 @@ import lombok.Data;
 
 @Data
 public class Bye {
-	/**
-	 * return "BYE"
-	 */
 	public String toString() {
 		return "BYE";
 	}

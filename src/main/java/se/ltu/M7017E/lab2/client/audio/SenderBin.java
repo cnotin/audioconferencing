@@ -46,12 +46,14 @@ public class SenderBin extends Bin {
 		encoder = new RtpEncodeBin();
 		encoder.syncStateWithParent();
 		rtpBin = new RTPBin((String) null);
+		// asking this put the gstrtpbin plugin in sender mode
 		Pad rtpSink0 = rtpBin.getRequestPad("send_rtp_sink_0");
 
 		udpSink = ElementFactory.make("udpsink", null);
 		udpSink.set("host", ip);
 		udpSink.set("port", port);
 		if (multicast) {
+			// make OS automatically join multicast group
 			udpSink.set("auto-multicast", true);
 		}
 		udpSink.set("async", false);
@@ -100,7 +102,16 @@ public class SenderBin extends Bin {
 		return ret;
 	}
 
+	/**
+	 * Get my SSRC as a sender (from gstrtpbin session manager)
+	 * 
+	 * @return
+	 */
 	public Long getSSRC() {
+		/*
+		 * we dig to find it in sink pad's caps by parsing these as a string,
+		 * didn't find any better way
+		 */
 		String caps = getElementByNameStartingWith(rtpBin.getElements(),
 				"rtpsession").getSinkPads().get(0).getCaps().toString();
 		int ssrcBegin = caps.indexOf("ssrc=(uint)") + 11;
@@ -124,8 +135,10 @@ public class SenderBin extends Bin {
 		this.setState(State.NULL);
 		System.out.println("Remove from parent bin " + parentBin.remove(this));
 
-		// if upstream tee has no src anymore, the pipeline will push in the
-		// void and crash, thus we avoid it
+		/*
+		 * if upstream tee has no src anymore, the pipeline will push in the
+		 * void and crash, thus we avoid it by stopping the whole bin
+		 */
 		if (teeUpstream.getSrcPads().size() == 1) {
 			parentBin.setState(State.NULL);
 		}

@@ -12,9 +12,6 @@ public class AnswerCall {
 	private String answer;
 	private String ipReceiver;
 
-	/**
-	 * transform the object into a string
-	 */
 	public String toString() {
 		return "ANSWERCALL," + portReceiver + "," + sender + "," + receiver
 				+ "," + answer + "," + ipReceiver;
@@ -22,7 +19,7 @@ public class AnswerCall {
 
 	/**
 	 * build an AnswerCall object from a String. The format of the string must
-	 * be: "ANSWERCALL",portReceiver,senderName, receiverName, ReceiverIp
+	 * be: ANSWERCALL,<portReceiver>,<senderName>,<receiverName>,<ReceiverIp>
 	 */
 	public static AnswerCall fromString(String str) {
 		String[] tokens = str.split(",");

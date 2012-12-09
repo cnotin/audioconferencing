@@ -12,11 +12,19 @@ import org.gstreamer.elements.BaseSrc;
 import se.ltu.M7017E.lab2.client.Config;
 import se.ltu.M7017E.lab2.client.Tool;
 
+/**
+ * GStreamer pipeline for the sending part. Can manage several multicast (for
+ * rooms) and one unicast channel at the same time.
+ */
 public class SenderPipeline extends Pipeline {
+	/** Name _the_ unicast sender bin */
 	private static final String SENDER_UNICAST = "sender_unicast";
+	/** Prefix to name the rooms bins */
 	private static final String SENDER_ROOM_PREFIX = "sender_room";
 
+	// TODO remove
 	private Map<Integer, SenderBin> rooms = new HashMap<Integer, SenderBin>();
+
 	private final BaseSrc src = (BaseSrc) ElementFactory.make("alsasrc", null);
 	private final Element tee = ElementFactory.make("tee", null);
 	// THE SenderBin to talk with somebody
@@ -45,7 +53,7 @@ public class SenderPipeline extends Pipeline {
 	public long streamTo(int roomId) {
 		// don't join if already joined
 		if (!rooms.containsKey(roomId)) {
-			// create the sender bin
+			// create the sender bin, name it after the room id
 			SenderBin room = new SenderBin(SENDER_ROOM_PREFIX + roomId,
 					Config.BASE_IP + roomId, Config.RTP_MULTICAST_PORT, true);
 			rooms.put(roomId, room);
@@ -64,6 +72,12 @@ public class SenderPipeline extends Pipeline {
 		return -1;
 	}
 
+	/**
+	 * Stop sending sound to a room and remove audio stuff that were created
+	 * 
+	 * @param roomId
+	 *            Room ID
+	 */
 	public void stopStreamingToRoom(int roomId) {
 		// can't leave if not joined
 		if (rooms.containsKey(roomId)) {
@@ -99,6 +113,10 @@ public class SenderPipeline extends Pipeline {
 		play();
 	}
 
+	/**
+	 * Stop streaming to someone and remove useless audio stuff that were
+	 * created.
+	 */
 	public void stopStreamingToUnicast() {
 		if (unicastSender != null) {
 			unicastSender.getOut();

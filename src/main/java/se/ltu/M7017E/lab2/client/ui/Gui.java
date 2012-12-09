@@ -53,7 +53,7 @@ public class Gui extends JFrame {
 	private JButton newBtn;
 	private JButton deleteBtn;
 	private JButton quitBtn;
-	private JList contactsList;
+	private JList<String> contactsList;
 	public JTree roomList;
 	private ImageIcon callIcon = new ImageIcon(getClass().getResource(
 			"/icons/call_button.png"));
@@ -68,10 +68,9 @@ public class Gui extends JFrame {
 	private ImageIcon quitIcon = new ImageIcon(getClass().getResource(
 			"/icons/quit_button.png"));
 
-	private DefaultListModel contactsListModel = new DefaultListModel();
-	private DefaultTreeModel modeltree;
+	private DefaultListModel<String> contactsListModel = new DefaultListModel<String>();
+	private DefaultTreeModel roomsTreeModel;
 	private App app;
-	private int roomSelected = 1000;
 
 	/**
 	 * Interface of the application. Display the main window
@@ -147,17 +146,15 @@ public class Gui extends JFrame {
 
 		// initialize the RoomList as a treemodel
 		DefaultMutableTreeNode racine = new DefaultMutableTreeNode("All rooms");
-		modeltree = new DefaultTreeModel(racine);
-		roomList = new JTree(modeltree);
+		roomsTreeModel = new DefaultTreeModel(racine);
+		roomList = new JTree(roomsTreeModel);
 		roomList.getSelectionModel().setSelectionMode(
 				TreeSelectionModel.SINGLE_TREE_SELECTION);
 		roomList.expandRow(2);
 		roomList.setCellRenderer(new CellRender(roomList.getCellRenderer()));
 		roomList.addTreeSelectionListener(new TreeSelectionListener() {
-
 			@Override
 			public void valueChanged(TreeSelectionEvent arg0) {
-				// TODO Auto-generated method stub
 				DefaultMutableTreeNode nodeSelected = (DefaultMutableTreeNode) roomList
 						.getLastSelectedPathComponent();
 				if (nodeSelected == null) {
@@ -262,7 +259,7 @@ public class Gui extends JFrame {
 		roomPanel = createRoomPanel();
 
 		refreshContactsList();
-		this.contactsList = new JList(contactsListModel);
+		this.contactsList = new JList<String>(contactsListModel);
 		contactPanel.setLayout(new BoxLayout(contactPanel, BoxLayout.Y_AXIS));
 
 		subContactPanel.setLayout(new BoxLayout(subContactPanel,
@@ -473,27 +470,25 @@ public class Gui extends JFrame {
 	 *            The list of rooms to display in the tree
 	 */
 	public void displayRoomList(List<Room> roomListToDisplay) {
+		DefaultMutableTreeNode root = (DefaultMutableTreeNode) roomsTreeModel
+				.getRoot();
+
 		// clear the modeltree if there is already something
-		((DefaultMutableTreeNode) modeltree.getRoot()).removeAllChildren();
+		root.removeAllChildren();
 		for (Room room : roomListToDisplay) {
-			if (!room.getAudienceAsStrings().isEmpty()) {
+			if (!room.getAudience().isEmpty()) {
 				DefaultMutableTreeNode newRoom = new DefaultMutableTreeNode(
 						room);
 				for (String contactName : room.getAudience()) {
 					MutableTreeNode contact = new DefaultMutableTreeNode(
 							contactName);
-					newRoom.insert(contact, room.getAudienceAsStrings()
-							.indexOf(contactName));
+					newRoom.add(contact);
 				}
-				((DefaultMutableTreeNode) modeltree.getRoot()).add(newRoom);
+				root.add(newRoom);
 			}
 		}
 		// To update the tree
-		modeltree.reload();
-		roomList.setModel(modeltree);
-	}
-
-	public int getRoomSelected() {
-		return roomSelected;
+		roomsTreeModel.reload();
+		roomList.setModel(roomsTreeModel);
 	}
 }

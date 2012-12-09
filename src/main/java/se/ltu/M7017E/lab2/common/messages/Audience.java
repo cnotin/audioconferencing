@@ -11,9 +11,6 @@ public class Audience {
 	private int room;
 	private List<String> names = new LinkedList<String>();
 
-	/**
-	 * transform the object into a string
-	 */
 	public String toString() {
 		StringBuilder sb = new StringBuilder("AUDIENCE,");
 		sb.append(room);
@@ -32,7 +29,7 @@ public class Audience {
 
 	/**
 	 * build an Audience object from a String. The format of the string must be:
-	 * "AUDIENCE",Room1,Room2,Room3 ...
+	 * AUDIENCE,<RoomId>,<Contact1>,<Contact2> ...
 	 */
 	public static Audience fromString(String str) {
 		Audience ret = new Audience();

@@ -11,9 +11,6 @@ public class Call {
 	private String ipSender;
 	private int portSender;
 
-	/**
-	 * transform the object into a string
-	 */
 	public String toString() {
 		return "CALL," + sender + "," + receiver + "," + ipSender + ","
 				+ portSender;
@@ -21,7 +18,7 @@ public class Call {
 
 	/**
 	 * build a Call object from a String. The format of the string must be:
-	 * "CALL",senderName, receiverName, senderIp,senderPort
+	 * CALL,<senderName>,<receiverName>,<senderIp>,<senderPort>
 	 */
 	public static Call fromString(String str) {
 		String[] tokens = str.split(",");

@@ -13,6 +13,10 @@ import org.gstreamer.State;
 
 import se.ltu.M7017E.lab2.client.Tool;
 
+/**
+ * Bin made to be added to the {@link ReceiverPipeline}. Receive from UDP
+ * unicast and do RTP stuff.
+ */
 public class UnicastReceiver extends Bin {
 	/** Name of _the_ unicast bin */
 	private static final String RECEIVER_UNICAST = "receiver_unicast";
@@ -20,22 +24,29 @@ public class UnicastReceiver extends Bin {
 	private final Element udpSource;
 	private final Element rtpBin;
 	private Pad src;
+
+	/** UDP port that has been automatically assigned from available ones */
 	@Getter
 	private int port = 0;
 
 	/**
-	 * TODO
+	 * Create a new {@link UnicastReceiver} and link everything needed.
 	 * 
 	 * @param connectSrcTo
-	 *            As soon as our friend will have called us on this local
-	 *            unicast port, we will connect the src of this bin to this
-	 *            Element
+	 *            As soon as our friend will have called us on this local port,
+	 *            we will connect the src of this bin to this {@link Element}
 	 */
 	public UnicastReceiver(final Element connectSrcTo) {
 		super(RECEIVER_UNICAST);
 
+		// refer to GStreamer udpsrc plugin documentation
 		udpSource = ElementFactory.make("udpsrc", null);
-		udpSource.set("port", 0);
+		udpSource.set("port", 0); // ask for a port
+
+		/*
+		 * set the caps from UDP, it flows downstream in the bin. Must match
+		 * what is sent by everyone in the room of course
+		 */
 		Tool.successOrDie(
 				"caps",
 				udpSource
@@ -47,7 +58,11 @@ public class UnicastReceiver extends Bin {
 
 		rtpBin = ElementFactory.make("gstrtpbin", null);
 
-		// ####################### CONNECT EVENTS ######################"
+		/*
+		 * when our friend starts emitting, a new SSRC appears on the stream and
+		 * the plugin gstrtpbin automatically demux this and creates the
+		 * specific pad
+		 */
 		rtpBin.connect(new Element.PAD_ADDED() {
 			@Override
 			public void padAdded(Element element, Pad pad) {
@@ -94,6 +109,10 @@ public class UnicastReceiver extends Bin {
 		Tool.successOrDie("udpSource-rtpbin", udpSource.getStaticPad("src")
 				.link(pad).equals(PadLinkReturn.OK));
 
+		/*
+		 * get this ready for playing, after this the UDP port will have been
+		 * assigned too
+		 */
 		pause();
 
 		port = (Integer) udpSource.get("port");

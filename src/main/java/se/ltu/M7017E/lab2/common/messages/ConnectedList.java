@@ -14,9 +14,6 @@ public class ConnectedList {
 	@Getter
 	private Set<String> connected = new HashSet<String>();
 
-	/**
-	 * transform the object into a string
-	 */
 	public String toString() {
 		StringBuilder sb = new StringBuilder("CONNECTEDLIST,");
 
@@ -32,7 +29,7 @@ public class ConnectedList {
 
 	/**
 	 * build an Audience object from a String. The format of the string must be:
-	 * "CONNECTEDLIST",c1,c2,c3 ...
+	 * CONNECTEDLIST,<c1>,<c2>,<c3> ...
 	 */
 	public static ConnectedList fromString(String str) {
 		ConnectedList ret = new ConnectedList();

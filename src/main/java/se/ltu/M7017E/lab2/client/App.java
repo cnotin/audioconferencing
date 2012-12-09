@@ -456,7 +456,7 @@ public class App {
 		// for all the rooms
 		for (Room currentRoom : allRooms) {
 			if (currentRoom.getId() == updatedRoom.getId()) {
-				for (String contactName : currentRoom.getAudienceAsStrings()) {
+				for (String contactName : currentRoom.getAudience()) {
 					if (contactName != deleteContact) {
 						updatedContactList.add(contactName);
 					}
@@ -491,7 +491,7 @@ public class App {
 		Room mynewRoom;
 		myRooms.clear();
 		for (Room rooms : allRoomList) {
-			if (rooms.getAudienceAsStrings().contains(username)) {
+			if (rooms.getAudience().contains(username)) {
 				mynewRoom = new Room();
 				mynewRoom.setAudience(rooms.getAudience());
 				mynewRoom.setId(rooms.getId());
