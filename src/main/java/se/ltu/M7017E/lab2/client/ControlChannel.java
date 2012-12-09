@@ -12,11 +12,11 @@ import java.util.concurrent.Semaphore;
 
 import lombok.Getter;
 import lombok.Setter;
-import se.ltu.M7017E.lab2.common.messages.AnswerCall;
-import se.ltu.M7017E.lab2.common.messages.Error;
-import se.ltu.M7017E.lab2.common.messages.Joined;
-import se.ltu.M7017E.lab2.common.messages.Left;
-import se.ltu.M7017E.lab2.common.messages.StopCall;
+import se.ltu.M7017E.lab2.messages.AnswerCall;
+import se.ltu.M7017E.lab2.messages.Error;
+import se.ltu.M7017E.lab2.messages.Joined;
+import se.ltu.M7017E.lab2.messages.Left;
+import se.ltu.M7017E.lab2.messages.StopCall;
 
 /**
  * Manage the control channel with the central server. Its job is to store who's

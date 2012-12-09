@@ -23,16 +23,15 @@ import org.gstreamer.Gst;
 import se.ltu.M7017E.lab2.client.audio.ReceiverPipeline;
 import se.ltu.M7017E.lab2.client.audio.SenderPipeline;
 import se.ltu.M7017E.lab2.client.ui.Gui;
-import se.ltu.M7017E.lab2.common.Room;
-import se.ltu.M7017E.lab2.common.messages.AnswerCall;
-import se.ltu.M7017E.lab2.common.messages.Call;
-import se.ltu.M7017E.lab2.common.messages.ConnectedList;
-import se.ltu.M7017E.lab2.common.messages.Hello;
-import se.ltu.M7017E.lab2.common.messages.Joined;
-import se.ltu.M7017E.lab2.common.messages.Leave;
-import se.ltu.M7017E.lab2.common.messages.Left;
-import se.ltu.M7017E.lab2.common.messages.ListMsg;
-import se.ltu.M7017E.lab2.common.messages.StopCall;
+import se.ltu.M7017E.lab2.messages.AnswerCall;
+import se.ltu.M7017E.lab2.messages.Call;
+import se.ltu.M7017E.lab2.messages.ConnectedList;
+import se.ltu.M7017E.lab2.messages.Hello;
+import se.ltu.M7017E.lab2.messages.Joined;
+import se.ltu.M7017E.lab2.messages.Leave;
+import se.ltu.M7017E.lab2.messages.Left;
+import se.ltu.M7017E.lab2.messages.ListMsg;
+import se.ltu.M7017E.lab2.messages.StopCall;
 
 @Getter
 public class App {

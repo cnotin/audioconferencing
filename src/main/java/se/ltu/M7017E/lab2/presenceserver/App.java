@@ -8,22 +8,31 @@ import java.util.Map;
 import java.util.Set;
 
 import lombok.Getter;
-import se.ltu.M7017E.lab2.common.messages.AnswerCall;
-import se.ltu.M7017E.lab2.common.messages.Audience;
-import se.ltu.M7017E.lab2.common.messages.Bye;
-import se.ltu.M7017E.lab2.common.messages.Call;
-import se.ltu.M7017E.lab2.common.messages.ConnectedList;
-import se.ltu.M7017E.lab2.common.messages.Hello;
-import se.ltu.M7017E.lab2.common.messages.Join;
-import se.ltu.M7017E.lab2.common.messages.Leave;
-import se.ltu.M7017E.lab2.common.messages.ListMsg;
-import se.ltu.M7017E.lab2.common.messages.RoomsStart;
-import se.ltu.M7017E.lab2.common.messages.RoomsStop;
-import se.ltu.M7017E.lab2.common.messages.StopCall;
+import se.ltu.M7017E.lab2.messages.AnswerCall;
+import se.ltu.M7017E.lab2.messages.Audience;
+import se.ltu.M7017E.lab2.messages.Bye;
+import se.ltu.M7017E.lab2.messages.Call;
+import se.ltu.M7017E.lab2.messages.ConnectedList;
+import se.ltu.M7017E.lab2.messages.Hello;
+import se.ltu.M7017E.lab2.messages.Join;
+import se.ltu.M7017E.lab2.messages.Leave;
+import se.ltu.M7017E.lab2.messages.ListMsg;
+import se.ltu.M7017E.lab2.messages.RoomsStart;
+import se.ltu.M7017E.lab2.messages.RoomsStop;
+import se.ltu.M7017E.lab2.messages.StopCall;
 
+/**
+ * Main class for presence server.
+ */
+/**
+ * @author Clem
+ * 
+ */
 public class App {
+	/** connected clients */
 	@Getter
 	private Set<Client> clients = new HashSet<Client>();
+	/** currently opened rooms */
 	private Map<Integer, Room> rooms = new HashMap<Integer, Room>();
 
 	public App() {
@@ -31,18 +40,29 @@ public class App {
 		try {
 			serverSocket = new ServerSocket(4000);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			System.err.println("Got a problem while trying to "
+					+ "open server port");
 			e.printStackTrace();
 		}
 
 		while (true) {
 			try {
+				// create one thread per new client
 				new Thread(new TCPThread(this, serverSocket.accept())).start();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				System.err.println("Got a problem while trying to "
+						+ "create thread for a client");
 				e.printStackTrace();
 			}
 		}
+	}
+
+	private Set<String> getClientsAsStrings() {
+		Set<String> nameClients = new HashSet<String>();
+		for (Client user : clients) {
+			nameClients.add(user.name);
+		}
+		return nameClients;
 	}
 
 	/**
@@ -57,14 +77,15 @@ public class App {
 		client.setName(hello.getName());
 		clients.add(client);
 
-		Set<String> nameClients = new HashSet<String>();
-		for (Client user : clients) {
-			nameClients.add(user.name);
-		}
-		ConnectedList cl = new ConnectedList(nameClients);
+		broadcastUpdatedListOfConnectedClient();
+	}
 
-		broadcast(cl.toString());
-
+	/**
+	 * Broadcast the updated list of connected clients. Useful when someone
+	 * enters/quits the server.
+	 */
+	private void broadcastUpdatedListOfConnectedClient() {
+		broadcast(new ConnectedList(getClientsAsStrings()).toString());
 	}
 
 	/**
@@ -87,16 +108,15 @@ public class App {
 		// removes him from the known clients in the server
 		clients.remove(client);
 
-		Set<String> nameClients = new HashSet<String>();
-		for (Client user : clients) {
-			nameClients.add(user.name);
-		}
-		ConnectedList cl = new ConnectedList(nameClients);
-
-		broadcast(cl.toString());
-
+		broadcastUpdatedListOfConnectedClient();
 	}
 
+	/**
+	 * Someone joined a room
+	 * 
+	 * @param client
+	 * @param join
+	 */
 	public void msg(Client client, Join join) {
 		int roomId = join.getRoom();
 
@@ -110,10 +130,7 @@ public class App {
 		room.join(client);
 
 		// tell to the newcomer who's there
-		Audience audience = new Audience();
-		audience.setRoom(roomId);
-		audience.setNames(room.getAudienceAsStrings());
-		client.send(audience);
+		client.send(new Audience(roomId, room.getAudienceAsStrings()));
 	}
 
 	/**
@@ -125,14 +142,14 @@ public class App {
 	 * @param call
 	 */
 	public void msg(Client sender, Call call) {
-		Client receiver = findClientsByName(call.getReceiver());
+		Client receiver = findClientByName(call.getReceiver());
 		if (receiver != null) {
 			System.out.println("sending message to " + receiver.getName());
 			System.out.println(sender.getIp());
 			call.setIpSender(sender.getIp());
 			receiver.send(call.toString());
 		} else {
-			sender = findClientsByName(call.getSender());
+			sender = findClientByName(call.getSender());
 			sender.send(new Error(call.getReceiver() + " is not connected :("));
 		}
 	}
@@ -143,7 +160,7 @@ public class App {
 	 * @param stop
 	 */
 	public void msg(StopCall stop) {
-		Client client = findClientsByName(stop.getReceiver());
+		Client client = findClientByName(stop.getReceiver());
 		client.send(stop.toString());
 	}
 
@@ -153,28 +170,42 @@ public class App {
 	 * 
 	 */
 	public void msg(Client answerer, AnswerCall answer) {
-		Client requester = findClientsByName(answer.getSender());
+		if (answer.getAnswer().equals("yes")) {
+			System.out.println("discussion between " + answer.getSender()
+					+ " and " + answer.getReceiver() + " on ports "
+					+ answer.getPortReceiver());
+		}
+		Client requester = findClientByName(answer.getSender());
 		System.out.println(answer.toString());
 		System.out.println("sending message to" + requester.getName());
 		answer.setIpReceiver(answerer.getIp());
 		requester.send(answer.toString());
 	}
 
+	/**
+	 * Someone left a room
+	 * 
+	 * @param client
+	 * @param leave
+	 */
 	public void msg(Client client, Leave leave) {
 		// removes him properly from the room
 		this.rooms.get(leave.getRoom()).left(client);
 	}
 
+	/**
+	 * Someone asked for a list of rooms
+	 * 
+	 * @param client
+	 * @param list
+	 */
 	public void msg(Client client, ListMsg list) {
 		client.send(new RoomsStart());
 
 		// for each room (key = id, value = room)
 		for (Map.Entry<Integer, Room> entry : rooms.entrySet()) {
-			Audience audience = new Audience();
-			audience.setRoom(entry.getKey());
-			audience.setNames(entry.getValue().getAudienceAsStrings());
-
-			client.send(audience);
+			client.send(new Audience(entry.getKey(), entry.getValue()
+					.getAudienceAsStrings()));
 		}
 
 		client.send(new RoomsStop());
@@ -189,7 +220,14 @@ public class App {
 		}
 	}
 
-	public Client findClientsByName(String name) {
+	/**
+	 * Find the client who uses this 'name'.
+	 * 
+	 * @param name
+	 *            the Client's name to search for
+	 * @return the Client, or null if not found
+	 */
+	public Client findClientByName(String name) {
 		System.out.println("name to search " + name + "<");
 		System.out.println("number of clients" + clients.size());
 		for (Client client : clients) {

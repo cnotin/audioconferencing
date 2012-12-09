@@ -1,4 +1,4 @@
-package se.ltu.M7017E.lab2.common.messages;
+package se.ltu.M7017E.lab2.messages;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

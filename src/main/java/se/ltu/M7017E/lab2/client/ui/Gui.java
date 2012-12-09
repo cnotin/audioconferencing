@@ -39,8 +39,8 @@ import javax.swing.tree.TreeSelectionModel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import se.ltu.M7017E.lab2.client.App;
-import se.ltu.M7017E.lab2.common.Room;
-import se.ltu.M7017E.lab2.common.messages.Call;
+import se.ltu.M7017E.lab2.client.Room;
+import se.ltu.M7017E.lab2.messages.Call;
 
 @Getter
 public class Gui extends JFrame {

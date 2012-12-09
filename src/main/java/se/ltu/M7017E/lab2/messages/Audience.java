@@ -1,15 +1,17 @@
-package se.ltu.M7017E.lab2.common.messages;
+package se.ltu.M7017E.lab2.messages;
 
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Set;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
 public class Audience {
 	private int room;
-	private List<String> names = new LinkedList<String>();
+	private Set<String> names;
 
 	public String toString() {
 		StringBuilder sb = new StringBuilder("AUDIENCE,");
@@ -32,15 +34,13 @@ public class Audience {
 	 * AUDIENCE,<RoomId>,<Contact1>,<Contact2> ...
 	 */
 	public static Audience fromString(String str) {
-		Audience ret = new Audience();
-
 		String[] tokens = str.split(",");
 
-		ret.room = new Integer(tokens[1]);
+		Set<String> names = new HashSet<String>();
 		for (int i = 2; i < tokens.length; i++) {
-			ret.names.add(tokens[i]);
+			names.add(tokens[i]);
 		}
 
-		return ret;
+		return new Audience(new Integer(tokens[1]), names);
 	}
 }

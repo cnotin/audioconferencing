@@ -1,4 +1,4 @@
-package se.ltu.M7017E.lab2.common;
+package se.ltu.M7017E.lab2.client;
 
 import java.util.Set;
 import java.util.TreeSet;
