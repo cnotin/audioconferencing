@@ -187,7 +187,6 @@ public class Gui extends JFrame {
 		roomList.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent evt) {
 				if (evt.getClickCount() == 2) {
-					System.out.println("the game");
 					DefaultMutableTreeNode node = (DefaultMutableTreeNode) roomList
 							.getLastSelectedPathComponent();
 					if (node == null) {
@@ -393,8 +392,6 @@ public class Gui extends JFrame {
 		new SwingWorker<Object, Object>() {
 			@Override
 			protected Object doInBackground() throws Exception {
-				System.out.println(contactsList.getSelectedValue());
-
 				if (contactsList.getSelectedValue() != null) {
 					app.askToCall((String) contactsList.getSelectedValue());
 				} else {
@@ -469,20 +466,6 @@ public class Gui extends JFrame {
 	 * 
 	 * @param roomListToDisplay
 	 *            The list of rooms to display in the tree
-	 */
-	/*
-	 * public void displayRoomList(List<Room> roomListToDisplay) {
-	 * DefaultMutableTreeNode root = (DefaultMutableTreeNode) roomsTreeModel
-	 * .getRoot();
-	 * 
-	 * // clear the modeltree if there is already something
-	 * root.removeAllChildren(); for (Room room : roomListToDisplay) { // if
-	 * (!room.getAudience().isEmpty()) { DefaultMutableTreeNode newRoom = new
-	 * DefaultMutableTreeNode(room); for (String contactName :
-	 * room.getAudience()) { MutableTreeNode contact = new
-	 * DefaultMutableTreeNode( contactName); newRoom.add(contact); }
-	 * root.add(newRoom); // } } // To update the tree roomsTreeModel.reload();
-	 * roomList.setModel(roomsTreeModel); }
 	 */
 	public void displayRoomList(List<Room> roomListToDisplay) {
 		Set<Integer> indexRoom = new TreeSet<Integer>();

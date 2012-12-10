@@ -1,8 +1,5 @@
 package se.ltu.M7017E.lab2.client.audio;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
 import org.gstreamer.PadLinkReturn;
@@ -21,9 +18,6 @@ public class SenderPipeline extends Pipeline {
 	private static final String SENDER_UNICAST = "sender_unicast";
 	/** Prefix to name the rooms bins */
 	private static final String SENDER_ROOM_PREFIX = "sender_room";
-
-	// TODO remove
-	private Map<Integer, SenderBin> rooms = new HashMap<Integer, SenderBin>();
 
 	private final BaseSrc src = (BaseSrc) ElementFactory.make("alsasrc", null);
 	private final Element tee = ElementFactory.make("tee", null);
@@ -47,29 +41,24 @@ public class SenderPipeline extends Pipeline {
 	 * 
 	 * @param roomId
 	 *            id of the room to join
-	 * @return the RTP SSRC of this sender, or (-1) if the room was already
-	 *         joined
+	 * @return the RTP SSRC of this sender
 	 */
 	public long streamTo(int roomId) {
-		// don't join if already joined
-		if (!rooms.containsKey(roomId)) {
-			// create the sender bin, name it after the room id
-			SenderBin room = new SenderBin(SENDER_ROOM_PREFIX + roomId,
-					Config.BASE_IP + roomId, Config.RTP_MULTICAST_PORT, true);
-			rooms.put(roomId, room);
-			// add it to this
-			add(room);
-			room.syncStateWithParent();
+		// create the sender bin, name it after the room id
+		SenderBin room = new SenderBin(SENDER_ROOM_PREFIX + roomId,
+				Config.BASE_IP + roomId, Config.RTP_MULTICAST_PORT, true);
+		// add it to this
+		add(room);
+		room.syncStateWithParent();
 
-			// connect its input to the tee
-			Tool.successOrDie("tee-roomSender", tee.getRequestPad("src%d")
-					.link(room.getStaticPad("sink")).equals(PadLinkReturn.OK));
+		// connect its input to the tee
+		Tool.successOrDie("tee-roomSender",
+				tee.getRequestPad("src%d").link(room.getStaticPad("sink"))
+						.equals(PadLinkReturn.OK));
 
-			play();
+		play();
 
-			return room.getSSRC();
-		}
-		return -1;
+		return room.getSSRC();
 	}
 
 	/**
@@ -79,11 +68,7 @@ public class SenderPipeline extends Pipeline {
 	 *            Room ID
 	 */
 	public void stopStreamingToRoom(int roomId) {
-		// can't leave if not joined
-		if (rooms.containsKey(roomId)) {
-			((SenderBin) getElementByName(SENDER_ROOM_PREFIX + roomId))
-					.getOut();
-		}
+		((SenderBin) getElementByName(SENDER_ROOM_PREFIX + roomId)).getOut();
 	}
 
 	/**

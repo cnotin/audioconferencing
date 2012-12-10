@@ -47,14 +47,12 @@ public class ControlChannel implements Runnable {
 
 	public ControlChannel(App app) {
 		this.app = app;
-		System.out.println("Creating control channel");
 
 		try {
 			// connect to server
-			Socket socket = new Socket(InetAddress.getByName("localhost"), 4000);
-			// Socket socket = new
-			// Socket(InetAddress.getByName("130.240.53.166"),
-			// 4000);
+			Socket socket = new Socket(
+					InetAddress.getByName(Config.SERVER_ADDRESS),
+					Config.SERVER_PORT);
 			in = new BufferedReader(new InputStreamReader(
 					socket.getInputStream()));
 			out = new PrintStream(socket.getOutputStream());
@@ -78,7 +76,6 @@ public class ControlChannel implements Runnable {
 				quit = true;
 			} else {
 				// do something with the message
-				System.out.println("Got raw msg: " + message);
 				caseMessage(message);
 			}
 		}
@@ -117,14 +114,12 @@ public class ControlChannel implements Runnable {
 			this.roomsListFinished.release();
 		} else if (message.startsWith("CALL")) {
 			// someone called me
-			System.out.println("allo");
 			app.getGui().acceptACall(message, this.app);
 		} else if (message.startsWith("ANSWERCALL")) {
 			// I received someone's answer about my call
 			AnswerCall answer = AnswerCall.fromString(message);
 			if (answer.getAnswer().equals("yes")) {
 				// he accepted
-				System.out.println("ip receiver" + answer.getIpReceiver());
 				app.getGui().showMessage(
 						answer.getReceiver() + " accepted the call");
 				// launch the streaming to him
@@ -160,7 +155,6 @@ public class ControlChannel implements Runnable {
 	 *            without any formatting (no '\n' at the end for example)
 	 */
 	public void send(String message) {
-		System.out.println("Client send: " + message);
 		out.println(message);
 	}
 }

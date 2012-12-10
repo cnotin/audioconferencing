@@ -72,8 +72,6 @@ public class RoomReceiver extends Bin {
 			public synchronized void padAdded(Element element, Pad pad) {
 				// don't react to other pads than new sound input
 				if (pad.getName().startsWith("recv_rtp_src")) {
-					System.out.println("Got new sound input pad: " + pad);
-
 					/*
 					 * if the SSRC if this incoming new participant is mine,
 					 * then connect to fakesink to prevent echo of my own voice.
@@ -140,9 +138,6 @@ public class RoomReceiver extends Bin {
 		Pad downstreamPeer = src.getPeer();
 
 		this.setState(State.NULL);
-
-		System.out.println("Remove from parent bin "
-				+ ((Bin) this.getParent()).remove(this));
 
 		downstreamPeer.getParentElement().releaseRequestPad(downstreamPeer);
 	}

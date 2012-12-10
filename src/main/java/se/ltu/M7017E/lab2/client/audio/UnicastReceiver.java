@@ -67,7 +67,6 @@ public class UnicastReceiver extends Bin {
 			@Override
 			public void padAdded(Element element, Pad pad) {
 				if (pad.getName().startsWith("recv_rtp_src")) {
-					System.out.println("Got new sound input pad: " + pad);
 					// create elements
 					RtpDecodeBin decoder = new RtpDecodeBin(false);
 
@@ -116,7 +115,6 @@ public class UnicastReceiver extends Bin {
 		pause();
 
 		port = (Integer) udpSource.get("port");
-		System.out.println("Got assigned port: " + port);
 	}
 
 	/**
@@ -136,9 +134,6 @@ public class UnicastReceiver extends Bin {
 		}
 
 		this.setState(State.NULL);
-
-		System.out.println("Remove from parent bin "
-				+ ((Bin) this.getParent()).remove(this));
 
 		if (downstreamPeer != null) {
 			// clean request pad from adder

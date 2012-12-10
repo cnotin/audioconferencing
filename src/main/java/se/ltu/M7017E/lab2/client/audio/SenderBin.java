@@ -133,7 +133,6 @@ public class SenderBin extends Bin {
 		upstreamPeer.setBlocked(true);
 
 		this.setState(State.NULL);
-		System.out.println("Remove from parent bin " + parentBin.remove(this));
 
 		/*
 		 * if upstream tee has no src anymore, the pipeline will push in the
@@ -143,7 +142,5 @@ public class SenderBin extends Bin {
 			parentBin.setState(State.NULL);
 		}
 		teeUpstream.releaseRequestPad(upstreamPeer);
-
-		System.out.println(teeUpstream.getPads());
 	}
 }
