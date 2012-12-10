@@ -77,7 +77,7 @@ public class App {
 	}
 
 	/**
-	 * Update the Allroom variable when someone join a room in which the user
+	 * Update the allRooms variable when someone join a room in which the user
 	 * is. If the user is not in the room, the tree is not updated since the
 	 * Join message has not be received
 	 * 
@@ -99,7 +99,7 @@ public class App {
 	}
 
 	/**
-	 * Update the Allroom variable when someone left a room in which the user
+	 * Update the allRooms variable when someone left a room in which the user
 	 * is. If the user is not in the room, the tree is not updated since the
 	 * Left message has not be received
 	 * 

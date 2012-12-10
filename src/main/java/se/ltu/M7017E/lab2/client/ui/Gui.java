@@ -73,10 +73,11 @@ public class Gui extends JFrame {
 	private App app;
 
 	/**
-	 * Interface of the application. Display the main window
+	 * Interface of the application. Display the main window and set the tree.
 	 */
 	public Gui(final App app) {
 		this.app = app;
+		JPanel subPanel = new JPanel();
 
 		// use OS' native look'n'feel
 		try {
@@ -98,8 +99,11 @@ public class Gui extends JFrame {
 		this.setJMenuBar(createMenu());
 		this.getContentPane().setLayout(
 				new BoxLayout(this.getContentPane(), BoxLayout.Y_AXIS));
+		subPanel.setLayout(new BoxLayout(subPanel, BoxLayout.X_AXIS));
+		subPanel.add(createRoomPanel());
+		subPanel.add(createContactsPanel());
 		this.add(createButtonPanel());
-		this.add(createContactsPanel());
+		this.add(subPanel);
 
 		// listener for playing a doubleclicked file in the JList
 		this.contactsList.addMouseListener(new MouseAdapter() {
@@ -110,7 +114,6 @@ public class Gui extends JFrame {
 			}
 		});
 		app.createAllRoomList();
-		// app.createMyRoomsList();
 		displayRoomList(app.getAllRooms());
 	}
 
@@ -249,14 +252,11 @@ public class Gui extends JFrame {
 
 		JPanel panel = new JPanel();
 
-		JPanel roomPanel = new JPanel();
 		JPanel contactPanel = new JPanel();
 		JPanel subContactPanel = new JPanel();
 
 		newBtn = new JButton(newIcon);
 		deleteBtn = new JButton(deleteIcon);
-
-		roomPanel = createRoomPanel();
 
 		refreshContactsList();
 		this.contactsList = new JList(contactsListModel);
@@ -295,7 +295,7 @@ public class Gui extends JFrame {
 		contactPanel.add(contactToCallScrollPane);
 
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
-		panel.add(roomPanel);
+		// panel.add(roomPanel);
 		panel.add(Box.createRigidArea(new Dimension(15, 0)));
 		panel.add(contactPanel);
 
