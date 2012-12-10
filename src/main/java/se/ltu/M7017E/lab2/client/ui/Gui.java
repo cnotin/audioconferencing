@@ -53,7 +53,7 @@ public class Gui extends JFrame {
 	private JButton newBtn;
 	private JButton deleteBtn;
 	private JButton quitBtn;
-	private JList<String> contactsList;
+	private JList contactsList;
 	public JTree roomList;
 	private ImageIcon callIcon = new ImageIcon(getClass().getResource(
 			"/icons/call_button.png"));
@@ -68,7 +68,7 @@ public class Gui extends JFrame {
 	private ImageIcon quitIcon = new ImageIcon(getClass().getResource(
 			"/icons/quit_button.png"));
 
-	private DefaultListModel<String> contactsListModel = new DefaultListModel<String>();
+	private DefaultListModel contactsListModel = new DefaultListModel();
 	private DefaultTreeModel roomsTreeModel;
 	private App app;
 
@@ -259,7 +259,7 @@ public class Gui extends JFrame {
 		roomPanel = createRoomPanel();
 
 		refreshContactsList();
-		this.contactsList = new JList<String>(contactsListModel);
+		this.contactsList = new JList(contactsListModel);
 		contactPanel.setLayout(new BoxLayout(contactPanel, BoxLayout.Y_AXIS));
 
 		subContactPanel.setLayout(new BoxLayout(subContactPanel,
