@@ -50,10 +50,9 @@ public class ControlChannel implements Runnable {
 
 		try {
 			// connect to server
-			Socket socket = new Socket(InetAddress.getByName("localhost"), 4000);
-			// Socket socket = new
-			// Socket(InetAddress.getByName("130.240.53.166"),
-			// 4000);
+			Socket socket = new Socket(
+					InetAddress.getByName(Config.SERVER_ADDRESS),
+					Config.SERVER_PORT);
 			in = new BufferedReader(new InputStreamReader(
 					socket.getInputStream()));
 			out = new PrintStream(socket.getOutputStream());
