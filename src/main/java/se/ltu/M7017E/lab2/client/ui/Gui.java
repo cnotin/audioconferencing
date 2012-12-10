@@ -54,6 +54,7 @@ public class Gui extends JFrame {
 	private JButton newBtn;
 	private JButton deleteBtn;
 	private JButton quitBtn;
+	private JButton refreshBtn;
 	private JList contactsList;
 	public JTree roomList;
 	private ImageIcon callIcon = new ImageIcon(getClass().getResource(
@@ -68,6 +69,8 @@ public class Gui extends JFrame {
 			"/icons/door_button.png"));
 	private ImageIcon quitIcon = new ImageIcon(getClass().getResource(
 			"/icons/quit_button.png"));
+	private ImageIcon refreshIcon = new ImageIcon(getClass().getResource(
+			"/icons/refresh_button.png"));
 
 	private DefaultListModel contactsListModel = new DefaultListModel();
 	private DefaultTreeModel roomsTreeModel;
@@ -146,6 +149,7 @@ public class Gui extends JFrame {
 
 		JPanel panel = new JPanel();
 		JPanel subPanel = new JPanel();
+
 		subPanel.setLayout(new BoxLayout(subPanel, BoxLayout.X_AXIS));
 
 		// initialize the RoomList as a treemodel
@@ -162,13 +166,17 @@ public class Gui extends JFrame {
 				DefaultMutableTreeNode nodeSelected = (DefaultMutableTreeNode) roomList
 						.getLastSelectedPathComponent();
 				if (nodeSelected == null) {
-				} else if ((nodeSelected.getLevel() == 1)
+				}
+				// node selected is a room
+				else if ((nodeSelected.getLevel() == 1)
 						&& app.getMyRooms().contains(
 								nodeSelected.getUserObject())) {
 					// if the room is already joined, display quitBtn
 					joinBtn.setVisible(false);
 					quitBtn.setVisible(true);
-				} else if ((nodeSelected.getLevel() == 2)
+				}
+				// node selected is a contact in a room
+				else if ((nodeSelected.getLevel() == 2)
 						&& app.getMyRooms().contains(
 								((DefaultMutableTreeNode) nodeSelected
 										.getParent()).getUserObject())) {
@@ -206,10 +214,21 @@ public class Gui extends JFrame {
 				}
 			}
 		});
+
+		refreshBtn = new JButton(refreshIcon);
+		refreshBtn.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				app.createAllRoomList();
+				displayRoomList(app.getAllRooms());
+			}
+		});
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		JScrollPane roomListPane = new JScrollPane(roomList);
 		subPanel.add(new JLabel("Room list"));
 		subPanel.add(Box.createHorizontalGlue());
+		subPanel.add(refreshBtn);
 		panel.setSize(200, 300);
 		panel.add(subPanel);
 		panel.add(roomListPane);
@@ -217,6 +236,13 @@ public class Gui extends JFrame {
 		return panel;
 	}
 
+	/**
+	 * Manage the render of the tree leafs. If the user is in a room, its name
+	 * appears in bold. Otherwise the name of the room is normal.
+	 * 
+	 * @author flodia-2
+	 * 
+	 */
 	@AllArgsConstructor
 	private class CellRender implements TreeCellRenderer {
 		TreeCellRenderer originalRender;
@@ -432,8 +458,10 @@ public class Gui extends JFrame {
 	}
 
 	/**
+	 * Ask to the user if he accepts a call from another user.
 	 * 
 	 * @param message
+	 *            text shown in the window
 	 * @param app
 	 */
 	public void acceptACall(String message, App app) {
@@ -450,7 +478,7 @@ public class Gui extends JFrame {
 	}
 
 	/**
-	 * Show a message to the user
+	 * Show a message to the user in an information window.
 	 * 
 	 */
 
@@ -490,7 +518,7 @@ public class Gui extends JFrame {
 				root.add(newRoom);
 			}
 		}
-		// display the empty room at the end
+		// display the empty room at the end of the list
 		for (Room room : roomListToDisplay) {
 			if (!indexRoom.contains(room.getId())) {
 				DefaultMutableTreeNode newRoom = new DefaultMutableTreeNode(
@@ -498,7 +526,7 @@ public class Gui extends JFrame {
 				root.add(newRoom);
 			}
 		}
-		// To update the tree
+		// Update the tree
 		roomsTreeModel.reload();
 		roomList.setModel(roomsTreeModel);
 	}

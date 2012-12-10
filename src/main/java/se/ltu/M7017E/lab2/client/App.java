@@ -103,7 +103,6 @@ public class App {
 			}
 		}
 		gui.displayRoomList(allRooms);
-		createMyRooms(allRooms);
 	}
 
 	/**
@@ -122,7 +121,6 @@ public class App {
 			}
 		}
 		gui.displayRoomList(allRooms);
-		createMyRooms(allRooms);
 	}
 
 	/**

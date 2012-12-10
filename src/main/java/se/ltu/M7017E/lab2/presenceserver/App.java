@@ -111,6 +111,14 @@ public class App {
 		broadcastUpdatedListOfConnectedClient();
 	}
 
+	/**
+	 * Remove a client from a room - use the directly the room .
+	 * 
+	 * @param client
+	 *            the client who leave the room
+	 * @param room
+	 *            the room left
+	 */
 	private void leaveRoom(Client client, Room room) {
 		room.left(client);
 		if (room.getAudience().isEmpty()) {
@@ -119,6 +127,14 @@ public class App {
 		}
 	}
 
+	/**
+	 * Remove a client from a room - use the roomID to identify the room.
+	 * 
+	 * @param client
+	 *            the client who leave the room
+	 * @param roomId
+	 *            the ID of the room left
+	 */
 	private void leaveRoom(Client client, Integer roomId) {
 		leaveRoom(client, this.rooms.get(roomId));
 	}
