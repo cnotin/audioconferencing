@@ -95,15 +95,12 @@ public class App {
 	 *            the message received from the server
 	 */
 	public void msg(Joined joined) {
-		String splitMessage[] = joined.toString().split(",", 0);
-
 		for (Room joinedRoom : allRooms) {
-			if (joinedRoom.getId() == Integer.parseInt(splitMessage[1])) {
+			if (joinedRoom.getId() == joined.getRoom()) {
 				allRooms.get(allRooms.indexOf(joinedRoom)).getAudience()
-						.remove(splitMessage[2]);
+						.add(joined.getName());
 			}
 		}
-		// TODO : not use the Gui ?
 		gui.displayRoomList(allRooms);
 		createMyRooms(allRooms);
 	}
@@ -117,15 +114,12 @@ public class App {
 	 *            the message received from the server
 	 */
 	public void msg(Left left) {
-		String splitMessage[] = left.toString().split(",", 0);
-
 		for (Room leftRoom : allRooms) {
-			if (leftRoom.getId() == Integer.parseInt(splitMessage[1])) {
+			if (leftRoom.getId() == left.getRoom()) {
 				allRooms.get(allRooms.indexOf(leftRoom)).getAudience()
-						.remove(splitMessage[2]);
+						.remove(left.getName());
 			}
 		}
-		// TODO : not use the Gui ?
 		gui.displayRoomList(allRooms);
 		createMyRooms(allRooms);
 	}
@@ -155,6 +149,7 @@ public class App {
 		receiver.receiveFromRoom(roomId, mySSRC);
 
 		Room newRoom = new Room();
+		boolean createRoom = true;
 		send(new Join(roomId));
 		try {
 			control.getRoomsListFinished().acquire();
@@ -165,22 +160,25 @@ public class App {
 			e.printStackTrace();
 		}
 		newRoom = updateAfterJoin(control.getUpdatedAudience());
+		// if the room already exists with some people inside, update it
 		for (Room oldRoom : allRooms) {
 			if (oldRoom.getId() == newRoom.getId()) {
 				allRooms.set(allRooms.indexOf(oldRoom), newRoom);
+				createRoom = false;
 			}
+		}
+		if (createRoom) {
+			// otherwise, create add the room to allRooms
+			allRooms.add(newRoom);
 		}
 	}
 
 	/**
-	 * <<<<<<< HEAD Send a message to the server to leave the room and
-	 * disconnect the user
+	 * Send a message to the server to leave the room and disconnect the user
+	 * (shutdown audio)
 	 * 
 	 * @param roomId
-	 *            the room to leave ======= Leave a room (shutdown audio)
-	 * 
-	 * @param roomId
-	 *            number from 1 to 254 >>>>>>> Comments
+	 *            the room to leave from 1 to 254
 	 */
 	public void leaveRoom(int roomId) {
 		getControl().send(new Leave(roomId).toString());
@@ -466,7 +464,7 @@ public class App {
 	}
 
 	/**
-	 * Update a room when someone joined it.
+	 * Update a room when the user just joined it.
 	 * 
 	 * @param newAudience
 	 *            the new contact list in the room joined.
@@ -486,6 +484,13 @@ public class App {
 		return updatedRoom;
 	}
 
+	/**
+	 * Update a room when the user just left it.
+	 * 
+	 * @param newAudience
+	 *            the new contact list in the room joined.
+	 * @return the new state of the room joined
+	 */
 	public Room updateAfterLeave(String leftMessage) {
 		String splitMessage[];
 		String deleteContact;

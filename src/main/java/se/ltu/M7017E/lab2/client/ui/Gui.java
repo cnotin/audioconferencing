@@ -7,6 +7,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -295,7 +297,6 @@ public class Gui extends JFrame {
 		contactPanel.add(contactToCallScrollPane);
 
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
-		// panel.add(roomPanel);
 		panel.add(Box.createRigidArea(new Dimension(15, 0)));
 		panel.add(contactPanel);
 
@@ -469,14 +470,32 @@ public class Gui extends JFrame {
 	 * @param roomListToDisplay
 	 *            The list of rooms to display in the tree
 	 */
+	/*
+	 * public void displayRoomList(List<Room> roomListToDisplay) {
+	 * DefaultMutableTreeNode root = (DefaultMutableTreeNode) roomsTreeModel
+	 * .getRoot();
+	 * 
+	 * // clear the modeltree if there is already something
+	 * root.removeAllChildren(); for (Room room : roomListToDisplay) { // if
+	 * (!room.getAudience().isEmpty()) { DefaultMutableTreeNode newRoom = new
+	 * DefaultMutableTreeNode(room); for (String contactName :
+	 * room.getAudience()) { MutableTreeNode contact = new
+	 * DefaultMutableTreeNode( contactName); newRoom.add(contact); }
+	 * root.add(newRoom); // } } // To update the tree roomsTreeModel.reload();
+	 * roomList.setModel(roomsTreeModel); }
+	 */
 	public void displayRoomList(List<Room> roomListToDisplay) {
+		Set<Integer> indexRoom = new TreeSet<Integer>();
+
 		DefaultMutableTreeNode root = (DefaultMutableTreeNode) roomsTreeModel
 				.getRoot();
 
 		// clear the modeltree if there is already something
 		root.removeAllChildren();
+		indexRoom.clear();
 		for (Room room : roomListToDisplay) {
 			if (!room.getAudience().isEmpty()) {
+				indexRoom.add(room.getId());
 				DefaultMutableTreeNode newRoom = new DefaultMutableTreeNode(
 						room);
 				for (String contactName : room.getAudience()) {
@@ -485,6 +504,13 @@ public class Gui extends JFrame {
 					newRoom.add(contact);
 				}
 				root.add(newRoom);
+			}
+		}
+		for (int i = 1; i < 255; i++) {
+			if (!indexRoom.contains(i)) {
+				DefaultMutableTreeNode emptyRoom;
+				emptyRoom = new DefaultMutableTreeNode(new Room(i));
+				root.add(emptyRoom);
 			}
 		}
 		// To update the tree
