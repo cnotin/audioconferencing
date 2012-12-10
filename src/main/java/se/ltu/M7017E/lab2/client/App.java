@@ -147,27 +147,29 @@ public class App {
 	 *            number from 1 to 254
 	 */
 	public void joinRoom(int roomId) {
-		/*
-		 * remember my SSRC to remove it from the incoming stream from multicast
-		 * (prevents echo of my own voice)
-		 */
-		long mySSRC = sender.streamTo(roomId);
-		receiver.receiveFromRoom(roomId, mySSRC);
+		// don't join if already joined
+		if (!myRooms.contains(new Room(roomId))) {
+			/*
+			 * remember my SSRC to remove it from the incoming stream from
+			 * multicast (prevents echo of my own voice)
+			 */
+			long mySSRC = sender.streamTo(roomId);
+			receiver.receiveFromRoom(roomId, mySSRC);
 
-		Room newRoom = new Room();
-		send(new Join(roomId));
-		try {
-			control.getRoomsListFinished().acquire();
-		} catch (InterruptedException e) {
-			System.err
-					.println("This thread has been interrupted while waiting the end "
-							+ "of a message from the server, message might be incomplete...");
-			e.printStackTrace();
-		}
-		newRoom = updateAfterJoin(control.getUpdatedAudience());
-		for (Room oldRoom : allRooms) {
-			if (oldRoom.getId() == newRoom.getId()) {
-				allRooms.set(allRooms.indexOf(oldRoom), newRoom);
+			send(new Join(roomId));
+			try {
+				control.getRoomsListFinished().acquire();
+			} catch (InterruptedException e) {
+				System.err
+						.println("This thread has been interrupted while waiting the end "
+								+ "of a message from the server, message might be incomplete...");
+				e.printStackTrace();
+			}
+			Room newRoom = updateAfterJoin(control.getUpdatedAudience());
+			for (Room oldRoom : allRooms) {
+				if (oldRoom.getId() == newRoom.getId()) {
+					allRooms.set(allRooms.indexOf(oldRoom), newRoom);
+				}
 			}
 		}
 	}
@@ -179,15 +181,18 @@ public class App {
 	 *            the room to leave, number from 1 to 254
 	 */
 	public void leaveRoom(int roomId) {
-		getControl().send(new Leave(roomId).toString());
-		for (Room room : allRooms) {
-			if (room.getId() == roomId) {
-				allRooms.get(allRooms.indexOf(room)).getAudience()
-						.remove(username);
+		// can't leave if not joined
+		if (myRooms.contains(new Room(roomId))) {
+			getControl().send(new Leave(roomId).toString());
+			for (Room room : allRooms) {
+				if (room.getId() == roomId) {
+					allRooms.get(allRooms.indexOf(room)).getAudience()
+							.remove(username);
+				}
 			}
+			sender.stopStreamingToRoom(roomId);
+			receiver.stopRoomReceiving(roomId);
 		}
-		sender.stopStreamingToRoom(roomId);
-		receiver.stopRoomReceiving(roomId);
 	}
 
 	/**
