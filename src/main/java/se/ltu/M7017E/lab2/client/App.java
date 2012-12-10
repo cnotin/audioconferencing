@@ -173,14 +173,10 @@ public class App {
 	}
 
 	/**
-	 * <<<<<<< HEAD Send a message to the server to leave the room and
-	 * disconnect the user
+	 * Send a message to the server to leave the room and disconnect the user
 	 * 
 	 * @param roomId
-	 *            the room to leave ======= Leave a room (shutdown audio)
-	 * 
-	 * @param roomId
-	 *            number from 1 to 254 >>>>>>> Comments
+	 *            the room to leave, number from 1 to 254
 	 */
 	public void leaveRoom(int roomId) {
 		getControl().send(new Leave(roomId).toString());
