@@ -12,6 +12,7 @@ public class Config {
 	public static final int RTP_MULTICAST_PORT = 5000;
 
 	/** Server address (IP or hostname) */
+	// public static final String SERVER_ADDRESS = "130.240.92.20";
 	public static final String SERVER_ADDRESS = "localhost";
 
 	/** Server TCP port */

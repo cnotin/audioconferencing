@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -398,6 +399,7 @@ public class App {
 	 */
 	public void createAllRoomList() {
 		allRooms.clear();
+		List<Integer> indexRoom = new ArrayList<Integer>();
 		boolean server = true;
 
 		if (server) {
@@ -413,11 +415,18 @@ public class App {
 					String split[] = oneRoom.split(",", 0);
 
 					newRoom.setId(Integer.parseInt(split[1]));
+					indexRoom.add(newRoom.getId());
 					for (int i = 2; i < split.length; i++) {
 						roomContactList.add(split[i]);
 					}
 					newRoom.setAudience(roomContactList);
 					allRooms.add(newRoom);
+				}
+				for (int i = 1; i < 255; i++) {
+					if (!indexRoom.contains(i)) {
+						Room newRoom = new Room(i);
+						allRooms.add(newRoom);
+					}
 				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();

@@ -101,7 +101,7 @@ public class App {
 		for (Map.Entry<Integer, Room> iter : rooms.entrySet()) {
 			Room room = iter.getValue();
 			if (room.isWithin(client)) {
-				room.left(client);
+				leaveRoom(client, room);
 			}
 		}
 
@@ -109,6 +109,18 @@ public class App {
 		clients.remove(client);
 
 		broadcastUpdatedListOfConnectedClient();
+	}
+
+	private void leaveRoom(Client client, Room room) {
+		room.left(client);
+		if (room.getAudience().isEmpty()) {
+			// Close the room if the last contact left
+			rooms.remove(room.getId());
+		}
+	}
+
+	private void leaveRoom(Client client, Integer roomId) {
+		leaveRoom(client, this.rooms.get(roomId));
 	}
 
 	/**
@@ -183,7 +195,7 @@ public class App {
 	 */
 	public void msg(Client client, Leave leave) {
 		// removes him properly from the room
-		this.rooms.get(leave.getRoom()).left(client);
+		leaveRoom(client, leave.getRoom());
 	}
 
 	/**

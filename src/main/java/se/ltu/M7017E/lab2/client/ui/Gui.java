@@ -6,9 +6,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -468,7 +467,7 @@ public class Gui extends JFrame {
 	 *            The list of rooms to display in the tree
 	 */
 	public void displayRoomList(List<Room> roomListToDisplay) {
-		Set<Integer> indexRoom = new TreeSet<Integer>();
+		List<Integer> indexRoom = new ArrayList<Integer>();
 
 		DefaultMutableTreeNode root = (DefaultMutableTreeNode) roomsTreeModel
 				.getRoot();
@@ -477,10 +476,12 @@ public class Gui extends JFrame {
 		root.removeAllChildren();
 		indexRoom.clear();
 		for (Room room : roomListToDisplay) {
+			// if the room is not empty, display it first
 			if (!room.getAudience().isEmpty()) {
 				indexRoom.add(room.getId());
 				DefaultMutableTreeNode newRoom = new DefaultMutableTreeNode(
 						room);
+				// Display the contact list
 				for (String contactName : room.getAudience()) {
 					MutableTreeNode contact = new DefaultMutableTreeNode(
 							contactName);
@@ -489,11 +490,12 @@ public class Gui extends JFrame {
 				root.add(newRoom);
 			}
 		}
-		for (int i = 1; i < 255; i++) {
-			if (!indexRoom.contains(i)) {
-				DefaultMutableTreeNode emptyRoom;
-				emptyRoom = new DefaultMutableTreeNode(new Room(i));
-				root.add(emptyRoom);
+		// display the empty room at the end
+		for (Room room : roomListToDisplay) {
+			if (!indexRoom.contains(room.getId())) {
+				DefaultMutableTreeNode newRoom = new DefaultMutableTreeNode(
+						room);
+				root.add(newRoom);
 			}
 		}
 		// To update the tree
