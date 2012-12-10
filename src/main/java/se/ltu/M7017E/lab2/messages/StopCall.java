@@ -1,11 +1,11 @@
 package se.ltu.M7017E.lab2.messages;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
+@Data
+@AllArgsConstructor
 public class StopCall {
-	@Getter
-	@Setter
 	public String receiver;
 
 	public String toString() {
@@ -17,9 +17,8 @@ public class StopCall {
 	 * STOPCALL,<receiverName>
 	 */
 	public static StopCall fromString(String message) {
-		StopCall ret = new StopCall();
 		String[] tokens = message.split(",");
-		ret.receiver = tokens[1];
-		return ret;
+
+		return new StopCall(tokens[1]);
 	}
 }

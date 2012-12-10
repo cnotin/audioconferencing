@@ -1,8 +1,10 @@
 package se.ltu.M7017E.lab2.messages;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
 public class Join {
 	private int room;
 
@@ -15,11 +17,8 @@ public class Join {
 	 * JOIN,<room>
 	 */
 	public static Join fromString(String str) {
-		Join ret = new Join();
-
 		String[] tokens = str.split(",");
-		ret.room = new Integer(tokens[1]);
 
-		return ret;
+		return new Join(new Integer(tokens[1]));
 	}
 }

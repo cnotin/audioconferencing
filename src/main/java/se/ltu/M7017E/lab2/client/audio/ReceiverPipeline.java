@@ -30,6 +30,12 @@ public class ReceiverPipeline extends Pipeline {
 
 		addMany(adder, sink);
 		linkMany(adder, sink);
+
+		/*
+		 * this begins without any source, so there's no problem (like source
+		 * pushing into the void) to start it right now
+		 */
+		play();
 	}
 
 	/**
