@@ -2,10 +2,10 @@ package se.ltu.M7017E.lab2.presenceserver;
 
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import lombok.Getter;
 import se.ltu.M7017E.lab2.messages.AnswerCall;
@@ -32,8 +32,8 @@ public class App {
 	/** connected clients */
 	@Getter
 	private Set<Client> clients = new HashSet<Client>();
-	/** currently opened rooms */
-	private Map<Integer, Room> rooms = new HashMap<Integer, Room>();
+	/** currently opened rooms, sorted by id */
+	private Map<Integer, Room> rooms = new TreeMap<Integer, Room>();
 
 	public App() {
 		ServerSocket serverSocket = null;
