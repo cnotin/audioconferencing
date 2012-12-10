@@ -33,7 +33,6 @@ public class TCPThread implements Runnable {
 	private boolean quit = false;
 
 	public TCPThread(App app, Socket socket) {
-		System.out.println("New client " + socket.getInetAddress());
 		this.app = app;
 		this.socket = socket;
 		this.me = new Client(this);
@@ -65,8 +64,6 @@ public class TCPThread implements Runnable {
 				quit = true;
 			} else {
 				// do something with the message
-				System.out.println("Got raw msg: " + message);
-
 				if (message.startsWith("HELLO")) {
 					app.msg(me, Hello.fromString(message));
 				} else if (message.startsWith("JOIN")) {
@@ -101,7 +98,6 @@ public class TCPThread implements Runnable {
 	 *            without any formatting (no '\n' at the end for example)
 	 */
 	public void send(String message) {
-		System.out.println("Server send: " + message);
 		out.println(message);
 	}
 

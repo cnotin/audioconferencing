@@ -210,7 +210,6 @@ public class App {
 				FileReader fr = new FileReader(file);
 				BufferedReader br = new BufferedReader(fr);
 				String s = br.readLine();
-				System.out.println("hello" + s);
 				if (s != null && !s.isEmpty()) {
 					this.username = s;
 					fr.close();
@@ -260,12 +259,12 @@ public class App {
 	}
 
 	/**
+	 * Start sending stream to someone for a call
 	 * 
 	 * @param ipReceiver
 	 * @param port
 	 */
 	public void call(String ipReceiver, int port) {
-		System.out.println("IP: " + ipReceiver);
 		sender.streamTo(ipReceiver, port);
 
 		gui.getCallBtn().setVisible(false);
@@ -310,7 +309,6 @@ public class App {
 		if (answer.equals("yes")) {
 			port = receiver.receiveFromUnicast();
 			this.friend = call.getSender();
-			System.out.println("My friend is the wonderful " + this.friend);
 
 			gui.getCallBtn().setVisible(false);
 			gui.getHangUpBtn().setVisible(true);
@@ -378,12 +376,9 @@ public class App {
 	 * Remove a contact from the list of contacts.
 	 */
 	public void removeContact(String contact) {
-		System.out.println("espece de contact " + contact);
 		if (contact.endsWith("(Disconnected)")) {
-			System.out.println("espece de deconnecte " + contact);
 			contact = contact.substring(0, contact.length() - 15);
-		} else
-			System.out.println("espece deconnecte " + contact);
+		}
 
 		this.contacts.remove(contact);
 		saveContacts();
@@ -397,14 +392,8 @@ public class App {
 		ConnectedList connectedList = ConnectedList
 				.fromString(connectedMessage);
 		connected = connectedList.getConnected();
-		String deleteme = "List of connected persons : ";
-		for (String c : connected) {
-			deleteme += "\n " + c;
-		}
 
-		System.out.println(deleteme);
 		if (gui != null) {
-			System.out.println("plooouf");
 			gui.refreshContactsList();
 		}
 	}
@@ -423,7 +412,6 @@ public class App {
 				send(new ListMsg());
 				// wait for the semaphore
 				control.getRoomsListFinished().acquire();
-				System.out.println(control.getMsgList());
 				updateMsgFromServer(control.getMsgList());
 				for (String oneRoom : msgFromServer) {
 					Room newRoom = new Room();
@@ -439,13 +427,10 @@ public class App {
 				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
-				System.out.println("Error when the thread is waiting");
 			} catch (NoSuchElementException e1) {
 				e1.printStackTrace();
-				System.out.println("End of the Server message");
 			} catch (NumberFormatException n) {
 				n.printStackTrace();
-				System.out.println("NumberFormatException for parseint");
 			}
 			// Debug : create the list when the server is down
 		} else {

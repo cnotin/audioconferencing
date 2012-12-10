@@ -144,8 +144,6 @@ public class App {
 	public void msg(Client sender, Call call) {
 		Client receiver = findClientByName(call.getReceiver());
 		if (receiver != null) {
-			System.out.println("sending message to " + receiver.getName());
-			System.out.println(sender.getIp());
 			call.setIpSender(sender.getIp());
 			receiver.send(call.toString());
 		} else {
@@ -171,13 +169,8 @@ public class App {
 	 */
 	public void msg(Client answerer, AnswerCall answer) {
 		if (answer.getAnswer().equals("yes")) {
-			System.out.println("discussion between " + answer.getSender()
-					+ " and " + answer.getReceiver() + " on ports "
-					+ answer.getPortReceiver());
 		}
 		Client requester = findClientByName(answer.getSender());
-		System.out.println(answer.toString());
-		System.out.println("sending message to" + requester.getName());
 		answer.setIpReceiver(answerer.getIp());
 		requester.send(answer.toString());
 	}
@@ -228,10 +221,7 @@ public class App {
 	 * @return the Client, or null if not found
 	 */
 	public Client findClientByName(String name) {
-		System.out.println("name to search " + name + "<");
-		System.out.println("number of clients" + clients.size());
 		for (Client client : clients) {
-			System.out.println("client name : " + client.getName());
 			if (client.getName().equals(name)) {
 				return client;
 			}

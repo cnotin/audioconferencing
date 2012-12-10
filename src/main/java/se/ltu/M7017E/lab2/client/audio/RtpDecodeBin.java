@@ -65,9 +65,6 @@ public class RtpDecodeBin extends Bin {
 		// clean request pad from adder
 		Pad downstreamPeer = src.getPeer();
 		downstreamPeer.getParentElement().releaseRequestPad(downstreamPeer);
-
-		System.out.println("Remove from parent bin "
-				+ ((Bin) this.getParent()).remove(this));
 	}
 
 	@AllArgsConstructor

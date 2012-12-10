@@ -185,7 +185,6 @@ public class Gui extends JFrame {
 		roomList.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent evt) {
 				if (evt.getClickCount() == 2) {
-					System.out.println("the game");
 					DefaultMutableTreeNode node = (DefaultMutableTreeNode) roomList
 							.getLastSelectedPathComponent();
 					if (node == null) {
@@ -392,8 +391,6 @@ public class Gui extends JFrame {
 		new SwingWorker<Object, Object>() {
 			@Override
 			protected Object doInBackground() throws Exception {
-				System.out.println(contactsList.getSelectedValue());
-
 				if (contactsList.getSelectedValue() != null) {
 					app.askToCall((String) contactsList.getSelectedValue());
 				} else {
