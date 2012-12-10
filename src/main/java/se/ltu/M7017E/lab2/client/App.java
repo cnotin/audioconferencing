@@ -27,6 +27,7 @@ import se.ltu.M7017E.lab2.messages.AnswerCall;
 import se.ltu.M7017E.lab2.messages.Call;
 import se.ltu.M7017E.lab2.messages.ConnectedList;
 import se.ltu.M7017E.lab2.messages.Hello;
+import se.ltu.M7017E.lab2.messages.Join;
 import se.ltu.M7017E.lab2.messages.Joined;
 import se.ltu.M7017E.lab2.messages.Leave;
 import se.ltu.M7017E.lab2.messages.Left;
@@ -35,30 +36,40 @@ import se.ltu.M7017E.lab2.messages.StopCall;
 
 @Getter
 public class App {
-	private ControlChannel control;
+	private static final String NAME_CONFIG_FILE = "name.txt";
+	/** my list of contacts */
 	private Set<String> contacts = new TreeSet<String>();
+	/** the connected people from my list of contacts */
 	private Set<String> connected = new HashSet<String>();
+	/** own username */
 	private String username;
+	/** name of the guy we're currently calling */
 	private String friend;
 
+	/** User interface */
 	@Setter
 	private Gui gui;
 
-	@Getter
+	/** all the rooms in the server */
 	private List<Room> allRooms = new LinkedList<Room>();
+	/** only the rooms I'm currently in */
 	private List<Room> myRooms = new LinkedList<Room>();
+
+	/** buffer for receiving messages from server separated in several packets */
 	@Setter
-	@Getter
-	private boolean serverIsWriting = false;
 	private List<String> msgFromServer = new LinkedList<String>();
 
+	/** TCP connection to server */
+	private ControlChannel control;
+	/** GStreamer pipeline to receive from rooms and contact */
 	private ReceiverPipeline receiver;
+	/** GStreamer pipeline to send to rooms and contact */
 	private SenderPipeline sender;
 
 	public App() {
 		// ######### BUSINESS LOGIC ############
-		fetchUsername();
-		fetchContacts();
+		fetchUsername(); // get my name from file
+		fetchContacts(); // get my contacts list
 
 		// ######### COMMUNICATION WITH SERVER ###########
 		control = new ControlChannel(this);
@@ -70,9 +81,8 @@ public class App {
 		// ############ GSTREAMER STUFF ###############
 		Gst.init("Audioconferencing", new String[] { "--gst-debug-level=2",
 				"--gst-debug-no-color" });
-		receiver = new ReceiverPipeline();
-		receiver.play();
 
+		receiver = new ReceiverPipeline();
 		sender = new SenderPipeline();
 	}
 
@@ -120,34 +130,57 @@ public class App {
 		createMyRooms(allRooms);
 	}
 
+	/**
+	 * Contact says that he ended the call.
+	 * 
+	 * @param stopCall
+	 *            the received msg
+	 */
 	public void msg(StopCall stopCall) {
 		stopCall();
 	}
 
+	/**
+	 * Join a room (set up audio send/receive)
+	 * 
+	 * @param roomId
+	 *            number from 1 to 254
+	 */
 	public void joinRoom(int roomId) {
+		/*
+		 * remember my SSRC to remove it from the incoming stream from multicast
+		 * (prevents echo of my own voice)
+		 */
 		long mySSRC = sender.streamTo(roomId);
-		Room newRoom = new Room();
 		receiver.receiveFromRoom(roomId, mySSRC);
-		// TODO: connect sender too
+
+		Room newRoom = new Room();
+		send(new Join(roomId));
 		try {
-			getControl().send("JOIN," + roomId);
 			control.getRoomsListFinished().acquire();
-			newRoom = updateAfterJoin(control.getUpdatedAudience());
-			for (Room oldRoom : allRooms) {
-				if (oldRoom.getId() == newRoom.getId()) {
-					allRooms.set(allRooms.indexOf(oldRoom), newRoom);
-				}
-			}
 		} catch (InterruptedException e) {
+			System.err
+					.println("This thread has been interrupted while waiting the end "
+							+ "of a message from the server, message might be incomplete...");
 			e.printStackTrace();
+		}
+		newRoom = updateAfterJoin(control.getUpdatedAudience());
+		for (Room oldRoom : allRooms) {
+			if (oldRoom.getId() == newRoom.getId()) {
+				allRooms.set(allRooms.indexOf(oldRoom), newRoom);
+			}
 		}
 	}
 
 	/**
-	 * Send a message to the server to leave the room and disconnect the user
+	 * <<<<<<< HEAD Send a message to the server to leave the room and
+	 * disconnect the user
 	 * 
 	 * @param roomId
-	 *            the room to leave
+	 *            the room to leave ======= Leave a room (shutdown audio)
+	 * 
+	 * @param roomId
+	 *            number from 1 to 254 >>>>>>> Comments
 	 */
 	public void leaveRoom(int roomId) {
 		getControl().send(new Leave(roomId).toString());
@@ -161,17 +194,20 @@ public class App {
 		receiver.stopRoomReceiving(roomId);
 	}
 
+	/**
+	 * Retrieve my username from config file. Ask it to the user if not already
+	 * set and then save it.
+	 */
 	public void fetchUsername() {
 		/*
 		 * algo: check if file exists, then check if there is a name inside. If
 		 * any of these two tests fail: ask for a name
 		 */
-		File file = new File("name.txt");
+		File file = new File(NAME_CONFIG_FILE);
 		if (file.exists()) {
 			try {
 				FileReader fr = new FileReader(file);
 				BufferedReader br = new BufferedReader(fr);
-				br = new BufferedReader(fr);
 				String s = br.readLine();
 				System.out.println("hello" + s);
 				if (s != null && !s.isEmpty()) {
@@ -197,7 +233,7 @@ public class App {
 
 		// save it
 		try {
-			FileWriter myFile = new FileWriter("name.txt");
+			FileWriter myFile = new FileWriter(NAME_CONFIG_FILE);
 			myFile.write(name);
 			myFile.close();
 		} catch (IOException e) {
@@ -206,18 +242,27 @@ public class App {
 	}
 
 	/**
-	 * send a message to the server to try to call someone
+	 * Send a message to the server to try to call someone
+	 * 
+	 * @param contact
+	 *            Name of the person to call
 	 */
-	public void askToCall(String receiver) {
-
-		if (receiver.endsWith("(Disconnected)")) {
-			receiver = receiver.substring(0, receiver.length() - 15);
+	public void askToCall(String contact) {
+		if (contact.endsWith("(Disconnected)")) {
+			contact = contact.substring(0, contact.length() - 15);
 		}
+		// open a local port for our (maybe) future conversation
 		int port = this.receiver.receiveFromUnicast();
-		control.send(new Call(username, receiver, "0", port).toString());
-		this.friend = receiver;
+		send(new Call(username, contact, "0", port));
+		// remember name of my friend I'm talking with
+		this.friend = contact;
 	}
 
+	/**
+	 * 
+	 * @param ipReceiver
+	 * @param port
+	 */
 	public void call(String ipReceiver, int port) {
 		System.out.println("IP: " + ipReceiver);
 		sender.streamTo(ipReceiver, port);
@@ -233,9 +278,7 @@ public class App {
 	public void askToStopCall() {
 		stopCall();
 
-		StopCall stop = new StopCall();
-		stop.setReceiver(friend);
-		control.send(stop.toString());
+		send(new StopCall(friend));
 	}
 
 	/**
@@ -272,8 +315,8 @@ public class App {
 			gui.getHangUpBtn().setVisible(true);
 		}
 
-		control.send(new AnswerCall(port, call.getSender(), call.getReceiver(),
-				answer, "0").toString());
+		send(new AnswerCall(port, call.getSender(), call.getReceiver(), answer,
+				"0"));
 	}
 
 	/**
@@ -376,7 +419,7 @@ public class App {
 		if (server) {
 			try {
 				// ask the server for the list
-				getControl().send(new ListMsg().toString());
+				send(new ListMsg());
 				// wait for the semaphore
 				control.getRoomsListFinished().acquire();
 				System.out.println(control.getMsgList());
@@ -497,5 +540,9 @@ public class App {
 				myRooms.add(mynewRoom);
 			}
 		}
+	}
+
+	public void send(Object msg) {
+		this.control.send(msg.toString());
 	}
 }
