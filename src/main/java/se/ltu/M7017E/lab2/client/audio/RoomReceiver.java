@@ -139,6 +139,8 @@ public class RoomReceiver extends Bin {
 
 		this.setState(State.NULL);
 
+		((Bin) this.getParent()).remove(this);
+
 		downstreamPeer.getParentElement().releaseRequestPad(downstreamPeer);
 	}
 }

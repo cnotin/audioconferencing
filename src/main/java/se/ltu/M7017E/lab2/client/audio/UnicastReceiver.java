@@ -135,6 +135,8 @@ public class UnicastReceiver extends Bin {
 
 		this.setState(State.NULL);
 
+		((Bin) this.getParent()).remove(this);
+
 		if (downstreamPeer != null) {
 			// clean request pad from adder
 			downstreamPeer.getParentElement().releaseRequestPad(downstreamPeer);

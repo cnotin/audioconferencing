@@ -134,6 +134,8 @@ public class SenderBin extends Bin {
 
 		this.setState(State.NULL);
 
+		((Bin) this.getParent()).remove(this);
+
 		/*
 		 * if upstream tee has no src anymore, the pipeline will push in the
 		 * void and crash, thus we avoid it by stopping the whole bin
